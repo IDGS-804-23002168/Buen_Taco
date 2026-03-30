@@ -1,11 +1,8 @@
 # Variables de entorno
-.env
+venv
 
 # Dependencias Node
 node_modules/
-
-# Carpeta static
-static/
 
 # Carpeta migrations
 migrations/
