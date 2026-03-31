@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 import logging
 import logging.handlers
 import os
@@ -48,7 +51,8 @@ def create_app(config=DevelopmentConfig):
     from auth import auth_bp
     app.register_blueprint(auth_bp)
 
-
+    from recetas import recetas_bp          # Módulo 7 - Recetas
+    app.register_blueprint(recetas_bp)
 
     # ---- Manejadores de error (A05 - no exponer información interna) ----
     @app.errorhandler(404)
