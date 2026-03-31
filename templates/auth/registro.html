@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crear Cuenta | El Buen Taco</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <style>
+    :root {
+      --taco-brown: #7B3F00; --taco-rust: #B5451B;
+      --taco-amber: #E8A838; --taco-cream: #FAF3E8;
+      --taco-sand:  #EDE0C8; --taco-dark:  #1C1008;
+      --taco-muted: #7A6652; --radius: 1.25rem;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { min-height: 100%; font-family: 'DM Sans', sans-serif; background: var(--taco-dark); }
+
+    .bg-scene {
+      position: fixed; inset: 0; z-index: 0;
+      background: radial-gradient(ellipse 80% 60% at 15% 80%, rgba(181,69,27,.35) 0%, transparent 60%),
+                  radial-gradient(ellipse 60% 50% at 85% 20%, rgba(232,168,56,.22) 0%, transparent 55%);
+      background-color: #110A04;
+    }
+    .page-wrapper {
+      position: relative; z-index: 10; min-height: 100vh;
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 2rem 1.5rem;
+    }
+    .card-auth {
+      width: 100%; max-width: 460px;
+      background: rgba(250,243,232,.97);
+      border-radius: var(--radius);
+      box-shadow: 0 28px 64px rgba(28,16,8,.2);
+      overflow: hidden;
+      animation: slideUp .5s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes slideUp { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:translateY(0); } }
+
+    .card-header-auth {
+      background: linear-gradient(135deg, var(--taco-rust), var(--taco-brown));
+      padding: 1.8rem 2rem 1.5rem; text-align: center; position: relative;
+    }
+    .card-header-auth::after {
+      content: ''; position: absolute; bottom: -12px; left: 50%;
+      transform: translateX(-50%); border-left: 14px solid transparent;
+      border-right: 14px solid transparent; border-top: 13px solid var(--taco-brown);
+    }
+    .header-icon { font-size: 2.5rem; display: block; margin-bottom: .3rem; }
+    .brand-title { font-family: 'Playfair Display', serif; font-size: 1.45rem; font-weight: 900; color: #fff; }
+    .brand-sub   { font-size: .78rem; color: rgba(255,255,255,.7); text-transform: uppercase; letter-spacing: .1em; margin-top: .25rem; }
+
+    .card-body-auth { padding: 2rem 2.2rem 1.8rem; }
+
+    .alert-auth {
+      border-radius: .7rem; font-size: .875rem;
+      padding: .7rem 1rem; margin-bottom: 1.1rem;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .alert-danger  { background: #fce8e6; color: #8b1a10; border: 1px solid #f5c6c1; }
+    .alert-warning { background: #fff8e1; color: #7a5c00; border: 1px solid #ffe082; }
+    .alert-success { background: #e8f5e9; color: #1b5e20; border: 1px solid #a5d6a7; }
+    .alert-info    { background: #e3f2fd; color: #0d47a1; border: 1px solid #90caf9; }
+
+    /* Rol badge */
+    .role-badge {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: #FFF8E1; border: 1px solid #FFE082;
+      border-radius: .6rem; padding: .4rem .9rem;
+      font-size: .82rem; color: #7a5c00; font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .field-group { margin-bottom: 1rem; }
+    .field-label { display: block; font-size: .8rem; font-weight: 600; color: var(--taco-brown); text-transform: uppercase; letter-spacing: .04em; margin-bottom: .3rem; }
+    .field-wrap  { position: relative; }
+    .field-icon  { position: absolute; left: .9rem; top: 50%; transform: translateY(-50%); color: var(--taco-rust); font-size: 1rem; pointer-events: none; }
+    .field-input {
+      width: 100%; padding: .72rem .9rem .72rem 2.5rem;
+      border: 1.5px solid var(--taco-sand); border-radius: .75rem;
+      background: #fff; color: var(--taco-dark);
+      font-family: 'DM Sans', sans-serif; font-size: .93rem;
+      outline: none; transition: border-color .2s, box-shadow .2s;
+    }
+    .field-input:focus { border-color: var(--taco-rust); box-shadow: 0 0 0 3px rgba(181,69,27,.12); }
+    .field-input.has-toggle { padding-right: 2.8rem; }
+
+    .toggle-pw-btn {
+      position: absolute; right: .9rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: var(--taco-muted); font-size: 1rem;
+    }
+    .toggle-pw-btn:hover { color: var(--taco-rust); }
+
+    /* Barra de fortaleza */
+    .strength-bar { display: flex; gap: 4px; margin-top: .4rem; height: 5px; }
+    .strength-seg { flex: 1; border-radius: 99px; background: var(--taco-sand); transition: background .3s; }
+    .strength-label { font-size: .75rem; color: var(--taco-muted); margin-top: .3rem; min-height: 1rem; }
+
+    /* Requisitos */
+    .req-list { list-style: none; margin-top: .4rem; }
+    .req-list li {
+      font-size: .78rem; color: var(--taco-muted);
+      display: flex; align-items: center; gap: .35rem;
+      margin-bottom: .2rem; transition: color .2s;
+    }
+    .req-list li.ok { color: #2e7d32; }
+    .req-list li i  { font-size: .85rem; }
+
+    .btn-auth {
+      width: 100%; padding: .85rem; margin-top: .5rem;
+      background: linear-gradient(135deg, var(--taco-rust), var(--taco-brown));
+      color: #fff; font-family: 'DM Sans', sans-serif;
+      font-size: .95rem; font-weight: 600; letter-spacing: .04em;
+      border: none; border-radius: .85rem; cursor: pointer;
+      transition: transform .18s, box-shadow .18s, filter .18s;
+    }
+    .btn-auth:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(181,69,27,.4); filter: brightness(1.08); }
+
+    .divider { display: flex; align-items: center; gap: .7rem; margin: 1.2rem 0; color: var(--taco-muted); font-size: .8rem; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--taco-sand); }
+
+    .login-link { text-align: center; font-size: .88rem; color: var(--taco-muted); }
+    .login-link a { color: var(--taco-rust); font-weight: 600; text-decoration: none; transition: color .2s; }
+    .login-link a:hover { color: var(--taco-brown); text-decoration: underline; }
+
+    .card-footer-auth { text-align: center; font-size: .72rem; color: var(--taco-muted); padding: .8rem 2rem 1.4rem; border-top: 1px solid var(--taco-sand); }
+  </style>
+</head>
+<body>
+<div class="bg-scene"></div>
+
+<div class="page-wrapper">
+  <div class="card-auth">
+
+    <div class="card-header-auth">
+      <span class="header-icon">🌮</span>
+      <p class="brand-title">Crear Cuenta</p>
+      <p class="brand-sub">El Buen Taco · Tienda en Línea</p>
+    </div>
+
+    <div class="card-body-auth">
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}{% for cat, msg in messages %}
+          <div class="alert-auth alert-{{ cat }}">
+            {% if cat=='danger' %}<i class="bi bi-exclamation-triangle-fill"></i>{% endif %}
+            {% if cat=='warning' %}<i class="bi bi-shield-exclamation"></i>{% endif %}
+            {% if cat=='success' %}<i class="bi bi-check-circle-fill"></i>{% endif %}
+            {{ msg }}
+          </div>
+        {% endfor %}{% endif %}
+      {% endwith %}
+
+      <!-- Rol asignado -->
+      <div class="role-badge">
+        <i class="bi bi-person-badge"></i>
+        Rol asignado: <strong>Usuario</strong> — Compras en línea
+      </div>
+
+      <form method="POST" action="{{ url_for('auth.registro') }}" autocomplete="off" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token is defined else '' }}" />
+
+        <!-- Nombre -->
+        <div class="field-group">
+          <label class="field-label" for="nombre">Nombre completo</label>
+          <div class="field-wrap">
+            <i class="bi bi-person-fill field-icon"></i>
+            <input class="field-input" type="text" id="nombre" name="nombre"
+              placeholder="Tu nombre completo" maxlength="150" required />
+          </div>
+        </div>
+
+        <!-- Username -->
+        <div class="field-group">
+          <label class="field-label" for="username">Nombre de usuario</label>
+          <div class="field-wrap">
+            <i class="bi bi-at field-icon"></i>
+            <input class="field-input" type="text" id="username" name="username"
+              placeholder="Ej: juanito99" maxlength="100" required autocomplete="username" />
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="field-group">
+          <label class="field-label" for="email">Correo electrónico</label>
+          <div class="field-wrap">
+            <i class="bi bi-envelope-fill field-icon"></i>
+            <input class="field-input" type="email" id="email" name="email"
+              placeholder="tu@correo.com" maxlength="150" required autocomplete="email" />
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="field-group">
+          <label class="field-label" for="password">Contraseña</label>
+          <div class="field-wrap">
+            <i class="bi bi-lock-fill field-icon"></i>
+            <input class="field-input has-toggle" type="password" id="password" name="password"
+              placeholder="Crea tu contraseña" maxlength="255" required autocomplete="new-password"
+              oninput="checkStrength(this.value)" />
+            <button type="button" class="toggle-pw-btn" onclick="togglePw('password',this)">
+              <i class="bi bi-eye-fill"></i>
+            </button>
+          </div>
+          <!-- Fortaleza -->
+          <div class="strength-bar" id="strengthBar">
+            <div class="strength-seg" id="s1"></div>
+            <div class="strength-seg" id="s2"></div>
+            <div class="strength-seg" id="s3"></div>
+            <div class="strength-seg" id="s4"></div>
+          </div>
+          <div class="strength-label" id="strengthLabel"></div>
+          <!-- Requisitos -->
+          <ul class="req-list" id="reqList">
+            <li id="r-len"><i class="bi bi-circle"></i> Mínimo 8 caracteres</li>
+            <li id="r-upper"><i class="bi bi-circle"></i> Al menos 1 mayúscula</li>
+            <li id="r-lower"><i class="bi bi-circle"></i> Al menos 1 minúscula</li>
+            <li id="r-num"><i class="bi bi-circle"></i> Al menos 1 número</li>
+            <li id="r-special"><i class="bi bi-circle"></i> Al menos 1 carácter especial (!@#$...)</li>
+          </ul>
+        </div>
+
+        <!-- Confirmar password -->
+        <div class="field-group">
+          <label class="field-label" for="confirm_password">Confirmar contraseña</label>
+          <div class="field-wrap">
+            <i class="bi bi-lock-fill field-icon"></i>
+            <input class="field-input has-toggle" type="password" id="confirm_password" name="confirm_password"
+              placeholder="Repite tu contraseña" maxlength="255" required autocomplete="new-password"
+              oninput="checkMatch()" />
+            <button type="button" class="toggle-pw-btn" onclick="togglePw('confirm_password',this)">
+              <i class="bi bi-eye-fill"></i>
+            </button>
+          </div>
+          <div id="matchMsg" style="font-size:.78rem;margin-top:.3rem;min-height:1rem;"></div>
+        </div>
+
+        <button type="submit" class="btn-auth">
+          <i class="bi bi-person-plus-fill"></i>&nbsp; Crear mi cuenta
+        </button>
+      </form>
+
+      <div class="divider">o</div>
+      <p class="login-link">
+        ¿Ya tienes cuenta? <a href="{{ url_for('auth.login') }}">Inicia sesión</a>
+      </p>
+    </div>
+
+    <div class="card-footer-auth">
+      Al registrarte aceptas los términos de uso del sistema.<br>
+      <strong>El Buen Taco</strong> © 2026
+    </div>
+  </div>
+</div>
+
+<script>
+function togglePw(id, btn) {
+  const f = document.getElementById(id);
+  const i = btn.querySelector('i');
+  f.type = f.type === 'password' ? 'text' : 'password';
+  i.className = f.type === 'password' ? 'bi bi-eye-fill' : 'bi bi-eye-slash-fill';
+}
+
+const colors  = ['#ef5350','#ff9800','#fdd835','#43a047'];
+const labels  = ['Muy débil','Débil','Aceptable','Fuerte'];
+const segs    = ['s1','s2','s3','s4'];
+
+function checkStrength(pw) {
+  const reqs = {
+    len:     pw.length >= 8,
+    upper:   /[A-Z]/.test(pw),
+    lower:   /[a-z]/.test(pw),
+    num:     /\d/.test(pw),
+    special: /[!@#$%^&*()_+\-=\[\]{}|;':",./<>?]/.test(pw),
+  };
+  const score = Object.values(reqs).filter(Boolean).length;
+
+  // colores
+  segs.forEach((id, i) => {
+    document.getElementById(id).style.background = i < score ? colors[Math.min(score-1,3)] : '';
+  });
+  document.getElementById('strengthLabel').textContent = pw.length ? labels[Math.min(score-1,3)] || '' : '';
+
+  // requisitos
+  const map = { len:'r-len', upper:'r-upper', lower:'r-lower', num:'r-num', special:'r-special' };
+  Object.entries(reqs).forEach(([k,v]) => {
+    const el = document.getElementById(map[k]);
+    el.classList.toggle('ok', v);
+    el.querySelector('i').className = v ? 'bi bi-check-circle-fill' : 'bi bi-circle';
+  });
+}
+
+function checkMatch() {
+  const pw  = document.getElementById('password').value;
+  const cpw = document.getElementById('confirm_password').value;
+  const el  = document.getElementById('matchMsg');
+  if (!cpw) { el.textContent = ''; return; }
+  if (pw === cpw) {
+    el.style.color = '#2e7d32';
+    el.innerHTML = '<i class="bi bi-check-circle-fill"></i> Las contraseñas coinciden';
+  } else {
+    el.style.color = '#8b1a10';
+    el.innerHTML = '<i class="bi bi-x-circle-fill"></i> Las contraseñas no coinciden';
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Error 404</title>
+
+<style>
+
+body{
+    margin:0;
+    font-family: Arial, Helvetica, sans-serif;
+    background:#f4f6f9;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.container{
+    text-align:center;
+}
+
+h1{
+    font-size:120px;
+    margin:0;
+    color:#ef4444;
+}
+
+h2{
+    margin:10px 0;
+    color:#333;
+}
+
+p{
+    color:#666;
+}
+
+a{
+    display:inline-block;
+    margin-top:20px;
+    padding:12px 20px;
+    background:#2563eb;
+    color:white;
+    text-decoration:none;
+    border-radius:6px;
+}
+
+a:hover{
+    background:#1d4ed8;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>404</h1>
+
+    <h2>Página no encontrada</h2>
+
+    <p>
+        Lo sentimos, la página que buscas no existe.
+    </p>
+
+    <a href="{{ url_for('index') }}">
+        Volver al inicio
+    </a>
+
+</div>
+
+</body>
+</html>

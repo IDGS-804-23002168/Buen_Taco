@@ -1,5 +1,6 @@
 # Variables de entorno
 venv
+.env
 
 # Dependencias Node
 node_modules/

@@ -1,0 +1,328 @@
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
+from datetime import datetime
+
+db = SQLAlchemy()
+
+
+# ---------------------------------------------------------------------------
+# CATÁLOGOS BASE
+# ---------------------------------------------------------------------------
+class CategoriaProducto(db.Model):
+    __tablename__ = 'CategoriasProducto'
+
+    CategoriaId = db.Column(db.Integer, primary_key=True)
+    Nombre      = db.Column(db.String(100), nullable=False)
+
+    productos = db.relationship('Producto', backref='categoria', lazy=True)
+
+
+class UnidadMedida(db.Model):
+    __tablename__ = 'UnidadesMedida'
+
+    UnidadId    = db.Column(db.Integer, primary_key=True)
+    Nombre      = db.Column(db.String(50), nullable=False)
+    Abreviatura = db.Column(db.String(10), nullable=False)
+
+
+class Proveedor(db.Model):
+    __tablename__ = 'Proveedores'
+
+    ProveedorId = db.Column(db.Integer, primary_key=True)
+    Nombre      = db.Column(db.String(150), nullable=False)
+    Telefono    = db.Column(db.String(20))
+    Email       = db.Column(db.String(150))
+    Activo      = db.Column(db.Boolean, default=True)
+
+    compras = db.relationship('Compra', backref='proveedor', lazy=True)
+
+
+# ---------------------------------------------------------------------------
+# COMPRAS
+# ---------------------------------------------------------------------------
+class Compra(db.Model):
+    __tablename__ = 'Compras'
+
+    CompraId    = db.Column(db.Integer, primary_key=True)
+    ProveedorId = db.Column(db.Integer, db.ForeignKey('Proveedores.ProveedorId'), nullable=False)
+    Fecha       = db.Column(db.DateTime, default=datetime.utcnow)
+    Total       = db.Column(db.Numeric(10, 2))
+
+    detalles = db.relationship('CompraDetalle', backref='compra', lazy=True)
+
+
+class CompraDetalle(db.Model):
+    __tablename__ = 'CompraDetalle'
+
+    CompraDetalleId = db.Column(db.Integer, primary_key=True)
+    CompraId        = db.Column(db.Integer, db.ForeignKey('Compras.CompraId'), nullable=False)
+    MateriaPrimaId  = db.Column(db.Integer, db.ForeignKey('MateriasPrimas.MateriaPrimaId'), nullable=False)
+    Cantidad        = db.Column(db.Numeric(10, 2), nullable=False)
+    PrecioUnitario  = db.Column(db.Numeric(10, 2))
+    Subtotal        = db.Column(db.Numeric(10, 2))
+
+
+# ---------------------------------------------------------------------------
+# MATERIAS PRIMAS
+# ---------------------------------------------------------------------------
+class MateriaPrima(db.Model):
+    __tablename__ = 'MateriasPrimas'
+
+    MateriaPrimaId   = db.Column(db.Integer, primary_key=True)
+    Nombre           = db.Column(db.String(150), nullable=False)
+    UnidadBaseId     = db.Column(db.Integer, db.ForeignKey('UnidadesMedida.UnidadId'), nullable=False)
+    PorcentajeMerma  = db.Column(db.Numeric(5, 2), default=0)
+    Activo           = db.Column(db.Boolean, default=True)
+
+    unidad = db.relationship('UnidadMedida')
+
+
+class MovimientoMateriaPrima(db.Model):
+    __tablename__ = 'MovimientoMateriaPrima'
+
+    MovimientoId   = db.Column(db.Integer, primary_key=True)
+    MateriaPrimaId = db.Column(db.Integer, db.ForeignKey('MateriasPrimas.MateriaPrimaId'), nullable=False)
+    TipoMovimiento = db.Column(db.String(50))
+    Cantidad       = db.Column(db.Numeric(10, 2), nullable=False)
+    Fecha          = db.Column(db.DateTime, default=datetime.utcnow)
+    ReferenciaId   = db.Column(db.Integer)
+
+    materia_prima = db.relationship('MateriaPrima')
+
+
+# ---------------------------------------------------------------------------
+# PRODUCTOS Y RECETAS
+# ---------------------------------------------------------------------------
+class Producto(db.Model):
+    __tablename__ = 'Productos'
+
+    ProductoId  = db.Column(db.Integer, primary_key=True)
+    CategoriaId = db.Column(db.Integer, db.ForeignKey('CategoriasProducto.CategoriaId'), nullable=False)
+    Nombre      = db.Column(db.String(150), nullable=False)
+    Precio      = db.Column(db.Numeric(10, 2), nullable=False)
+    Activo      = db.Column(db.Boolean, default=True)
+
+    recetas = db.relationship('Receta', backref='producto', lazy=True)
+
+
+class Receta(db.Model):
+    __tablename__ = 'Recetas'
+
+    RecetaId       = db.Column(db.Integer, primary_key=True)
+    ProductoId     = db.Column(db.Integer, db.ForeignKey('Productos.ProductoId'), nullable=False)
+    MateriaPrimaId = db.Column(db.Integer, db.ForeignKey('MateriasPrimas.MateriaPrimaId'), nullable=False)
+    Cantidad       = db.Column(db.Numeric(10, 4), nullable=False)
+    UnidadId       = db.Column(db.Integer, db.ForeignKey('UnidadesMedida.UnidadId'), nullable=False)
+
+    materia_prima = db.relationship('MateriaPrima')
+    unidad        = db.relationship('UnidadMedida')
+
+
+# ---------------------------------------------------------------------------
+# PRODUCCIÓN
+# ---------------------------------------------------------------------------
+class SolicitudProduccion(db.Model):
+    __tablename__ = 'SolicitudProduccion'
+
+    SolicitudId       = db.Column(db.Integer, primary_key=True)
+    ProductoId        = db.Column(db.Integer, db.ForeignKey('Productos.ProductoId'), nullable=False)
+    CantidadSolicitada = db.Column(db.Integer, nullable=False)
+    Fecha             = db.Column(db.DateTime, default=datetime.utcnow)
+    Estado            = db.Column(db.String(50))
+
+    producto = db.relationship('Producto')
+
+
+class OrdenProduccion(db.Model):
+    __tablename__ = 'OrdenProduccion'
+
+    OrdenProduccionId = db.Column(db.Integer, primary_key=True)
+    ProductoId        = db.Column(db.Integer, db.ForeignKey('Productos.ProductoId'), nullable=False)
+    CantidadProducir  = db.Column(db.Integer, nullable=False)
+    FechaInicio       = db.Column(db.DateTime, default=datetime.utcnow)
+    FechaFin          = db.Column(db.DateTime)
+    Estado            = db.Column(db.String(50))
+
+    producto = db.relationship('Producto')
+
+
+class MovimientoProducto(db.Model):
+    __tablename__ = 'MovimientoProducto'
+
+    MovimientoId   = db.Column(db.Integer, primary_key=True)
+    ProductoId     = db.Column(db.Integer, db.ForeignKey('Productos.ProductoId'), nullable=False)
+    TipoMovimiento = db.Column(db.String(50))
+    Cantidad       = db.Column(db.Integer, nullable=False)
+    Fecha          = db.Column(db.DateTime, default=datetime.utcnow)
+    ReferenciaId   = db.Column(db.Integer)
+
+    producto = db.relationship('Producto')
+
+
+# ---------------------------------------------------------------------------
+# CLIENTES Y PEDIDOS
+# ---------------------------------------------------------------------------
+class Cliente(db.Model):
+    __tablename__ = 'Clientes'
+
+    ClienteId      = db.Column(db.Integer, primary_key=True)
+    Nombre         = db.Column(db.String(150))
+    Telefono       = db.Column(db.String(20))
+    Email          = db.Column(db.String(150))
+    FechaRegistro  = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class Pedido(db.Model):
+    __tablename__ = 'Pedidos'
+
+    PedidoId      = db.Column(db.Integer, primary_key=True)
+    UsuarioId     = db.Column(db.Integer, db.ForeignKey('Usuarios.UsuarioId'), nullable=False)
+    DireccionId   = db.Column(db.Integer, db.ForeignKey('Direcciones.DireccionId'), nullable=False)
+    Fecha         = db.Column(db.DateTime, default=datetime.utcnow)
+    Estado        = db.Column(db.String(50))
+    Total         = db.Column(db.Numeric(10, 2))
+    Observaciones = db.Column(db.String(255))
+
+    detalles = db.relationship('PedidoDetalle', backref='pedido', lazy=True)
+
+
+class PedidoDetalle(db.Model):
+    __tablename__ = 'PedidoDetalle'
+
+    PedidoDetalleId = db.Column(db.Integer, primary_key=True)
+    PedidoId        = db.Column(db.Integer, db.ForeignKey('Pedidos.PedidoId'), nullable=False)
+    ProductoId      = db.Column(db.Integer, db.ForeignKey('Productos.ProductoId'), nullable=False)
+    Cantidad        = db.Column(db.Integer, nullable=False)
+    PrecioUnitario  = db.Column(db.Numeric(10, 2))
+    Subtotal        = db.Column(db.Numeric(10, 2))
+
+    producto = db.relationship('Producto')
+
+
+# ---------------------------------------------------------------------------
+# VENTAS
+# ---------------------------------------------------------------------------
+class Venta(db.Model):
+    __tablename__ = 'Ventas'
+
+    VentaId   = db.Column(db.Integer, primary_key=True)
+    ClienteId = db.Column(db.Integer, db.ForeignKey('Clientes.ClienteId'))
+    PedidoId  = db.Column(db.Integer, db.ForeignKey('Pedidos.PedidoId'))
+    EsEnLinea = db.Column(db.Boolean, default=False)
+    Fecha     = db.Column(db.DateTime, default=datetime.utcnow)
+    Total     = db.Column(db.Numeric(10, 2))
+
+    detalles = db.relationship('VentaDetalle', backref='venta', lazy=True)
+
+
+class VentaDetalle(db.Model):
+    __tablename__ = 'VentaDetalle'
+
+    VentaDetalleId = db.Column(db.Integer, primary_key=True)
+    VentaId        = db.Column(db.Integer, db.ForeignKey('Ventas.VentaId'), nullable=False)
+    ProductoId     = db.Column(db.Integer, db.ForeignKey('Productos.ProductoId'), nullable=False)
+    Cantidad       = db.Column(db.Integer, nullable=False)
+    PrecioUnitario = db.Column(db.Numeric(10, 2))
+    Subtotal       = db.Column(db.Numeric(10, 2))
+
+
+class Pago(db.Model):
+    __tablename__ = 'Pagos'
+
+    PagoId      = db.Column(db.Integer, primary_key=True)
+    VentaId     = db.Column(db.Integer, db.ForeignKey('Ventas.VentaId'), nullable=False)
+    MetodoPago  = db.Column(db.String(50))
+    Monto       = db.Column(db.Numeric(10, 2))
+    Fecha       = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class CorteCaja(db.Model):
+    __tablename__ = 'CorteCaja'
+
+    CorteId      = db.Column(db.Integer, primary_key=True)
+    Fecha        = db.Column(db.Date, nullable=False)
+    TotalVentas  = db.Column(db.Numeric(10, 2))
+    TotalEfectivo = db.Column(db.Numeric(10, 2))
+    TotalSalidas  = db.Column(db.Numeric(10, 2))
+    Utilidad      = db.Column(db.Numeric(10, 2))
+
+
+# ---------------------------------------------------------------------------
+# USUARIOS Y SEGURIDAD
+# ---------------------------------------------------------------------------
+class Rol(db.Model):
+    __tablename__ = 'Roles'
+
+    RolId      = db.Column(db.Integer, primary_key=True)
+    Nombre     = db.Column(db.String(100), unique=True, nullable=False)
+    Descripcion = db.Column(db.String(255))
+    Activo     = db.Column(db.Boolean, default=True)
+
+
+class Usuario(UserMixin, db.Model):
+    """
+    Modelo de usuario con soporte completo para Flask-Login.
+    Incluye campos de seguridad OWASP A07 y recuperación de contraseña.
+    """
+    __tablename__ = 'Usuarios'
+
+    UsuarioId    = db.Column(db.Integer, primary_key=True)
+    Nombre       = db.Column(db.String(150), nullable=False)
+    Username     = db.Column(db.String(100), unique=True, nullable=False)
+    Email        = db.Column(db.String(150), unique=True, nullable=False)
+
+    PasswordHash = db.Column(db.String(255), nullable=False)
+    Salt         = db.Column(db.String(255), nullable=False, default='')
+
+    IntentosFallidos       = db.Column(db.Integer, default=0)
+    Bloqueado              = db.Column(db.Boolean, default=False)
+    FechaBloqueo           = db.Column(db.DateTime)
+
+    UltimoLogin            = db.Column(db.DateTime)
+
+    FechaCambioPassword    = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    RequiereCambioPassword = db.Column(db.Boolean, default=False)
+
+    # 2FA
+    Token2FA               = db.Column(db.String(10))
+    Token2FAExpiracion     = db.Column(db.DateTime)
+    TwoFactorHabilitado    = db.Column(db.Boolean, default=False)
+
+    # Recuperación de contraseña
+    TokenRecuperacion      = db.Column(db.String(64))
+    TokenRecuperacionExp   = db.Column(db.DateTime)
+
+    Activo = db.Column(db.Boolean, default=True)
+
+    roles     = db.relationship('UsuariosRoles', backref='usuario', lazy=True)
+    direcciones = db.relationship('Direccion', backref='usuario', lazy=True)
+
+    # Flask-Login: usar UsuarioId como identificador de sesión
+    def get_id(self):
+        return str(self.UsuarioId)
+
+
+class UsuariosRoles(db.Model):
+    __tablename__ = 'UsuariosRoles'
+
+    UsuarioId       = db.Column(db.Integer, db.ForeignKey('Usuarios.UsuarioId'), primary_key=True)
+    RolId           = db.Column(db.Integer, db.ForeignKey('Roles.RolId'), primary_key=True)
+    FechaAsignacion = db.Column(db.DateTime, default=datetime.utcnow)
+    Activo          = db.Column(db.Boolean, default=True)
+
+    rol = db.relationship('Rol')
+
+
+class Direccion(db.Model):
+    __tablename__ = 'Direcciones'
+
+    DireccionId  = db.Column(db.Integer, primary_key=True)
+    UsuarioId    = db.Column(db.Integer, db.ForeignKey('Usuarios.UsuarioId'), nullable=False)
+    Calle        = db.Column(db.String(150))
+    Numero       = db.Column(db.String(20))
+    Colonia      = db.Column(db.String(100))
+    Ciudad       = db.Column(db.String(100))
+    Estado       = db.Column(db.String(100))
+    CodigoPostal = db.Column(db.String(10))
+    Referencias  = db.Column(db.String(255))
+    Activa       = db.Column(db.Boolean, default=True)
