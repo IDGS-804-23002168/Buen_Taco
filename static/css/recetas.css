@@ -1,0 +1,53 @@
+/* ── Módulo 7: Recetas ── */
+
+.accordion-button:not(.collapsed) {
+    background-color: #fdf9f7;
+    color: #8B3A0E;
+    box-shadow: none;
+}
+
+.receta-badge {
+    background-color: #8B3A0E;
+    font-size: 0.75rem;
+    min-width: 80px;
+    text-align: center;
+}
+
+.receta-body {
+    background-color: #fdf9f7;
+}
+
+.receta-icon {
+    color: #8B3A0E;
+}
+
+.receta-costo {
+    color: #8B3A0E;
+    font-weight: 600;
+}
+
+.receta-card-header {
+    background-color: #8B3A0E;
+    color: #fff;
+}
+
+.receta-btn-primary {
+    background-color: #8B3A0E;
+    color: #fff;
+    font-weight: 600;
+}
+
+.receta-btn-primary:hover {
+    background-color: #6e2e0a;
+    color: #fff;
+}
+
+.receta-sidebar {
+    background-color: #fdf9f7;
+    border-left: 4px solid #8B3A0E;
+}
+
+.receta-empty {
+    background-color: #fdf9f7;
+    border: 2px dashed rgba(139,58,14,0.2);
+}

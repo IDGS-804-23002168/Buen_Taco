@@ -1,0 +1,81 @@
+{# ── Macros del Módulo 7: Recetas ── #}
+
+{# Mensajes flash #}
+{% macro flash_messages() %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for cat, msg in messages %}
+  <div class="alert alert-{{ cat }} alert-dismissible fade show">
+    {{ msg }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  {% endfor %}
+{% endwith %}
+{% endmacro %}
+
+{# Campo de formulario con error #}
+{% macro campo(field, placeholder='') %}
+<div class="mb-3">
+  <label class="form-label fw-semibold">
+    {{ field.label.text }}
+    {% if field.flags.required %}
+    <span class="text-danger">*</span>
+    {% endif %}
+  </label>
+  {{ field(class="form-control" + (" is-invalid" if field.errors else ""), placeholder=placeholder) }}
+  {% if field.errors %}
+  <div class="invalid-feedback">
+    {% for error in field.errors %}{{ error }}{% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endmacro %}
+
+{# Select con error #}
+{% macro campo_select(field) %}
+<div class="mb-3">
+  <label class="form-label fw-semibold">
+    {{ field.label.text }}
+    {% if field.flags.required %}
+    <span class="text-danger">*</span>
+    {% endif %}
+  </label>
+  {{ field(class="form-select" + (" is-invalid" if field.errors else "")) }}
+  {% if field.errors %}
+  <div class="invalid-feedback">
+    {% for error in field.errors %}{{ error }}{% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endmacro %}
+
+{# Botones guardar/cancelar #}
+{% macro botones(url_cancelar) %}
+<div class="d-flex gap-2 mt-3">
+  <button type="submit" class="btn receta-btn-primary">
+    <i class="bi bi-check-lg me-1"></i>Guardar
+  </button>
+  <a href="{{ url_cancelar }}" class="btn btn-outline-secondary">Cancelar</a>
+</div>
+{% endmacro %}
+
+{# Encabezado de sección #}
+{% macro encabezado(titulo, subtitulo='', url_boton='', texto_boton='', rol_requerido='Administrador') %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h4 class="fw-bold mb-0">
+      <i class="bi bi-journal-richtext me-2 receta-icon"></i>{{ titulo }}
+    </h4>
+    {% if subtitulo %}
+    <small class="text-muted">{{ subtitulo }}</small>
+    {% endif %}
+  </div>
+  {% if url_boton and texto_boton %}
+  {% set roles_usuario = current_user.roles | map(attribute='rol.Nombre') | list %}
+  {% if rol_requerido in roles_usuario %}
+  <a href="{{ url_boton }}" class="btn btn-sm receta-btn-primary px-3 py-2">
+    <i class="bi bi-plus-lg me-1"></i>{{ texto_boton }}
+  </a>
+  {% endif %}
+  {% endif %}
+</div>
+{% endmacro %}

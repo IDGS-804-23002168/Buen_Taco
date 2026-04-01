@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% from "recetas/_macros_recetas.html" import flash_messages %}
 {% block content %}
 
 {% with messages = get_flashed_messages(with_categories=true) %}

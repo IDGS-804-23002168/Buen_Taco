@@ -7,6 +7,7 @@
 2026-03-31 12:21:24,080 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
 2026-03-31 12:23:16,480 WARNING: accion=LOGIN_FALLIDO usuario_id=1 detalle=intento 1
 2026-03-31 12:23:34,109 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+<<<<<<< HEAD
 2026-03-31 16:11:46,533 WARNING: accion=LOGIN_FALLIDO usuario_id=None detalle=username=admin no existe
 2026-03-31 16:12:07,400 WARNING: accion=LOGIN_FALLIDO usuario_id=None detalle=username=admin no existe
 2026-03-31 16:15:22,351 WARNING: accion=LOGIN_FALLIDO usuario_id=None detalle=username=admin no existe
@@ -44,3 +45,9 @@
 2026-03-31 23:18:00,689 INFO: accion=LOGOUT usuario_id=1 detalle=
 2026-03-31 23:18:13,308 INFO: accion=LOGIN_EXITOSO usuario_id=3 detalle=
 2026-03-31 23:18:58,369 INFO: accion=LOGOUT usuario_id=3 detalle=
+=======
+2026-03-31 17:41:03,063 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-03-31 17:57:43,759 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-03-31 19:09:31,908 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-03-31 22:05:39,269 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+>>>>>>> 6051d689cdf591e0301485584492c43abecb4b25
