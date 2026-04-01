@@ -29,10 +29,21 @@ class Proveedor(db.Model):
     __tablename__ = 'Proveedores'
 
     ProveedorId = db.Column(db.Integer, primary_key=True)
-    Nombre      = db.Column(db.String(150), nullable=False)
-    Telefono    = db.Column(db.String(20))
-    Email       = db.Column(db.String(150))
-    Activo      = db.Column(db.Boolean, default=True)
+
+    Nombre = db.Column(db.String(150), nullable=False, unique=True)
+    RFC = db.Column(db.String(13), nullable=False, unique=True)
+    Categoria = db.Column(db.String(100), nullable=False)
+    Direccion = db.Column(db.String(255), nullable=False)
+    ContactoPrincipal = db.Column(db.String(150), nullable=False)
+    Telefono = db.Column(db.String(20), nullable=False)
+    Email = db.Column(db.String(150), nullable=False, unique=True)
+
+    Banco = db.Column(db.String(100))
+    CuentaBancaria = db.Column(db.String(18), unique=True, nullable=False)
+    CLABE = db.Column(db.String(18), unique=True, nullable=False)
+
+    Activo = db.Column(db.Boolean, default=True)
+    Notas = db.Column(db.String(500))
 
     compras = db.relationship('Compra', backref='proveedor', lazy=True)
 
