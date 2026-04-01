@@ -107,11 +107,13 @@ class MovimientoMateriaPrima(db.Model):
 class Producto(db.Model):
     __tablename__ = 'Productos'
 
-    ProductoId  = db.Column(db.Integer, primary_key=True)
-    CategoriaId = db.Column(db.Integer, db.ForeignKey('CategoriasProducto.CategoriaId'), nullable=False)
-    Nombre      = db.Column(db.String(150), nullable=False)
-    Precio      = db.Column(db.Numeric(10, 2), nullable=False)
-    Activo      = db.Column(db.Boolean, default=True)
+    ProductoId               = db.Column(db.Integer, primary_key=True)
+    CategoriaId              = db.Column(db.Integer, db.ForeignKey('CategoriasProducto.CategoriaId'), nullable=False)
+    Nombre                   = db.Column(db.String(150), nullable=False)
+    Descripcion              = db.Column(db.Text)
+    Precio                   = db.Column(db.Numeric(10, 2), nullable=False)
+    CostoUltimaActualizacion = db.Column(db.DateTime)
+    Activo                   = db.Column(db.Boolean, default=True)
 
     recetas = db.relationship('Receta', backref='producto', lazy=True)
 
@@ -119,14 +121,11 @@ class Producto(db.Model):
 class Receta(db.Model):
     __tablename__ = 'Recetas'
 
-    RecetaId       = db.Column(db.Integer, primary_key=True)
-    ProductoId     = db.Column(db.Integer, db.ForeignKey('Productos.ProductoId'), nullable=False)
-    MateriaPrimaId = db.Column(db.Integer, db.ForeignKey('MateriasPrimas.MateriaPrimaId'), nullable=False)
-    Cantidad       = db.Column(db.Numeric(10, 4), nullable=False)
-    UnidadId       = db.Column(db.Integer, db.ForeignKey('UnidadesMedida.UnidadId'), nullable=False)
+    ProductoId     = db.Column(db.Integer, db.ForeignKey('Productos.ProductoId'), primary_key=True)
+    MateriaPrimaId = db.Column(db.Integer, db.ForeignKey('MateriasPrimas.MateriaPrimaId'), primary_key=True)
+    CantidadBase   = db.Column(db.Numeric(10, 2), nullable=False)
 
     materia_prima = db.relationship('MateriaPrima')
-    unidad        = db.relationship('UnidadMedida')
 
 
 # ---------------------------------------------------------------------------

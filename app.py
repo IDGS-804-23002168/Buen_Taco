@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 import logging
 import logging.handlers
 import os
@@ -27,6 +30,10 @@ def create_app(config=DevelopmentConfig):
 
     # ---- Inicializar extensiones ----
     db.init_app(app)
+
+    with app.app_context():
+        db.create_all()
+
     csrf.init_app(app)
     mail.init_app(app)
 
@@ -52,7 +59,14 @@ def create_app(config=DevelopmentConfig):
     app.register_blueprint(auth_bp)
     app.register_blueprint(proveedores) 
 
+    from recetas import recetas_bp          # Módulo 7 - Recetas
+    app.register_blueprint(recetas_bp)
 
+    from inventario import inventario_bp
+    app.register_blueprint(inventario_bp)
+    
+    from costoUtilidad import costo_utilidad_bp    # Módulo 11 - Costo y Utilidad
+    app.register_blueprint(costo_utilidad_bp)
 
     # ---- Manejadores de error (A05 - no exponer información interna) ----
     @app.errorhandler(404)

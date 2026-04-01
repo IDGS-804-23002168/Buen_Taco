@@ -1,0 +1,149 @@
+{% extends "layout.html" %}
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for cat, msg in messages %}
+    <div class="alert alert-{{ cat }} alert-dismissible fade show">
+      {{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  {% endfor %}
+{% endwith %}
+
+{% set roles_usuario = current_user.roles | map(attribute='rol.Nombre') | list %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h4 class="fw-bold mb-0"><i class="bi bi-box-seam me-2" style="color:#8B3A0E;"></i>Materias Primas</h4>
+    <small class="text-muted">Gestión de insumos del almacén</small>
+  </div>
+  {% if 'Administrador' in roles_usuario or 'Encargado_Almacen' in roles_usuario %}
+  <button class="btn btn-sm text-white fw-semibold px-3 py-2" style="background-color:#8B3A0E;"
+          data-bs-toggle="modal" data-bs-target="#modalNuevaMateria">
+    <i class="bi bi-plus-lg me-1"></i>Nuevo insumo
+  </button>
+  {% endif %}
+</div>
+
+<div class="input-group mb-4 shadow-sm" style="max-width:400px;">
+  <span class="input-group-text bg-white border-end-0">
+    <i class="bi bi-search text-muted"></i>
+  </span>
+  <input type="text" id="buscador" class="form-control border-start-0" placeholder="Buscar materia prima...">
+</div>
+
+{% if materias %}
+<div class="card border-0 shadow-sm">
+  <div class="card-header text-white fw-semibold" style="background-color:#8B3A0E;">
+    <i class="bi bi-list-ul me-2"></i>Insumos Registrados
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0 align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th><th>Nombre</th><th>Unidad</th><th>Merma (%)</th><th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in materias %}
+        <tr class="materia-item" data-nombre="{{ m.Nombre | lower }}">
+          <td class="fw-semibold">{{ m.MateriaPrimaId }}</td>
+          <td>{{ m.Nombre }}</td>
+          <td><span class="badge bg-light text-dark border">{{ m.unidad.Abreviatura if m.unidad else 'S/U' }}</span></td>
+          <td>
+            <span class="badge rounded-pill {{ 'bg-warning text-dark' if m.PorcentajeMerma > 10 else 'bg-light text-dark border' }}">
+              {{ m.PorcentajeMerma }}%
+            </span>
+          </td>
+          <td><span class="badge bg-success">Activo</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="text-center py-5 text-muted">
+  <i class="bi bi-box-seam fs-1 d-block mb-2"></i> No hay materias primas registradas.
+</div>
+{% endif %}
+
+<div class="modal fade" id="modalNuevaMateria" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header text-white" style="background-color:#8B3A0E;">
+        <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Nueva Materia Prima</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="POST" action="{{ url_for('inventario.materias_primas') }}" novalidate>
+        {{ form.csrf_token }}
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Nombre <span class="text-danger">*</span></label>
+            {% set clase_nombre = 'form-control is-invalid' if form.nombre.errors else 'form-control' %}
+            {{ form.nombre(class=clase_nombre, placeholder="Ej. Tomate, Carne...") }}
+            {% for error in form.nombre.errors %}<div class="invalid-feedback fw-bold">{{ error }}</div>{% endfor %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Unidad de Medida <span class="text-danger">*</span></label>
+            {% set clase_u = 'form-select is-invalid' if form.unidad_id.errors else 'form-select' %}
+            {{ form.unidad_id(class=clase_u) }}
+            {% for error in form.unidad_id.errors %}<div class="invalid-feedback fw-bold">{{ error }}</div>{% endfor %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Merma Esperada (%)</label>
+            {% set clase_m = 'form-control is-invalid' if form.merma.errors else 'form-control' %}
+            {{ form.merma(class=clase_m) }}
+            {% for error in form.merma.errors %}<div class="invalid-feedback fw-bold">{{ error }}</div>{% endfor %}
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn text-white fw-semibold" style="background-color:#8B3A0E;">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 1. Buscador en tiempo real
+  document.getElementById('buscador').addEventListener('input', function () {
+    const q = this.value.toLowerCase();
+    document.querySelectorAll('.materia-item').forEach(function (item) {
+      item.style.display = item.dataset.nombre.includes(q) ? '' : 'none';
+    });
+  });
+
+  // 2. Control del Modal y Limpieza Definitiva
+  document.addEventListener("DOMContentLoaded", function() {
+    var modalElement = document.getElementById('modalNuevaMateria');
+    
+    {% if form.errors %}
+      // CASO A: Flask detectó un error. 
+      // 1. Abrimos la ventana automáticamente para mostrar el error.
+      var myModal = new bootstrap.Modal(modalElement);
+      myModal.show();
+      
+      // 2. Si el usuario se arrepiente y cierra la ventana (Cancelar o la 'X'), 
+      // recargamos la página por completo para limpiar la "basura" del servidor.
+      modalElement.addEventListener('hidden.bs.modal', function () {
+        window.location.href = "{{ url_for('inventario.materias_primas') }}";
+      });
+      
+    {% else %}
+      // CASO B: Todo está normal. Si abren la ventana y la cancelan sin guardar, 
+      // solo vaciamos las cajas de texto rápidamente.
+      modalElement.addEventListener('hidden.bs.modal', function () {
+        var form = modalElement.querySelector('form');
+        if (form) {
+          var inputs = form.querySelectorAll('input:not([type="hidden"])');
+          inputs.forEach(i => i.value = '');
+          var selects = form.querySelectorAll('select');
+          selects.forEach(s => s.selectedIndex = 0);
+        }
+      });
+    {% endif %}
+  });
+</script>
+
+{% endblock %}

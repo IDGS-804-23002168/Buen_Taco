@@ -1,0 +1,44 @@
+from flask_wtf import FlaskForm
+from wtforms import SelectField, FloatField, StringField, TextAreaField
+from wtforms.validators import DataRequired, NumberRange, Length, Optional
+
+class FormAgregarIngrediente(FlaskForm):
+    materia_prima_id = SelectField(
+        'Materia Prima',
+        coerce=int,
+        validators=[DataRequired(message='Selecciona una materia prima.')]
+    )
+    cantidad_base = FloatField(
+        'Cantidad Base',
+        validators=[
+            DataRequired(message='La cantidad es obligatoria.'),
+            NumberRange(min=0.01, message='La cantidad debe ser mayor a 0.')
+        ]
+    )
+
+class FormEditarIngrediente(FlaskForm):
+    cantidad_base = FloatField(
+        'Cantidad Base',
+        validators=[
+            DataRequired(message='La cantidad es obligatoria.'),
+            NumberRange(min=0.01, message='La cantidad debe ser mayor a 0.')
+        ]
+    )
+
+class FormProducto(FlaskForm):
+    nombre = StringField(
+        'Nombre',
+        validators=[
+            DataRequired(message='El nombre es obligatorio.'),
+            Length(max=150, message='Máximo 150 caracteres.')
+        ]
+    )
+    descripcion = TextAreaField(
+        'Descripción',
+        validators=[Optional(), Length(max=500)]
+    )
+    categoria_id = SelectField(
+        'Categoría',
+        coerce=int,
+        validators=[DataRequired(message='Selecciona una categoría.')]
+    )

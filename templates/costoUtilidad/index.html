@@ -1,0 +1,125 @@
+{% extends "layout.html" %}
+{% from "costoUtilidad/_macros_costo.html" import flash_messages, badge_semaforo, tarjeta_resumen %}
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/costo_utilidad.css') }}">
+
+{{ flash_messages() }}
+
+<!-- Encabezado -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="fw-bold mb-0">
+      <i class="bi bi-graph-up-arrow me-2" style="color:#8B3A0E;"></i>Costo y Utilidad
+    </h4>
+    <small class="text-muted">Análisis financiero de rentabilidad por producto</small>
+  </div>
+  <a href="{{ url_for('costo_utilidad.exportar_csv') }}"
+     class="btn btn-sm cu-btn-primary px-3 py-2">
+    <i class="bi bi-download me-1"></i>Exportar CSV
+  </a>
+</div>
+
+<!-- Tarjetas de resumen -->
+<div class="row g-3 mb-4">
+  {% if mas_rentable %}
+  {{ tarjeta_resumen(
+      'Más rentable',
+      mas_rentable.producto.Nombre,
+      'bi-trophy',
+      "%.1f"|format(mas_rentable.margen_porcentaje) ~ '%'
+  ) }}
+  {% endif %}
+  {% if menos_rentable %}
+  {{ tarjeta_resumen(
+      'Menos rentable',
+      menos_rentable.producto.Nombre,
+      'bi-exclamation-triangle',
+      "%.1f"|format(menos_rentable.margen_porcentaje) ~ '%'
+  ) }}
+  {% endif %}
+  {{ tarjeta_resumen(
+      'Margen promedio',
+      "%.1f"|format(promedio_margen) ~ '%',
+      'bi-bar-chart'
+  ) }}
+</div>
+
+<!-- Filtros -->
+<div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+  <div class="input-group shadow-sm" style="max-width:280px;">
+    <span class="input-group-text bg-white border-end-0">
+      <i class="bi bi-search text-muted"></i>
+    </span>
+    <input type="text" id="buscadorProducto" class="form-control border-start-0"
+           placeholder="Buscar producto...">
+  </div>
+
+  <select id="filtroCategoria" class="form-select shadow-sm" style="max-width:200px;">
+    <option value="">Todas las categorías</option>
+    {% for cat in categorias %}
+    <option value="{{ cat.CategoriaId }}">{{ cat.Nombre }}</option>
+    {% endfor %}
+  </select>
+
+  <div class="form-check form-switch ms-2">
+    <input class="form-check-input" type="checkbox" id="toggleInactivos">
+    <label class="form-check-label text-muted small" for="toggleInactivos">
+      Mostrar inactivos
+    </label>
+  </div>
+</div>
+
+<!-- Leyenda semáforo -->
+<div class="d-flex gap-3 mb-3 flex-wrap">
+  <span class="badge cu-semaforo-bueno rounded-pill px-3">≥ 20% Bueno</span>
+  <span class="badge cu-semaforo-bajo rounded-pill px-3">1–19% Bajo</span>
+  <span class="badge cu-semaforo-negativo rounded-pill px-3">≤ 0% Negativo</span>
+  <span class="badge cu-semaforo-sin-precio rounded-pill px-3">Sin precio</span>
+</div>
+
+<!-- Tabla -->
+<div class="card border-0 shadow-sm">
+  <div class="card-body p-0">
+    <table class="table table-hover align-middle mb-0 table-cu">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Categoría</th>
+          <th>Precio Venta</th>
+          <th>Costo Producción</th>
+          <th>Margen</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in datos %}
+        <tr data-categoria="{{ d.producto.CategoriaId }}"
+            data-nombre="{{ d.producto.Nombre | lower }}"
+            data-activo="{{ '1' if d.producto.Activo else '0' }}"
+            class="{{ 'fila-inactivo' if not d.producto.Activo else '' }}">
+          <td class="fw-semibold">
+            {{ d.producto.Nombre }}
+            {% if not d.producto.Activo %}
+            <span class="badge bg-secondary ms-1 small">Inactivo</span>
+            {% endif %}
+          </td>
+          <td><span class="badge bg-light text-dark border">{{ d.producto.categoria.Nombre }}</span></td>
+          <td>${{ "%.2f"|format(d.producto.Precio) }}</td>
+          <td>${{ "%.2f"|format(d.costo) }}</td>
+          <td>{{ badge_semaforo(d.semaforo, d.margen_pesos, d.margen_porcentaje) }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5" class="text-center text-muted py-4">No hay productos registrados.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<input type="hidden" id="categoriasData"
+       value="{{ categorias | map(attribute='CategoriaId') | list | join(',') }}">
+
+<script src="{{ url_for('static', filename='js/costo_utilidad.js') }}"></script>
+{% endblock %}
