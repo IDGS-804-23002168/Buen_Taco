@@ -28,6 +28,10 @@ def create_app(config=DevelopmentConfig):
 
     # ---- Inicializar extensiones ----
     db.init_app(app)
+
+    with app.app_context():
+        db.create_all()
+
     csrf.init_app(app)
     mail.init_app(app)
 
@@ -53,6 +57,9 @@ def create_app(config=DevelopmentConfig):
 
     from recetas import recetas_bp          # Módulo 7 - Recetas
     app.register_blueprint(recetas_bp)
+
+    from inventario import inventario_bp
+    app.register_blueprint(inventario_bp)
 
     # ---- Manejadores de error (A05 - no exponer información interna) ----
     @app.errorhandler(404)

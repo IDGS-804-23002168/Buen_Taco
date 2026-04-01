@@ -26,7 +26,7 @@ class DevelopmentConfig(Config):
     # Base de datos (A05 - usar usuario con permisos mínimos, NO root)
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         'DATABASE_URL',
-        'mysql+pymysql://root:1234@localhost/Tacos_Buen_Taco'
+        'mysql+pymysql://root:twoface05@localhost/Tacos_Buen_Taco'
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {
