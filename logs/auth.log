@@ -7,3 +7,7 @@
 2026-03-31 12:21:24,080 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
 2026-03-31 12:23:16,480 WARNING: accion=LOGIN_FALLIDO usuario_id=1 detalle=intento 1
 2026-03-31 12:23:34,109 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-03-31 17:41:03,063 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-03-31 17:57:43,759 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-03-31 19:09:31,908 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-03-31 22:05:39,269 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=

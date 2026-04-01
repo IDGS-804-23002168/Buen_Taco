@@ -1,23 +1,22 @@
 {% extends "layout.html" %}
+{% from "recetas/_macros_recetas.html" import flash_messages, campo, campo_select %}
 {% block content %}
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% for cat, msg in messages %}
-    <div class="alert alert-{{ cat }} alert-dismissible fade show">
-      {{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-  {% endfor %}
-{% endwith %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/recetas.css') }}">
+
+{{ flash_messages() }}
 
 <!-- Encabezado -->
 <div class="d-flex justify-content-between align-items-center mb-3">
   <div>
-    <h4 class="fw-bold mb-0"><i class="bi bi-journal-richtext me-2" style="color:#8B3A0E;"></i>Recetas</h4>
+    <h4 class="fw-bold mb-0">
+      <i class="bi bi-journal-richtext me-2 receta-icon"></i>Recetas
+    </h4>
     <small class="text-muted">Gestión de ingredientes y costos de producción</small>
   </div>
   {% set roles_usuario = current_user.roles | map(attribute='rol.Nombre') | list %}
   {% if 'Administrador' in roles_usuario %}
-  <button class="btn btn-sm text-white fw-semibold px-3 py-2" style="background-color:#8B3A0E;"
+  <button class="btn btn-sm receta-btn-primary px-3 py-2"
           data-bs-toggle="modal" data-bs-target="#modalNuevoProducto">
     <i class="bi bi-plus-lg me-1"></i>Nuevo producto
   </button>
@@ -40,16 +39,12 @@
        data-nombre="{{ p.Nombre | lower }}">
     <h2 class="accordion-header">
       <button class="accordion-button collapsed fw-semibold d-flex align-items-center"
-              style="background-color:#fff;"
               type="button"
               data-bs-toggle="collapse"
               data-bs-target="#receta-{{ p.ProductoId }}">
-        <span class="me-2" style="color:#8B3A0E;">
-          <i class="bi bi-fire"></i>
-        </span>
+        <span class="me-2 receta-icon"><i class="bi bi-fire"></i></span>
         <span class="flex-grow-1">{{ p.Nombre }}</span>
-        <span class="badge rounded-pill text-white me-3"
-              style="background-color:#8B3A0E; font-size:0.75rem; min-width:80px; text-align:center;">
+        <span class="badge rounded-pill text-white me-3 receta-badge">
           {{ p.categoria.Nombre }}
         </span>
       </button>
@@ -57,7 +52,7 @@
     <div id="receta-{{ p.ProductoId }}"
          class="accordion-collapse collapse"
          data-bs-parent="#acordeonRecetas">
-      <div class="accordion-body" style="background-color:#fdf9f7;">
+      <div class="accordion-body receta-body">
         <div class="row align-items-start">
           <div class="col-md-8">
             {% if p.Descripcion %}
@@ -71,9 +66,7 @@
           <div class="col-md-4 text-md-end">
             <p class="mb-2">
               <span class="text-muted small">Costo por lote:</span>
-              <span class="fw-bold ms-1" style="color:#8B3A0E;">
-                ${{ "%.2f"|format(costos[p.ProductoId]) }}
-              </span>
+              <span class="receta-costo ms-1">${{ "%.2f"|format(costos[p.ProductoId]) }}</span>
             </p>
             <a href="{{ url_for('recetas.ver', producto_id=p.ProductoId) }}"
                class="btn btn-sm btn-outline-secondary">
@@ -85,7 +78,7 @@
     </div>
   </div>
   {% else %}
-  <div class="text-center py-5 text-muted">
+  <div class="text-center py-5 text-muted receta-empty rounded p-4">
     <i class="bi bi-journal-x fs-1 d-block mb-2"></i>
     No hay productos registrados.
   </div>
@@ -96,37 +89,21 @@
 <div class="modal fade" id="modalNuevoProducto" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header text-white" style="background-color:#8B3A0E;">
+      <div class="modal-header receta-card-header">
         <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Nuevo Producto</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
-      <form method="POST" action="{{ url_for('recetas.nuevo_producto') }}">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <form method="POST" action="{{ url_for('recetas.nuevo_producto') }}" novalidate>
+        {{ form.hidden_tag() }}
         <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Nombre <span class="text-danger">*</span></label>
-            <input type="text" name="nombre" class="form-control" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Descripción</label>
-            <textarea name="descripcion" class="form-control" rows="2"
-                      placeholder="Descripción breve del producto..."></textarea>
-          </div>
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Categoría <span class="text-danger">*</span></label>
-            <select name="categoria_id" class="form-select" required>
-              <option value="">— Selecciona —</option>
-              {% for cat in categorias %}
-              <option value="{{ cat.CategoriaId }}">{{ cat.Nombre }}</option>
-              {% endfor %}
-            </select>
-          </div>
+          {{ campo(form.nombre) }}
+          {{ campo(form.descripcion, placeholder='Descripción breve del producto...') }}
+          {{ campo_select(form.categoria_id) }}
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary"
                   data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn text-white fw-semibold"
-                  style="background-color:#8B3A0E;">
+          <button type="submit" class="btn receta-btn-primary">
             <i class="bi bi-check-lg me-1"></i>Guardar
           </button>
         </div>
@@ -135,13 +112,8 @@
   </div>
 </div>
 
-<script>
-document.getElementById('buscador').addEventListener('input', function () {
-  const q = this.value.toLowerCase();
-  document.querySelectorAll('.receta-item').forEach(function (item) {
-    item.style.display = item.dataset.nombre.includes(q) ? '' : 'none';
-  });
-});
-</script>
+
+<input type="hidden" id="abrirModal" value="{{ 'true' if abrir_modal else 'false' }}">
+<script src="{{ url_for('static', filename='js/recetas.js') }}"></script>
 
 {% endblock %}
