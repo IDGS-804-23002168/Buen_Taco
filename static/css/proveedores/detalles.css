@@ -1,0 +1,37 @@
+/* ── GRID DETALLE ───────────────────────────────── */
+.detalle-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  padding: 1.2rem;
+  font-size: .9rem;
+}
+
+/* ── ITEMS ─────────────────────────────────────── */
+.detalle-grid div {
+  background: #f9fafb;
+  padding: .7rem;
+  border-radius: 8px;
+}
+
+/* ── CAMPO GRANDE ──────────────────────────────── */
+.detalle-grid .full {
+  grid-column: span 2;
+}
+
+/* ── LABEL ─────────────────────────────────────── */
+.detalle-grid strong {
+  display: block;
+  font-size: .75rem;
+  color: var(--text-secondary);
+  margin-bottom: .2rem;
+}
+
+/* ── BOTÓN ABAJO DERECHA ───────────────────────── */
+.footer-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}

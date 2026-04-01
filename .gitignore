@@ -8,4 +8,10 @@ node_modules/
 # Carpeta migrations
 migrations/
 
-config.py
+# Logs
+logs/
+*.log
+
+# Python cache
+_pycache_/
+*.pyc

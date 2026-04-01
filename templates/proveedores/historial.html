@@ -1,0 +1,157 @@
+{% extends "layout.html" %}
+{% block title %}Historial – {{ proveedor.Nombre }} – El Buen Taco{% endblock %}
+
+{% block content %}
+<div class="proveedores-page">
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb-nav">
+    <a href="{{ url_for('proveedores.index') }}" class="bc-link">Proveedores</a>
+    <span class="bc-sep">›</span>
+    <span class="bc-current">{{ proveedor.Nombre }}</span>
+    <span class="bc-sep">›</span>
+    <span class="bc-current">Historial</span>
+  </nav>
+
+  <!-- Cabecera con info del proveedor -->
+  <div class="proveedor-hero">
+    <div class="proveedor-hero__info">
+      <h1 class="page-title">{{ proveedor.Nombre }}</h1>
+      <div class="proveedor-meta">
+        {% if proveedor.RFC %}<span class="meta-chip">RFC: {{ proveedor.RFC }}</span>{% endif %}
+        {% if proveedor.Categoria %}<span class="meta-chip meta-chip--cat">{{ proveedor.Categoria }}</span>{% endif %}
+        <span class="badge-estado {{ 'badge-activo' if proveedor.Activo else 'badge-inactivo' }}">
+          {{ 'Activo' if proveedor.Activo else 'Inactivo' }}
+        </span>
+      </div>
+      <div class="proveedor-contact">
+        {% if proveedor.ContactoPrincipal %}<span>👤 {{ proveedor.ContactoPrincipal }}</span>{% endif %}
+        {% if proveedor.Telefono %}<a href="tel:{{ proveedor.Telefono }}" class="phone-link">📞 {{ proveedor.Telefono }}</a>{% endif %}
+        {% if proveedor.Email %}<a href="mailto:{{ proveedor.Email }}" class="email-link">✉ {{ proveedor.Email }}</a>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpis-row">
+    <div class="kpi-card">
+      <span class="kpi-label">Total de Compras</span>
+      <span class="kpi-value">{{ compras | length }}</span>
+    </div>
+    <div class="kpi-card kpi-card--blue">
+      <span class="kpi-label">Monto Total</span>
+      <span class="kpi-value">${{ "%.2f" | format(total_compras) }}</span>
+    </div>
+    {% if compras %}
+    <div class="kpi-card">
+      <span class="kpi-label">Última Compra</span>
+      <span class="kpi-value kpi-value--sm">{{ compras[0].Fecha.strftime('%d/%m/%Y') }}</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Filtros -->
+  <div class="card mb-1">
+    <div class="card-header">
+      <span style="font-weight:600; font-size:.95rem;">📅 Filtrar por Fecha</span>
+    </div>
+    <div style="padding:1rem 1.25rem;">
+      <form method="GET" action="{{ url_for('proveedores.historial', id=proveedor.ProveedorId) }}"
+            class="filter-form">
+        <div class="filter-row">
+          <div class="filter-field">
+            <label class="field-label">Desde</label>
+            <input type="date" name="fecha_inicio" class="field-input"
+                   value="{{ fecha_inicio }}">
+          </div>
+          <div class="filter-field">
+            <label class="field-label">Hasta</label>
+            <input type="date" name="fecha_fin" class="field-input"
+                   value="{{ fecha_fin }}">
+          </div>
+          <div class="filter-actions">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+            <a href="{{ url_for('proveedores.historial', id=proveedor.ProveedorId) }}"
+               class="btn btn-secondary">Limpiar</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="card">
+    <div class="card-header">
+      <div style="display:flex;align-items:center;gap:.5rem;">
+        <span style="font-size:.95rem;font-weight:600;">Historial de Compras</span>
+        <span class="badge-count">{{ compras | length }}</span>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="proveedores-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Fecha</th>
+            <th>Total</th>
+            <th>Productos</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if compras %}
+            {% for c in compras %}
+            <tr>
+              <td><span class="text-muted">#{{ c.CompraId }}</span></td>
+              <td>{{ c.Fecha.strftime('%d/%m/%Y %H:%M') }}</td>
+              <td><strong>${{ "%.2f" | format(c.Total or 0) }}</strong></td>
+              <td>
+                <span class="badge-count">{{ c.detalles | length }}</span>
+                <span class="text-muted" style="font-size:.8rem;"> artículo(s)</span>
+              </td>
+              <td>
+                <a href="{{ url_for('proveedores.detalle_compra', compra_id=c.CompraId) }}"
+                   class="btn btn-secondary" style="padding:.3rem .7rem;font-size:.8rem;">
+                  Ver detalle
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="5" class="td-empty">
+                <div class="empty-state">
+                  <p>No hay compras registradas para este proveedor en el período seleccionado.</p>
+                </div>
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+
+        {% if compras %}
+        <tfoot>
+          <tr class="tfoot-total">
+            <td colspan="2" style="font-weight:700;padding:.8rem 1.25rem;">Total del período</td>
+            <td style="font-weight:700;padding:.8rem 1.25rem;">${{ "%.2f" | format(total_compras) }}</td>
+            <td colspan="2"></td>
+          </tr>
+        </tfoot>
+        {% endif %}
+      </table>
+    </div>
+  </div>
+
+  <!-- 🔥 BOTÓN ABAJO -->
+  <div class="footer-actions">
+    <a href="{{ url_for('proveedores.index') }}" class="btn btn-primary">
+      ← Regresar
+    </a>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/proveedores/historial.css') }}">
+{% endblock %}

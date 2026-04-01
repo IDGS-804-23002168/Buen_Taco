@@ -1,0 +1,158 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  {{ titulo }} – El Buen Taco
+{% endblock %}
+
+{% block content %}
+<div class="proveedores-page">
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb-nav" aria-label="breadcrumb">
+    <a href="{{ url_for('proveedores.index') }}" class="bc-link">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5V5h1.02a1.5 1.5 0 0 1 1.17.563l1.481 1.85a1.5 1.5 0 0 1 .329.938V10.5a1.5 1.5 0 0 1-1.5 1.5H14a2 2 0 1 1-4 0H5a2 2 0 1 1-3.998-.085A1.5 1.5 0 0 1 0 10.5z"/>
+      </svg>
+      Proveedores
+    </a>
+    <span class="bc-sep">›</span>
+    <span class="bc-current">{{ titulo }}</span>
+  </nav>
+
+  <!-- Cabecera -->
+  <div class="page-header">
+    <div class="page-header__info">
+      <h1 class="page-title">{{ titulo }}</h1>
+      <p class="page-subtitle">{% if modo == 'crear' %}{% else %}{% endif %}</p>
+    </div>
+  </div>
+
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <!-- Formulario -->
+  <form method="POST"
+        action="{{ url_for('proveedores.nuevo') if modo == 'crear' else url_for('proveedores.editar', id=proveedor.ProveedorId) }}"
+        novalidate>
+
+    {{ form.hidden_tag() }}
+
+    {{ form.proveedor_id }}
+
+    <div class="form-grid">
+      <!-- DATOS EMPRESA -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <h2 class="section-title">Datos de la Empresa</h2>
+        </div>
+        <div class="fields-row">
+          <div class="field-group field-group--lg">
+            {{ form.Nombre.label(class="field-label required") }}
+            {{ form.Nombre(class="field-input" + (" is-invalid" if form.Nombre.errors else "")) }}
+            {% for e in form.Nombre.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+          </div>
+          <div class="field-group">
+            {{ form.RFC.label(class="field-label") }}
+            {{ form.RFC(class="field-input" + (" is-invalid" if form.RFC.errors else "")) }}
+            {% for e in form.RFC.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+          </div>
+        </div>
+
+        <div class="fields-row">
+          <div class="field-group">
+            {{ form.Categoria.label(class="field-label") }}
+            {{ form.Categoria(class="field-input" + (" is-invalid" if form.Categoria.errors else "")) }}
+            {% for e in form.Categoria.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+          </div>
+          <div class="field-group field-group--lg">
+            {{ form.Direccion.label(class="field-label") }}
+            {{ form.Direccion(class="field-input field-textarea" + (" is-invalid" if form.Direccion.errors else "")) }}
+            {% for e in form.Direccion.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTACTO -->
+      <div class="form-section">
+        <h2 class="section-title">Datos de Contacto</h2>
+        <div class="fields-row">
+          <div class="field-group">
+            {{ form.ContactoPrincipal.label(class="field-label") }}
+            {{ form.ContactoPrincipal(class="field-input" + (" is-invalid" if form.ContactoPrincipal.errors else "")) }}
+            {% for e in form.ContactoPrincipal.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+          </div>
+          <div class="field-group">
+            {{ form.Telefono.label(class="field-label") }}
+            {{ form.Telefono(class="field-input" + (" is-invalid" if form.Telefono.errors else "")) }}
+            {% for e in form.Telefono.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+          </div>
+          <div class="field-group">
+            {{ form.Email.label(class="field-label") }}
+            {{ form.Email(class="field-input" + (" is-invalid" if form.Email.errors else "")) }}
+            {% for e in form.Email.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- BANCARIOS -->
+      <div class="form-section">
+        <h2 class="section-title">Datos Bancarios</h2>
+        <div class="fields-row">
+          <div class="field-group">
+            {{ form.Banco.label(class="field-label") }}
+            {{ form.Banco(class="field-input" + (" is-invalid" if form.Banco.errors else "")) }}
+            {% for e in form.Banco.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+          </div>
+          <div class="field-group">
+            {{ form.CuentaBancaria.label(class="field-label") }}
+            {{ form.CuentaBancaria(class="field-input" + (" is-invalid" if form.CuentaBancaria.errors else "")) }}
+            {% for e in form.CuentaBancaria.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+          </div>
+          <div class="field-group">
+            {{ form.CLABE.label(class="field-label") }}
+            {{ form.CLABE(class="field-input" + (" is-invalid" if form.CLABE.errors else "")) }}
+            {% for e in form.CLABE.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- CONFIG -->
+      <div class="form-section">
+        <h2 class="section-title">Configuración</h2>
+        <div class="fields-row">
+          <div class="field-group field-group--lg">
+            {{ form.Notas.label(class="field-label") }}
+            {{ form.Notas(class="field-input field-textarea" + (" is-invalid" if form.Notas.errors else "")) }}
+            {% for e in form.Notas.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+          </div>
+          <div class="field-group field-group--checkbox">
+            <label class="toggle-label">
+              {{ form.Activo(class="toggle-input") }}
+              <span class="toggle-track"></span>
+              <span class="toggle-text">Proveedor activo</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Acciones -->
+    <div class="form-actions">
+      <a href="{{ url_for('proveedores.index') }}" class="btn btn-secondary">Cancelar</a>
+      <button type="submit" class="btn btn-primary">Guardar</button>
+    </div>
+
+  </form>
+</div>
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/proveedores/formulario.css') }}">
+{% endblock %}

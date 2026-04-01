@@ -11,6 +11,8 @@ from flask_mail import Mail
 from config import DevelopmentConfig
 from models import db, Usuario
 
+
+
 # ---------------------------------------------------------------------------
 # Instancias de extensiones (se configuran con la app en create_app)
 # ---------------------------------------------------------------------------
@@ -46,7 +48,9 @@ def create_app(config=DevelopmentConfig):
 
     # ---- Registrar Blueprints ----
     from auth import auth_bp
+    from proveedores import proveedores
     app.register_blueprint(auth_bp)
+    app.register_blueprint(proveedores) 
 
 
 

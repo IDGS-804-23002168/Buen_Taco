@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+
+{% block title %}Detalle – {{ proveedor.Nombre }}{% endblock %}
+
+{% block content %}
+<div class="proveedores-page">
+
+  <!-- CABECERA -->
+  <div class="page-header">
+    <h1 class="page-title">{{ proveedor.Nombre }}</h1>
+  </div>
+
+  <!-- CARD -->
+  <div class="card">
+
+    <div class="card-header">
+      <span class="card-title">Información del Proveedor</span>
+    </div>
+
+    <div class="detalle-grid">
+
+      <div><strong>RFC:</strong> {{ proveedor.RFC }}</div>
+      <div><strong>Categoría:</strong> {{ proveedor.Categoria }}</div>
+      <div><strong>Contacto:</strong> {{ proveedor.ContactoPrincipal }}</div>
+      <div><strong>Teléfono:</strong> {{ proveedor.Telefono }}</div>
+      <div><strong>Email:</strong> {{ proveedor.Email }}</div>
+      <div><strong>Dirección:</strong> {{ proveedor.Direccion }}</div>
+
+      <div><strong>Banco:</strong> {{ proveedor.Banco }}</div>
+      <div><strong>Cuenta:</strong> {{ proveedor.CuentaBancaria }}</div>
+      <div><strong>CLABE:</strong> {{ proveedor.CLABE }}</div>
+
+      <div>
+        <strong>Estado:</strong>
+        <span class="badge-estado {{ 'badge-activo' if proveedor.Activo else 'badge-inactivo' }}">
+          {{ 'Activo' if proveedor.Activo else 'Inactivo' }}
+        </span>
+      </div>
+
+      <div class="full">
+        <strong>Notas:</strong>
+        <p>{{ proveedor.Notas or 'Sin notas' }}</p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- 🔥 BOTÓN ABAJO A LA DERECHA -->
+  <div class="footer-actions">
+    <a href="{{ url_for('proveedores.index') }}" class="btn btn-primary">
+      ← Regresar
+    </a>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/proveedores/detalles.css') }}">
+{% endblock %}
