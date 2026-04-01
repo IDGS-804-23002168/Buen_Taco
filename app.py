@@ -60,6 +60,9 @@ def create_app(config=DevelopmentConfig):
 
     from inventario import inventario_bp
     app.register_blueprint(inventario_bp)
+    
+    from costoUtilidad import costo_utilidad_bp    # Módulo 11 - Costo y Utilidad
+    app.register_blueprint(costo_utilidad_bp)
 
     # ---- Manejadores de error (A05 - no exponer información interna) ----
     @app.errorhandler(404)

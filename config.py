@@ -15,11 +15,7 @@ class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         'DATABASE_URL',
-<<<<<<< HEAD
-        'mysql+pymysql://root:twoface05@localhost/Tacos_Buen_Taco'
-=======
         'mysql+pymysql://root:admin@localhost/Tacos_Buen_Taco'
->>>>>>> 6051d689cdf591e0301485584492c43abecb4b25
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {

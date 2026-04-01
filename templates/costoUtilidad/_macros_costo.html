@@ -1,0 +1,47 @@
+{# ── Macros Módulo 11: Costo y Utilidad ── #}
+
+{% macro flash_messages() %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for cat, msg in messages %}
+  <div class="alert alert-{{ cat }} alert-dismissible fade show">
+    {{ msg }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  {% endfor %}
+{% endwith %}
+{% endmacro %}
+
+{% macro badge_semaforo(semaforo, margen_pesos, margen_porcentaje) %}
+{% if semaforo == 'bueno' %}
+  <span class="badge cu-semaforo-bueno rounded-pill px-3">
+    {{ "%.1f"|format(margen_porcentaje) }}% / ${{ "%.2f"|format(margen_pesos) }}
+  </span>
+{% elif semaforo == 'bajo' %}
+  <span class="badge cu-semaforo-bajo rounded-pill px-3">
+    {{ "%.1f"|format(margen_porcentaje) }}% / ${{ "%.2f"|format(margen_pesos) }}
+  </span>
+{% elif semaforo == 'negativo' %}
+  <span class="badge cu-semaforo-negativo rounded-pill px-3">
+    {{ "%.1f"|format(margen_porcentaje) }}% / ${{ "%.2f"|format(margen_pesos) }}
+  </span>
+{% else %}
+  <span class="badge cu-semaforo-sin-precio rounded-pill px-3">Sin precio</span>
+{% endif %}
+{% endmacro %}
+
+{% macro tarjeta_resumen(titulo, valor, icono, subtitulo='') %}
+<div class="col-md-4">
+  <div class="card cu-card-resumen p-3">
+    <div class="d-flex align-items-center gap-3">
+      <i class="bi {{ icono }} fs-2" style="color:#8B3A0E;"></i>
+      <div>
+        <div class="card-title">{{ titulo }}</div>
+        <div class="card-value">{{ valor }}</div>
+        {% if subtitulo %}
+        <small class="text-muted">{{ subtitulo }}</small>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endmacro %}
