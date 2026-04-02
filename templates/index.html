@@ -1,6 +1,76 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<H1>PRUEBA</H1>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 
-{% endblock %} 
+<style>
+  
+  body { 
+    background: #1a0a00 !important; 
+  }
+
+  
+  .bg-wrapper {
+    min-height: 70vh;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(180,80,10,0.35) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 90% 80%, rgba(220,120,20,0.18) 0%, transparent 60%),
+      #1a0a00;
+    border-radius: 20px;
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    border: 1px solid rgba(210,100,10,0.15);
+  }
+
+  /* ── Hero (Sección del Texto) ── */
+  .hero { position: relative; text-align: center; padding: 40px 24px; overflow: hidden; width: 100%; }
+  .hero::before {
+    content: '🌮'; position: absolute; font-size: 280px; opacity: 0.03;
+    top: -50px; left: 50%; transform: translateX(-50%); pointer-events: none; line-height: 1;
+  }
+  .hero-badge {
+    display: inline-block; background: rgba(210,100,10,0.18);
+    border: 1px solid rgba(210,100,10,0.4); color: #f4a84a;
+    font-size: 0.8rem; font-weight: 700; letter-spacing: 0.18em;
+    text-transform: uppercase; padding: 6px 20px; border-radius: 99px;
+    margin-bottom: 20px; animation: fadeDown 0.6s ease both;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 900; color: #fff; line-height: 1.1;
+    margin-bottom: 20px;
+    animation: fadeDown 0.7s ease 0.1s both;
+  }
+  .hero h1 span {
+    background: linear-gradient(90deg, #f4a84a, #e06010);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .hero p { color: rgba(255,255,255,0.7); font-size: 1.25rem; animation: fadeDown 0.7s ease 0.2s both; }
+  
+  .instruccion {
+    margin-top: 40px;
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.4);
+    animation: fadeDown 0.7s ease 0.3s both;
+  }
+
+  @keyframes fadeDown { from { opacity:0; transform:translateY(-18px); } to { opacity:1; transform:translateY(0); } }
+</style>
+
+<div class="bg-wrapper">
+  <div class="hero">
+    <div class="hero-badge">Panel de Control</div>
+    <h1>El Buen <span>Taco</span> 🌮</h1>
+    
+    <p>Bienvenido a la plataforma, <strong>{{ current_user.Nombre | default(current_user.nombre, true) | default('Compañero', true) }}</strong>.</p>
+    
+    <div class="instruccion">
+        <i class="bi bi-arrow-up-circle me-2"></i> Utiliza el menú superior para acceder a tus módulos.
+    </div>
+  </div>
+</div>
+
+{% endblock %}

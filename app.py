@@ -71,6 +71,9 @@ def create_app(config=DevelopmentConfig):
     from costoUtilidad import costo_utilidad_bp    # Módulo 11 - Costo y Utilidad
     app.register_blueprint(costo_utilidad_bp)
 
+    from compras import compras as compras_bp
+    app.register_blueprint(compras_bp)
+
     # ---- Manejadores de error (A05 - no exponer información interna) ----
     @app.errorhandler(404)
     def pagina_no_encontrada(error):
