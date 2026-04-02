@@ -7,47 +7,30 @@
 2026-03-31 12:21:24,080 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
 2026-03-31 12:23:16,480 WARNING: accion=LOGIN_FALLIDO usuario_id=1 detalle=intento 1
 2026-03-31 12:23:34,109 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
-<<<<<<< HEAD
-2026-03-31 16:11:46,533 WARNING: accion=LOGIN_FALLIDO usuario_id=None detalle=username=admin no existe
-2026-03-31 16:12:07,400 WARNING: accion=LOGIN_FALLIDO usuario_id=None detalle=username=admin no existe
-2026-03-31 16:15:22,351 WARNING: accion=LOGIN_FALLIDO usuario_id=None detalle=username=admin no existe
-2026-03-31 16:15:58,082 WARNING: accion=LOGIN_FALLIDO usuario_id=None detalle=username=admin no existe
-2026-03-31 16:22:15,375 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
-2026-03-31 16:39:11,649 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
-2026-03-31 16:48:35,647 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
-2026-03-31 16:52:23,924 INFO: accion=LOGOUT usuario_id=1 detalle=
-2026-03-31 16:53:00,567 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
-2026-03-31 16:53:04,423 INFO: accion=LOGOUT usuario_id=1 detalle=
-2026-03-31 16:53:06,326 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
-2026-03-31 16:54:29,470 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
-2026-03-31 17:03:21,561 INFO: accion=LOGOUT usuario_id=1 detalle=
-2026-03-31 17:03:37,230 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
-2026-03-31 17:12:29,515 INFO: accion=LOGOUT usuario_id=1 detalle=
-2026-03-31 17:12:45,195 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
-2026-03-31 17:21:09,977 INFO: accion=LOGOUT usuario_id=1 detalle=
-2026-03-31 17:21:37,191 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
-2026-03-31 17:30:41,201 INFO: accion=LOGOUT usuario_id=1 detalle=
-2026-03-31 17:31:44,651 INFO: accion=REGISTRO_USUARIO usuario_id=3 detalle=username=jiovani email=jiovanipacheco12@gmail.com
-2026-03-31 17:31:53,636 INFO: accion=LOGIN_EXITOSO usuario_id=3 detalle=
-2026-03-31 22:59:19,802 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
-2026-03-31 23:02:51,078 INFO: accion=LOGOUT usuario_id=1 detalle=
-2026-03-31 23:03:17,404 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
-2026-03-31 23:03:44,732 INFO: accion=LOGOUT usuario_id=1 detalle=
-2026-03-31 23:03:58,155 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
-2026-03-31 23:04:35,744 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
-2026-03-31 23:09:19,156 INFO: accion=LOGOUT usuario_id=1 detalle=
-2026-03-31 23:09:23,107 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
-2026-03-31 23:11:12,709 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
-2026-03-31 23:13:43,807 INFO: accion=LOGOUT usuario_id=1 detalle=
-2026-03-31 23:14:00,541 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
-2026-03-31 23:16:16,504 INFO: accion=LOGOUT usuario_id=1 detalle=
-2026-03-31 23:16:23,509 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
-2026-03-31 23:18:00,689 INFO: accion=LOGOUT usuario_id=1 detalle=
-2026-03-31 23:18:13,308 INFO: accion=LOGIN_EXITOSO usuario_id=3 detalle=
-2026-03-31 23:18:58,369 INFO: accion=LOGOUT usuario_id=3 detalle=
-=======
 2026-03-31 17:41:03,063 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
 2026-03-31 17:57:43,759 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
 2026-03-31 19:09:31,908 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
 2026-03-31 22:05:39,269 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
->>>>>>> 6051d689cdf591e0301485584492c43abecb4b25
+2026-03-31 23:31:34,251 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-03-31 23:32:08,237 INFO: accion=LOGOUT usuario_id=1 detalle=
+2026-04-01 21:34:56,965 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-01 21:47:19,323 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-01 22:05:49,751 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-01 22:15:41,885 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-01 22:24:47,694 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-01 22:28:30,060 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-01 22:28:59,249 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-01 22:30:02,534 INFO: accion=LOGOUT usuario_id=1 detalle=
+2026-04-01 22:30:19,282 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-01 22:32:05,068 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-01 22:32:27,521 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-01 22:38:14,838 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-01 22:41:22,163 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-01 22:41:29,953 INFO: accion=LOGOUT usuario_id=1 detalle=
+2026-04-01 22:41:51,503 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-01 22:48:04,862 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-01 22:48:16,107 INFO: accion=LOGOUT usuario_id=1 detalle=
+2026-04-01 22:48:19,625 INFO: accion=LOGIN_EXITOSO usuario_id=3 detalle=
+2026-04-01 22:49:10,289 INFO: accion=LOGOUT usuario_id=3 detalle=
+2026-04-01 22:49:13,011 INFO: accion=LOGIN_EXITOSO usuario_id=3 detalle=
+2026-04-01 23:02:12,550 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=

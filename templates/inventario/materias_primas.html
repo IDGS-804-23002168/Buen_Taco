@@ -40,7 +40,11 @@
     <table class="table table-hover mb-0 align-middle">
       <thead class="table-light">
         <tr>
-          <th>ID</th><th>Nombre</th><th>Unidad</th><th>Merma (%)</th><th>Estado</th>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Unidad</th>
+          <th>Stock Actual</th> <th>Merma (%)</th>
+          <th>Estado</th>
         </tr>
       </thead>
       <tbody>
@@ -49,6 +53,11 @@
           <td class="fw-semibold">{{ m.MateriaPrimaId }}</td>
           <td>{{ m.Nombre }}</td>
           <td><span class="badge bg-light text-dark border">{{ m.unidad.Abreviatura if m.unidad else 'S/U' }}</span></td>
+          
+          <td class="fw-bold text-success">
+            {{ m.stock }} <span class="fw-normal text-muted">{{ m.unidad.Abreviatura if m.unidad else '' }}</span>
+          </td>
+
           <td>
             <span class="badge rounded-pill {{ 'bg-warning text-dark' if m.PorcentajeMerma > 10 else 'bg-light text-dark border' }}">
               {{ m.PorcentajeMerma }}%

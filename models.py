@@ -72,6 +72,7 @@ class MateriaPrima(db.Model):
     Nombre           = db.Column(db.String(150), nullable=False)
     UnidadBaseId     = db.Column(db.Integer, db.ForeignKey('UnidadesMedida.UnidadId'), nullable=False)
     PorcentajeMerma  = db.Column(db.Numeric(5, 2), default=0)
+    stock            = db.Column(db.Numeric(7, 2), nullable=False, default=0.00)
     Activo           = db.Column(db.Boolean, default=True)
 
     unidad = db.relationship('UnidadMedida')
