@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+
 load_dotenv()
 
 import logging
@@ -13,7 +14,6 @@ from flask_mail import Mail
 
 from config import DevelopmentConfig
 from models import db, Usuario
-
 
 
 # ---------------------------------------------------------------------------
@@ -39,9 +39,9 @@ def create_app(config=DevelopmentConfig):
 
     # ---- Flask-Login ----
     login_manager.init_app(app)
-    login_manager.login_view = 'auth.login'          # A01 - redirigir si no autenticado
-    login_manager.login_message = 'Inicia sesión para acceder.'
-    login_manager.login_message_category = 'warning'
+    login_manager.login_view = "auth.login"  # A01 - redirigir si no autenticado
+    login_manager.login_message = "Inicia sesión para acceder."
+    login_manager.login_message_category = "warning"
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -56,16 +56,24 @@ def create_app(config=DevelopmentConfig):
     # ---- Registrar Blueprints ----
     from auth import auth_bp
     from proveedores import proveedores
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(proveedores) 
 
-    from recetas import recetas_bp          # Módulo 7 - Recetas
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(proveedores)
+
+    from recetas import recetas_bp  # Módulo 7 - Recetas
+
     app.register_blueprint(recetas_bp)
 
     from inventario import inventario_bp
+
     app.register_blueprint(inventario_bp)
-    
-    from costoUtilidad import costo_utilidad_bp    # Módulo 11 - Costo y Utilidad
+
+    from produccion import produccion_bp
+
+    app.register_blueprint(produccion_bp)
+
+    from costoUtilidad import costo_utilidad_bp  # Módulo 11 - Costo y Utilidad
+
     app.register_blueprint(costo_utilidad_bp)
 
     # ---- Manejadores de error (A05 - no exponer información interna) ----
@@ -73,14 +81,13 @@ def create_app(config=DevelopmentConfig):
     def pagina_no_encontrada(error):
         return render_template("404.html"), 404
 
-
     # ---- Rutas principales ----
     @app.route("/")
     def index():
         if current_user.is_authenticated:
             # return redirect(url_for('dashboard.index'))
             return render_template("index.html")
-        return redirect(url_for('auth.login'))
+        return redirect(url_for("auth.login"))
 
     return app
 
@@ -91,4 +98,4 @@ def create_app(config=DevelopmentConfig):
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(debug=False)   # debug=False en producción (A05)
+    app.run(debug=False)  # debug=False en producción (A05)

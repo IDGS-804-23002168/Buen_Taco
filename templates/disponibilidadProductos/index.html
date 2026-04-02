@@ -1,0 +1,151 @@
+{% extends 'layout.html' %}
+
+{% block styles %}
+<style>
+    .nav-pills .nav-link {
+        color: #555;
+        border-radius: 20px;
+        margin: 0 5px;
+        font-weight: 500;
+    }
+
+    .nav-pills .nav-link.active {
+        background-color: #8B3A0E;
+        color: white;
+    }
+
+    .card-producto {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s;
+        background-color: #ffffff;
+    }
+
+    .card-producto:hover {
+        transform: translateY(-5px);
+    }
+
+    .icon-placeholder {
+        height: 120px;
+        background-color: #F8F9FA;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+    }
+
+    .icon-placeholder i {
+        font-size: 3rem;
+        color: #ADB5BD;
+    }
+
+    .badge-disponible {
+        background-color: #E8F5E9;
+        color: #2E7D32;
+        font-weight: 600;
+        padding: 5px 10px;
+        border-radius: 15px;
+    }
+
+    .badge-alerta {
+        background-color: #FFEBEE;
+        color: #C62828;
+        font-weight: 600;
+        padding: 5px 10px;
+        border-radius: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12 text-center">
+        <h2 class="mb-3" style="color: #8B3A0E; font-weight: bold;">Disponibilidad en Mostrador</h2>
+
+        <ul class="nav nav-pills justify-content-center" id="pills-tab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="pills-todos-tab" data-bs-toggle="pill" data-bs-target="#pills-todos"
+                    type="button" role="tab" aria-selected="true">Todos</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="pills-tacos-tab" data-bs-toggle="pill" data-bs-target="#pills-tacos"
+                    type="button" role="tab" aria-selected="false">Tacos</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="pills-tortas-tab" data-bs-toggle="pill" data-bs-target="#pills-tortas"
+                    type="button" role="tab" aria-selected="false">Tortas</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="pills-bebidas-tab" data-bs-toggle="pill" data-bs-target="#pills-bebidas"
+                    type="button" role="tab" aria-selected="false">Bebidas</button>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="tab-content" id="pills-tabContent">
+    <div class="tab-pane fade show active" id="pills-todos" role="tabpanel" aria-labelledby="pills-todos-tab">
+        <div class="row g-4">
+
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card card-producto p-3">
+                    <div class="icon-placeholder">
+                        <i class="bi bi-file-richtext"></i>
+                    </div>
+                    <h5 class="fw-bold">Taco al Pastor</h5>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <span class="badge-disponible"><i class="bi bi-check-circle"></i> Disponible (45 pz)</span>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" checked disabled>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card card-producto p-3">
+                    <div class="icon-placeholder">
+                        <i class="bi bi-file-richtext"></i>
+                    </div>
+                    <h5 class="fw-bold">Taco de Asada</h5>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <span class="badge-alerta"><i class="bi bi-exclamation-triangle"></i> Poco Stock (5 pz)</span>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" checked disabled>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card card-producto p-3" style="opacity: 0.6;">
+                    <div class="icon-placeholder">
+                        <i class="bi bi-file-richtext"></i>
+                    </div>
+                    <h5 class="fw-bold text-muted">Taco de Suadero</h5>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <span class="badge bg-secondary text-white px-3 py-1 rounded-pill"><i
+                                class="bi bi-x-circle"></i> Agotado</span>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" disabled>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="pills-tacos" role="tabpanel" aria-labelledby="pills-tacos-tab">
+        <p class="text-center text-muted mt-5">Aquí se mostrarán solo los tacos filtrados desde el backend.</p>
+    </div>
+    <div class="tab-pane fade" id="pills-tortas" role="tabpanel" aria-labelledby="pills-tortas-tab">
+        <p class="text-center text-muted mt-5">Aquí se mostrarán solo las tortas filtradas desde el backend.</p>
+    </div>
+    <div class="tab-pane fade" id="pills-bebidas" role="tabpanel" aria-labelledby="pills-bebidas-tab">
+        <p class="text-center text-muted mt-5">Aquí se mostrarán solo las bebidas filtradas desde el backend.</p>
+    </div>
+</div>
+{% endblock %}
