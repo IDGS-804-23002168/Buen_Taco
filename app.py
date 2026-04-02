@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+
 load_dotenv()
 
 import logging
@@ -13,9 +14,6 @@ from flask_mail import Mail
 
 from config import DevelopmentConfig
 from models import db, Usuario
-from usuarios import usuarios_bp
-
-
 
 
 # ---------------------------------------------------------------------------
@@ -29,7 +27,6 @@ mail = Mail()
 def create_app(config=DevelopmentConfig):
     app = Flask(__name__)
     app.config.from_object(config)
-    
 
     # ---- Inicializar extensiones ----
     db.init_app(app)
@@ -42,9 +39,9 @@ def create_app(config=DevelopmentConfig):
 
     # ---- Flask-Login ----
     login_manager.init_app(app)
-    login_manager.login_view = 'auth.login'          # A01 - redirigir si no autenticado
-    login_manager.login_message = 'Inicia sesión para acceder.'
-    login_manager.login_message_category = 'warning'
+    login_manager.login_view = "auth.login"  # A01 - redirigir si no autenticado
+    login_manager.login_message = "Inicia sesión para acceder."
+    login_manager.login_message_category = "warning"
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -59,24 +56,46 @@ def create_app(config=DevelopmentConfig):
     # ---- Registrar Blueprints ----
     from auth import auth_bp
     from proveedores import proveedores
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(usuarios_bp)
-    app.register_blueprint(proveedores) 
 
-    from recetas import recetas_bp          # Módulo 7 - Recetas
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(proveedores)
+
+    from dashboard import dashboard_bp  # Módulo 3 - Dashboard
+
+    app.register_blueprint(dashboard_bp)
+
+    from recetas import recetas_bp  # Módulo 7 - Recetas
+
     app.register_blueprint(recetas_bp)
 
     from inventario import inventario_bp
+
     app.register_blueprint(inventario_bp)
-    
-    from costoUtilidad import costo_utilidad_bp    # Módulo 11 - Costo y Utilidad
+
+    from costoUtilidad import costo_utilidad_bp  # Módulo 11 - Costo y Utilidad
+
     app.register_blueprint(costo_utilidad_bp)
+
+    from compras import compras as compras_bp
+
+    app.register_blueprint(compras_bp)
+
+    from solicitudProduccion import solicitudes_bp
+
+    app.register_blueprint(solicitudes_bp)
+
+    from disponibilidadProductos import disponibilidad_bp
+
+    app.register_blueprint(disponibilidad_bp)
+
+    from venta import ventas_bp
+
+    app.register_blueprint(ventas_bp)
 
     # ---- Manejadores de error (A05 - no exponer información interna) ----
     @app.errorhandler(404)
     def pagina_no_encontrada(error):
         return render_template("404.html"), 404
-
 
     # ---- Rutas principales ----
     @app.route("/")
@@ -84,7 +103,7 @@ def create_app(config=DevelopmentConfig):
         if current_user.is_authenticated:
             # return redirect(url_for('dashboard.index'))
             return render_template("index.html")
-        return redirect(url_for('auth.login'))
+        return redirect(url_for("auth.login"))
 
     return app
 
@@ -95,4 +114,4 @@ def create_app(config=DevelopmentConfig):
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(debug=True)   # debug=False en producción (A05)
+    app.run(debug=False)  # debug=False en producción (A05)

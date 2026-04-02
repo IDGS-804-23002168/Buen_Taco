@@ -44,8 +44,7 @@ WEAK_PASSWORDS = {
 }
 
 ROLE_REDIRECTS = {
-    # 'Administrador':     'dashboard.index',
-    'Administrador':     'index',
+    'Administrador':     'dashboard.index',
     'Encargado_Almacen': 'inventario.index',
     'Cocinero':          'produccion.index',
     'Vendedor':          'venta.index',

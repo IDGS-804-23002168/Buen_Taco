@@ -1,0 +1,174 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h4 class="fw-bold mb-0"><i class="bi bi-cart-plus me-2" style="color:#8B3A0E;"></i>Registrar Nueva Compra</h4>
+    <small class="text-muted">Ingresa los insumos al inventario</small>
+  </div>
+</div>
+
+<form method="POST" action="{{ url_for('compras.nueva_compra') }}" id="formCompra">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Proveedor <span class="text-danger">*</span></label>
+          <select name="proveedor_id" class="form-select" required>
+            <option value="" selected disabled>Selecciona un proveedor...</option>
+            {% for p in proveedores %}
+              <option value="{{ p.ProveedorId }}">{{ p.Nombre }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Fecha de Registro</label>
+          <input type="text" class="form-control bg-light" value="Se registrará con la fecha actual" disabled>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-header text-white fw-semibold" style="background-color:#8B3A0E;">
+      <i class="bi bi-basket me-2"></i>Detalle de la Compra
+    </div>
+    <div class="card-body bg-light">
+      <div class="row align-items-end">
+        <div class="col-md-5 mb-3">
+          <label class="form-label">Materia Prima</label>
+          <select id="select_materia" class="form-select">
+            <option value="" selected disabled>Selecciona un insumo...</option>
+            {% for m in materias %}
+              <option value="{{ m.MateriaPrimaId }}" data-nombre="{{ m.Nombre }}">{{ m.Nombre }} ({{ m.unidad.Abreviatura if m.unidad else '' }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Cantidad comprada</label>
+          <input type="number" id="input_cantidad" class="form-control" step="0.01" min="0.01" placeholder="Ej. 1000">
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Precio Total del Insumo ($)</label>
+          <input type="number" id="input_precio" class="form-control" step="0.01" min="0.01" placeholder="Ej. 250.50">
+        </div>
+        <div class="col-md-1 mb-3 text-end">
+          <button type="button" id="btn_agregar" class="btn btn-secondary w-100"><i class="bi bi-plus-lg"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-body p-0">
+      <table class="table table-hover mb-0 align-middle text-center" id="tablaDetalle">
+        <thead class="table-light">
+          <tr>
+            <th class="text-start">Insumo</th>
+            <th>Cantidad</th>
+            <th>Costo Total</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody id="lista_compras">
+          </tbody>
+        <tfoot class="table-light fw-bold fs-5">
+          <tr>
+            <td colspan="2" class="text-end">TOTAL DE LA COMPRA:</td>
+            <td>$<span id="texto_total">0.00</span></td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <input type="hidden" name="total_compra" id="input_total" value="0">
+  <div class="text-end mb-5">
+    <a href="#" class="btn btn-outline-secondary me-2">Cancelar</a>
+    <button type="submit" class="btn text-white fw-bold px-4 py-2" style="background-color:#8B3A0E;" id="btn_guardar" disabled>
+      <i class="bi bi-save me-2"></i>Guardar Compra
+    </button>
+  </div>
+</form>
+
+<script>
+  let totalCompra = 0;
+
+  document.getElementById('btn_agregar').addEventListener('click', function() {
+    const select = document.getElementById('select_materia');
+    const cantidad = parseFloat(document.getElementById('input_cantidad').value);
+    const precioTotal = parseFloat(document.getElementById('input_precio').value); // Aquí pedimos el costo total de lo que compró de ese insumo
+
+    if(select.value === "" || isNaN(cantidad) || isNaN(precioTotal) || cantidad <= 0 || precioTotal <= 0) {
+      alert("Por favor llena todos los datos con números válidos.");
+      return;
+    }
+
+    const nombre = select.options[select.selectedIndex].getAttribute('data-nombre');
+    const idMateria = select.value;
+    
+    // Calculamos el precio unitario para guardarlo en la BD (Precio Total / Cantidad)
+    const precioUnitario = precioTotal / cantidad;
+
+    // Crear la fila visible
+    const fila = document.createElement('tr');
+    fila.innerHTML = `
+      <td class="text-start">
+        ${nombre}
+        <input type="hidden" name="materia_id[]" value="${idMateria}">
+      </td>
+      <td>
+        ${cantidad}
+        <input type="hidden" name="cantidad[]" value="${cantidad}">
+      </td>
+      <td class="subtotal-item">
+        $${precioTotal.toFixed(2)}
+        <input type="hidden" name="precio_unitario[]" value="${precioUnitario.toFixed(4)}">
+        <input type="hidden" name="subtotal[]" value="${precioTotal.toFixed(2)}">
+      </td>
+      <td>
+        <button type="button" class="btn btn-sm btn-danger btn-eliminar" data-costo="${precioTotal}">
+          <i class="bi bi-trash"></i>
+        </button>
+      </td>
+    `;
+
+    document.getElementById('lista_compras').appendChild(fila);
+
+    // Sumar al total
+    totalCompra += precioTotal;
+    actualizarTotal();
+
+    // Limpiar cajas
+    select.value = "";
+    document.getElementById('input_cantidad').value = "";
+    document.getElementById('input_precio').value = "";
+
+    // Activar botón de guardar
+    document.getElementById('btn_guardar').disabled = false;
+  });
+
+  // Eliminar filas
+  document.getElementById('lista_compras').addEventListener('click', function(e) {
+    if(e.target.closest('.btn-eliminar')) {
+      const boton = e.target.closest('.btn-eliminar');
+      const costoRestar = parseFloat(boton.getAttribute('data-costo'));
+      
+      totalCompra -= costoRestar;
+      actualizarTotal();
+
+      boton.closest('tr').remove();
+
+      if(document.getElementById('lista_compras').children.length === 0) {
+        document.getElementById('btn_guardar').disabled = true;
+      }
+    }
+  });
+
+  function actualizarTotal() {
+    document.getElementById('texto_total').innerText = totalCompra.toFixed(2);
+    document.getElementById('input_total').value = totalCompra.toFixed(2);
+  }
+</script>
+
+{% endblock %}
