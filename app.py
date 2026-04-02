@@ -60,6 +60,13 @@ def create_app(config=DevelopmentConfig):
     app.register_blueprint(auth_bp)
     app.register_blueprint(proveedores)
 
+    from dashboard import dashboard_bp  # Módulo 3 - Dashboard
+
+    app.register_blueprint(dashboard_bp)
+
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(proveedores)
+
     from recetas import recetas_bp  # Módulo 7 - Recetas
 
     app.register_blueprint(recetas_bp)
@@ -75,6 +82,10 @@ def create_app(config=DevelopmentConfig):
     from costoUtilidad import costo_utilidad_bp  # Módulo 11 - Costo y Utilidad
 
     app.register_blueprint(costo_utilidad_bp)
+
+    from compras import compras as compras_bp
+
+    app.register_blueprint(compras_bp)
 
     # ---- Manejadores de error (A05 - no exponer información interna) ----
     @app.errorhandler(404)

@@ -1,0 +1,143 @@
+{% extends "layout.html" %}
+{% from "dashboard/_macros_dashboard.html" import flash_messages, tarjeta_kpi %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+
+{{ flash_messages() }}
+
+<!-- Encabezado -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="fw-bold mb-0">
+      <i class="bi bi-speedometer2 me-2" style="color:#8B3A0E;"></i>Panel de Control
+    </h4>
+    <small class="text-muted">{{ fecha_hoy }} — {{ mes_actual }}</small>
+  </div>
+</div>
+
+<!-- KPIs -->
+<div class="row g-3 mb-4">
+  {{ tarjeta_kpi('bi-cash-stack', '#fef3c7', '#d97706',
+      'Ventas hoy', '$' ~ "%.2f"|format(ventas_hoy),
+      transacciones_hoy|string ~ ' transacción(es)') }}
+  {{ tarjeta_kpi('bi-calendar-month', '#dbeafe', '#2563eb',
+      'Ventas del mes', '$' ~ "%.2f"|format(ventas_mes), mes_actual) }}
+  {{ tarjeta_kpi('bi-receipt', '#dcfce7', '#16a34a',
+      'Transacciones hoy', transacciones_hoy|string, 'ventas registradas') }}
+  {{ tarjeta_kpi('bi-exclamation-triangle', '#fee2e2', '#dc2626',
+      'Alertas stock', alertas_stock|length|string, 'insumos agotados') }}
+</div>
+
+<div class="row g-4 mb-4">
+
+  <!-- Gráfica de horas pico -->
+  <div class="col-md-7">
+    <div class="card dash-card p-4 h-100">
+      <div class="dash-section-title">
+        <i class="bi bi-bar-chart me-1"></i>Ventas por hora — hoy
+      </div>
+      <div class="chart-container">
+        <canvas id="graficaHoras"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Productos más vendidos -->
+  <div class="col-md-5">
+    <div class="card dash-card p-4 h-100">
+      <div class="dash-section-title">
+        <i class="bi bi-trophy me-1"></i>Más vendidos hoy
+      </div>
+      {% if productos_top %}
+        {% for p in productos_top %}
+        <div class="dash-top-item">
+          <div class="d-flex align-items-center gap-2">
+            <div class="dash-top-rank">{{ loop.index }}</div>
+            <span class="fw-semibold small">{{ p.Nombre }}</span>
+          </div>
+          <div class="text-end">
+            <div class="fw-bold small" style="color:#8B3A0E;">{{ p.total_vendido }} uds</div>
+            <div class="text-muted" style="font-size:0.75rem;">${{ "%.2f"|format(p.total_monto) }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="dash-empty">
+          <i class="bi bi-inbox fs-2 d-block mb-1"></i>
+          Sin ventas registradas hoy
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+<div class="row g-4">
+
+  <!-- Materias primas más consumidas -->
+  <div class="col-md-6">
+    <div class="card dash-card p-4 h-100">
+      <div class="dash-section-title">
+        <i class="bi bi-box-seam me-1"></i>Insumos más consumidos — {{ mes_actual }}
+      </div>
+      {% if materias_top %}
+        {% for m in materias_top %}
+        <div class="dash-top-item">
+          <span class="small fw-semibold">{{ m.Nombre }}</span>
+          <span class="badge rounded-pill text-white small"
+                style="background-color:#8B3A0E;">
+            {{ "%.2f"|format(m.total_consumido) }}
+          </span>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="dash-empty">
+          <i class="bi bi-inbox fs-2 d-block mb-1"></i>
+          Sin consumo registrado este mes
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Alertas de stock -->
+  <div class="col-md-6">
+    <div class="card dash-card p-4 h-100">
+      <div class="dash-section-title">
+        <i class="bi bi-exclamation-triangle me-1"></i>Alertas de stock
+      </div>
+      {% if alertas_stock %}
+        {% for a in alertas_stock %}
+        <div class="dash-alerta mb-2">
+          <i class="bi bi-x-circle-fill text-danger me-1"></i>
+          <strong>{{ a.Nombre }}</strong>
+          <span class="text-muted ms-1 small">— Sin stock disponible</span>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="dash-empty">
+          <i class="bi bi-check-circle fs-2 d-block mb-1 text-success"></i>
+          Todos los insumos tienen stock
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+<!-- Datos para Chart.js -->
+<script>
+  window.dashData = {
+    horasLabels : {{ horas_labels | tojson }},
+    ventasHoras : {{ ventas_horas | tojson }}
+  };
+</script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+
+{% endblock %}
