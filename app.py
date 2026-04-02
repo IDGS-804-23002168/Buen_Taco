@@ -59,6 +59,10 @@ def create_app(config=DevelopmentConfig):
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(proveedores)
+    
+    from usuarios import usuarios_bp
+
+    app.register_blueprint(usuarios_bp)
 
     from dashboard import dashboard_bp  # Módulo 3 - Dashboard
 
@@ -114,4 +118,4 @@ def create_app(config=DevelopmentConfig):
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(debug=False)  # debug=False en producción (A05)
+    app.run(debug=True)  # debug=False en producción (A05)
