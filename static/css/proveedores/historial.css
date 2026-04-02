@@ -1,0 +1,357 @@
+/* ───────────────── VARIABLES ───────────────── */
+:root {
+  --brand: #8B2500;
+  --blue: #2563eb;
+  --blue-bg: #eff6ff;
+  --green: #16a34a;
+  --green-bg: #f0fdf4;
+  --border: #e5e7eb;
+  --bg-page: #f0f0f0;
+  --bg-card: #fff;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+
+/* ───────────────── BASE ───────────────── */
+body {
+  background: var(--bg-page);
+}
+
+.proveedores-page {
+  padding: 2rem 2.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.mb-1 {
+  margin-bottom: 1rem;
+}
+
+.text-muted {
+  color: var(--text-secondary);
+}
+
+/* ───────────────── BREADCRUMB ───────────────── */
+.breadcrumb-nav {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  margin-bottom: 1rem;
+  font-size: .875rem;
+}
+
+.bc-link {
+  color: var(--blue);
+  text-decoration: none;
+}
+
+.bc-link:hover {
+  text-decoration: underline;
+}
+
+.bc-sep,
+.bc-current {
+  color: var(--text-secondary);
+}
+
+/* ───────────────── HERO ───────────────── */
+.proveedor-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 .4rem;
+}
+
+.proveedor-meta {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+  margin-bottom: .5rem;
+}
+
+.meta-chip {
+  padding: .15rem .6rem;
+  border-radius: 999px;
+  font-size: .78rem;
+  font-weight: 600;
+  background: #f3f4f6;
+  color: var(--text-secondary);
+}
+
+.meta-chip--cat {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.badge-estado {
+  display: inline-block;
+  padding: .2rem .65rem;
+  border-radius: 999px;
+  font-size: .78rem;
+  font-weight: 600;
+}
+
+.badge-activo {
+  background: var(--green-bg);
+  color: var(--green);
+}
+
+.badge-inactivo {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.proveedor-contact {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: .875rem;
+  color: var(--text-secondary);
+}
+
+.phone-link,
+.email-link {
+  color: var(--blue);
+  text-decoration: none;
+}
+
+.phone-link:hover,
+.email-link:hover {
+  text-decoration: underline;
+}
+
+.proveedor-hero__actions {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+/* ───────────────── KPIs ───────────────── */
+.kpis-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  min-width: 140px;
+  box-shadow: var(--shadow);
+}
+
+.kpi-card--blue {
+  border-left: 3px solid var(--blue);
+}
+
+.kpi-label {
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.kpi-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.kpi-value--sm {
+  font-size: 1.1rem;
+}
+
+/* ───────────────── FILTROS ───────────────── */
+.filter-form .filter-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+}
+
+.filter-actions {
+  display: flex;
+  gap: .5rem;
+}
+
+.field-label {
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.field-input {
+  padding: .45rem .75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: .875rem;
+  outline: none;
+}
+
+.field-input:focus {
+  border-color: var(--blue);
+}
+
+/* ───────────────── CARD ───────────────── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.badge-count {
+  background: var(--blue-bg);
+  color: var(--blue);
+  border-radius: 999px;
+  padding: .1rem .55rem;
+  font-size: .8rem;
+  font-weight: 700;
+}
+
+/* ───────────────── TABLA ───────────────── */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.proveedores-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .875rem;
+}
+
+.proveedores-table thead th {
+  padding: .75rem 1.25rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border);
+}
+
+.proveedores-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background .1s;
+}
+
+.proveedores-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.proveedores-table td {
+  padding: .8rem 1.25rem;
+  vertical-align: middle;
+}
+
+.tfoot-total {
+  background: #f9fafb;
+  border-top: 2px solid var(--border);
+}
+
+.td-empty {
+  text-align: center;
+  padding: 3rem !important;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .75rem;
+}
+
+.empty-state p {
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ───────────────── BOTONES ───────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  border: none;
+  border-radius: var(--radius);
+  padding: .5rem 1rem;
+  font-size: .875rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background .15s;
+}
+
+.btn-primary {
+  background: var(--blue);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--blue);
+  border: none;
+  padding: .5rem .75rem;
+}
+
+.btn-ghost:hover {
+  background: var(--blue-bg);
+}
+
+/* ── BOTÓN ABAJO DERECHA ───────────────────────── */
+.footer-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}

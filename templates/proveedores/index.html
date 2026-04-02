@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+{% import "_macros.html" as macros %}
+
+{% block title %}Gestión de Proveedores – El Buen Taco{% endblock %}
+
+{% block content %}
+<div class="proveedores-page">
+
+  <!-- ── Cabecera ─────────────────────────────────────────────────── -->
+  <div class="page-header">
+    <div class="page-header__info">
+      <h1 class="page-title">Gestión de Proveedores</h1>
+
+    </div>
+    <a href="{{ url_for('proveedores.nuevo') }}" class="btn btn-primary">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm.75 4.25v2.5h2.5a.75.75 0 0 1 0 1.5h-2.5v2.5a.75.75 0 0 1-1.5 0v-2.5h-2.5a.75.75 0 0 1 0-1.5h2.5v-2.5a.75.75 0 0 1 1.5 0z"/>
+      </svg>
+      Nuevo Proveedor
+    </a>
+  </div>
+
+  <!-- ── Flash messages ───────────────────────────────────────────── -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <!-- ── Tarjeta con tabla ─────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header__left">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" class="icon-truck">
+          <path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5V5h1.02a1.5 1.5 0 0 1 1.17.563l1.481 1.85a1.5 1.5 0 0 1 .329.938V10.5a1.5 1.5 0 0 1-1.5 1.5H14a2 2 0 1 1-4 0H5a2 2 0 1 1-3.998-.085A1.5 1.5 0 0 1 0 10.5zm1.294 7.456A2 2 0 0 1 4.732 11h5.536a2 2 0 0 1 .732-.732V3.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .294.456zM12 10a2 2 0 0 1 1.732 1h.768a.5.5 0 0 0 .5-.5V8.35a.5.5 0 0 0-.11-.312l-1.48-1.85A.5.5 0 0 0 13.02 6H12v4zm-9 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm9 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+        </svg>
+        <span class="card-title">Lista de Proveedores</span>
+        <span class="badge-count">{{ total }}</span>
+      </div>
+
+      <!-- Búsqueda -->
+      <form method="GET" action="{{ url_for('proveedores.index') }}" class="search-form" id="searchForm">
+        <div class="search-wrapper">
+       <input type="text" name="q" class="search-input"
+       placeholder="Buscar proveedor"
+       value="{{ request.args.get('q', '') }}">
+        </div>
+      </form>
+    </div>
+
+    <!-- Tabla -->
+    <div class="table-wrapper">
+      <table class="proveedores-table">
+        <thead>
+          <tr>
+            <th>Empresa</th>
+            <th>RFC</th>
+            <th>Contacto Principal</th>
+            <th>Teléfono</th>
+            <th>Categoría</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+       {% for p in proveedores %}
+  {{ macros.fila_proveedor(p) }}
+{% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/proveedores/index.css') }}">
+{% endblock %}

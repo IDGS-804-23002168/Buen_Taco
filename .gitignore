@@ -7,3 +7,11 @@ node_modules/
 
 # Carpeta migrations
 migrations/
+
+# Logs
+logs/
+*.log
+
+# Python cache
+_pycache_/
+*.pyc

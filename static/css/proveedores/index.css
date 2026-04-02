@@ -1,0 +1,191 @@
+/* ── Variables ────────────────────────────────────────────────── */
+:root {
+    --brand:        #8B2500;
+    --brand-light:  #a83200;
+    --bg-page:      #f0f0f0;
+    --bg-card:      #ffffff;
+    --border:       #e5e7eb;
+    --text-primary: #111827;
+    --text-secondary:#6b7280;
+    --blue:         #2563eb;
+    --blue-bg:      #eff6ff;
+    --green:        #16a34a;
+    --green-bg:     #f0fdf4;
+    --red:          #dc2626;
+    --red-bg:       #fef2f2;
+    --orange:       #ea580c;
+    --orange-bg:    #fff7ed;
+    --radius:       10px;
+    --shadow:       0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+  }
+
+  body { background: var(--bg-page); }
+
+  /* ── Página ─────────────────────────────────────────────────── */
+  .proveedores-page { padding: 2rem 2.5rem; max-width: 1300px; margin: 0 auto; }
+
+  /* ── Cabecera ────────────────────────────────────────────────── */
+  .page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+  .page-title   { font-size: 1.6rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+  .page-subtitle{ font-size: .875rem; color: var(--text-secondary); margin: .2rem 0 0; }
+
+  /* ── Botón primario ──────────────────────────────────────────── */
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: .4rem;
+    background: var(--blue); color: #fff;
+    border: none; border-radius: var(--radius);
+    padding: .55rem 1.1rem; font-size: .875rem; font-weight: 600;
+    text-decoration: none; cursor: pointer;
+    transition: background .15s;
+  }
+  .btn-primary:hover { background: #1d4ed8; color: #fff; }
+  .btn-primary.btn-sm { padding: .35rem .8rem; font-size: .8rem; }
+
+  /* ── Card ───────────────────────────────────────────────────── */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  /* ── Card Header ─────────────────────────────────────────────── */
+  .card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    gap: 1rem; flex-wrap: wrap;
+  }
+  .card-header__left { display: flex; align-items: center; gap: .5rem; }
+  .card-title { font-size: .95rem; font-weight: 600; color: var(--text-primary); }
+  .badge-count {
+    background: var(--blue-bg); color: var(--blue);
+    border-radius: 999px; padding: .1rem .55rem;
+    font-size: .8rem; font-weight: 700;
+  }
+  .icon-truck { color: var(--blue); }
+
+  /* ── Búsqueda ────────────────────────────────────────────────── */
+  .search-form { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+  .search-wrapper {
+    position: relative;
+    display: flex; align-items: center;
+  }
+  .search-icon {
+    position: absolute; left: .7rem; color: var(--text-secondary);
+    pointer-events: none;
+  }
+  .search-input {
+    padding: .45rem .75rem .45rem 2.2rem;
+    border: 1px solid var(--border); border-radius: var(--radius);
+    font-size: .875rem; width: 220px;
+    outline: none; transition: border-color .15s;
+  }
+  .search-input:focus { border-color: var(--blue); }
+  .filter-select {
+    padding: .45rem .75rem; border: 1px solid var(--border);
+    border-radius: var(--radius); font-size: .875rem;
+    outline: none; cursor: pointer;
+  }
+
+  /* ── Tabla ───────────────────────────────────────────────────── */
+  .table-wrapper { overflow-x: auto; }
+  .proveedores-table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+  .proveedores-table thead th {
+    padding: .75rem 1.25rem;
+    text-align: left; font-weight: 600; color: var(--text-primary);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .proveedores-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background .1s;
+  }
+  .proveedores-table tbody tr:hover { background: #f9fafb; }
+  .proveedores-table tbody tr:last-child { border-bottom: none; }
+  .proveedores-table td { padding: .8rem 1.25rem; vertical-align: middle; }
+
+  .row-inactive { opacity: .55; }
+
+  .td-empresa .empresa-nombre { font-weight: 600; color: var(--text-primary); }
+  .td-rfc { font-family: monospace; font-size: .8rem; color: var(--text-secondary); }
+
+  .td-contacto {
+    display: flex; align-items: center; gap: .35rem;
+    color: var(--text-secondary);
+  }
+  .icon-person { flex-shrink: 0; }
+
+  .phone-link {
+    display: inline-flex; align-items: center; gap: .3rem;
+    color: var(--blue); text-decoration: none; font-weight: 500;
+  }
+  .phone-link:hover { text-decoration: underline; }
+
+  /* Badges categoría */
+  .badge-categoria {
+    display: inline-block;
+    padding: .2rem .65rem; border-radius: 999px;
+    font-size: .78rem; font-weight: 600;
+    background: #e0f2fe; color: #0369a1;
+  }
+
+  /* Badges estado */
+  .badge-estado {
+    display: inline-block;
+    padding: .2rem .65rem; border-radius: 999px;
+    font-size: .78rem; font-weight: 600;
+  }
+  .badge-activo   { background: var(--green-bg); color: var(--green); }
+  .badge-inactivo { background: #f3f4f6; color: #6b7280; }
+
+  /* ── Botones de acción ───────────────────────────────────────── */
+  .td-acciones { white-space: nowrap; }
+  .btn-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 6px;
+    border: none; cursor: pointer; text-decoration: none;
+    background: transparent; transition: background .15s, color .15s;
+    margin-right: .15rem;
+  }
+  .btn-icon--history   { color: #6b7280; }
+  .btn-icon--history:hover { background: #f3f4f6; color: var(--text-primary); }
+  .btn-icon--edit      { color: var(--blue); }
+  .btn-icon--edit:hover{ background: var(--blue-bg); }
+  .btn-icon--deactivate     { color: var(--red); }
+  .btn-icon--deactivate:hover{ background: var(--red-bg); }
+  .btn-icon--activate   { color: var(--green); }
+  .btn-icon--activate:hover { background: var(--green-bg); }
+
+  /* ── Empty state ────────────────────────────────────────────── */
+  .td-empty { text-align: center; padding: 3rem !important; }
+  .empty-state { display: flex; flex-direction: column; align-items: center; gap: .75rem; }
+  .empty-icon  { color: var(--text-secondary); opacity: .4; }
+  .empty-state p { color: var(--text-secondary); margin: 0; }
+
+  /* ── Card footer ─────────────────────────────────────────────── */
+  .card-footer {
+    padding: .6rem 1.25rem;
+    border-top: 1px solid var(--border);
+    text-align: right;
+  }
+
+  /* ── Alertas ─────────────────────────────────────────────────── */
+  .alert { padding: .75rem 1rem; border-radius: var(--radius); margin-bottom: 1rem; }
+  .alert-success { background: var(--green-bg); color: var(--green); border: 1px solid #bbf7d0; }
+  .alert-info    { background: var(--blue-bg);  color: var(--blue);  border: 1px solid #bfdbfe; }
+  .alert-warning { background: var(--orange-bg);color: var(--orange);border: 1px solid #fed7aa; }
+  .alert-danger  { background: var(--red-bg);   color: var(--red);   border: 1px solid #fecaca; }
+  .alert-dismissible { position: relative; padding-right: 2.5rem; }
+  .btn-close {
+    position: absolute; top: .5rem; right: .75rem;
+    border: none; background: none; cursor: pointer; font-size: 1rem; line-height: 1;
+  }
+
+  .text-muted { color: var(--text-secondary); }
