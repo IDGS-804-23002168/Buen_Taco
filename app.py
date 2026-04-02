@@ -13,6 +13,8 @@ from flask_mail import Mail
 
 from config import DevelopmentConfig
 from models import db, Usuario
+from usuarios import usuarios_bp
+
 
 
 
@@ -27,6 +29,7 @@ mail = Mail()
 def create_app(config=DevelopmentConfig):
     app = Flask(__name__)
     app.config.from_object(config)
+    
 
     # ---- Inicializar extensiones ----
     db.init_app(app)
@@ -57,6 +60,7 @@ def create_app(config=DevelopmentConfig):
     from auth import auth_bp
     from proveedores import proveedores
     app.register_blueprint(auth_bp)
+    app.register_blueprint(usuarios_bp)
     app.register_blueprint(proveedores) 
 
     from recetas import recetas_bp          # Módulo 7 - Recetas
@@ -91,4 +95,4 @@ def create_app(config=DevelopmentConfig):
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(debug=False)   # debug=False en producción (A05)
+    app.run(debug=True)   # debug=False en producción (A05)
