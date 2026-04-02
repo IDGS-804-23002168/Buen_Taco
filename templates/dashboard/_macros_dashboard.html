@@ -1,0 +1,29 @@
+{# ── Macros Módulo 3: Dashboard ── #}
+
+{% macro flash_messages() %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for cat, msg in messages %}
+  <div class="alert alert-{{ cat }} alert-dismissible fade show">
+    {{ msg }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  {% endfor %}
+{% endwith %}
+{% endmacro %}
+
+{% macro tarjeta_kpi(icono, color_bg, color_icon, label, valor, sub='') %}
+<div class="col-6 col-md-3">
+  <div class="card dash-card p-3">
+    <div class="d-flex align-items-center gap-3">
+      <div class="icon-wrap" style="background-color:{{ color_bg }};">
+        <i class="bi {{ icono }}" style="color:{{ color_icon }};"></i>
+      </div>
+      <div>
+        <div class="label">{{ label }}</div>
+        <div class="valor">{{ valor }}</div>
+        {% if sub %}<div class="sub">{{ sub }}</div>{% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endmacro %}

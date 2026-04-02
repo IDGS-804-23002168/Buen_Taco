@@ -1,0 +1,96 @@
+/* ── Módulo 3: Dashboard ── */
+
+.dash-card {
+    border: none;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    transition: transform 0.15s;
+}
+
+.dash-card:hover {
+    transform: translateY(-2px);
+}
+
+.dash-card .icon-wrap {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+}
+
+.dash-card .label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+}
+
+.dash-card .valor {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1f2937;
+    line-height: 1.1;
+}
+
+.dash-card .sub {
+    font-size: 0.78rem;
+    color: #9ca3af;
+}
+
+.dash-section-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #8B3A0E;
+    margin-bottom: 1rem;
+}
+
+.dash-alerta {
+    background: #fff5f5;
+    border-left: 4px solid #ef4444;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.875rem;
+}
+
+.dash-top-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.dash-top-item:last-child {
+    border-bottom: none;
+}
+
+.dash-top-rank {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background-color: #8B3A0E;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.dash-empty {
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.875rem;
+    padding: 24px 0;
+}
+
+.chart-container {
+    position: relative;
+    height: 220px;
+}

@@ -58,6 +58,9 @@ def create_app(config=DevelopmentConfig):
     from proveedores import proveedores
     app.register_blueprint(auth_bp)
     app.register_blueprint(proveedores) 
+    
+    from dashboard import dashboard_bp         # Módulo 3 - Dashboard
+    app.register_blueprint(dashboard_bp)
 
     from recetas import recetas_bp          # Módulo 7 - Recetas
     app.register_blueprint(recetas_bp)
