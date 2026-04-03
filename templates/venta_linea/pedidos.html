@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>📦 Mis Pedidos – El Buen Taco</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ventas_linea/index.css') }}">
+    <style>
+        /* Centrar la tabla */
+        .panel-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .panel-left .card {
+            width: 100%;
+            max-width: 800px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 0.75rem 0.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            background-color: #f8f8f8;
+        }
+        /* Botón Ver más pequeño */
+        .btn-small-ver {
+            background-color: #8B2E0F;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.35rem 0.6rem;
+            font-weight: 700;
+            font-size: 0.78rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .btn-small-ver:hover {
+            background-color: #6e240c;
+        }
+        /* Alertas centradas */
+        .alert {
+            max-width: 800px;
+            margin: 1rem auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a class="navbar-brand">🌮 El Buen Taco</a>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('venta_linea.index') }}">Inicio</a></li>
+            <li><a href="{{ url_for('venta_linea.mis_pedidos') }}">Mis pedidos</a></li>
+        </ul>
+        <div class="nav-right">
+            <span>👤 {{ current_user.Nombre }}</span>
+            <a href="{{ url_for('auth.logout') }}" class="btn-logout">↪ Salir</a>
+        </div>
+    </nav>
+
+    <!-- PAGE -->
+    <div class="page-wrapper">
+        <!-- LEFT PANEL -->
+        <div class="panel-left">
+            <h1 class="page-title"> Mis Pedidos</h1>
+
+            <!-- FLASH MESSAGES -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="flash-container">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            {% endwith %}
+
+            <!-- PEDIDOS -->
+            {% if pedidos %}
+            <div class="card" style="margin-top: 1rem;">
+                <table>
+                    <thead>
+                        <tr>
+                        
+                            <th>Fecha</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Detalles</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pedido in pedidos %}
+                        <tr>
+                           
+                            <td>{{ pedido.Fecha.strftime("%d/%m/%Y %H:%M") if pedido.Fecha else 'N/A' }}</td>
+                            <td>${{ "%.2f"|format(pedido.Total) }}</td>
+                            <td>{{ pedido.Estado }}</td>
+                            <td>
+                                <a href="{{ url_for('venta_linea.ver_pedido', pedido_id=pedido.PedidoId) }}" class="btn-small-ver">Ver</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info mt-3">No has realizado pedidos todavía.</div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

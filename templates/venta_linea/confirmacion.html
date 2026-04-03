@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>✅ Confirmación – El Buen Taco</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/ventas_linea/index.css') }}">
+  <style>
+    /* CENTRADO COMPLETO */
+    .page-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: calc(100vh - 56px); /* navbar altura */
+      padding: 2rem 1rem;
+    }
+
+    .panel-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .panel-left .card {
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .panel-left h1, 
+    .panel-left p, 
+    .panel-left h4, 
+    .panel-left h5 {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="navbar-brand">🌮 El Buen Taco</a>
+
+  <ul class="nav-links">
+    <li><a href="{{ url_for('venta_linea.index') }}">Inicio</a></li>
+    <li><a href="{{ url_for('venta_linea.mis_pedidos') }}">Mis pedidos</a></li>
+  </ul>
+
+  <div class="nav-right">
+    <span>👤 {{ current_user.Nombre }}</span>
+    <a href="{{ url_for('auth.logout') }}" class="btn-logout">↪ Salir</a>
+  </div>
+</nav>
+
+<!-- CONTENIDO CENTRADO -->
+<div class="page-wrapper">
+
+  <div class="panel-left">
+
+    <!-- MENSAJE DE CONFIRMACIÓN -->
+    <div class="card" style="padding:2rem;">
+      <h1 class="mb-4">✅ Pedido realizado con éxito</h1>
+      <p class="page-subtitle">
+        Gracias por tu compra.
+      </p>
+    </div>
+
+    <!-- DETALLE DEL PEDIDO -->
+    <div class="card" style="padding:1.5rem;">
+      <h4 class="mb-3"> Detalle del pedido</h4>
+
+      {% for item in detalles %}
+        <p class="mb-1">
+          {{ item.Cantidad }}x {{ item.nombre }}
+        </p>
+      {% endfor %}
+
+      <hr>
+
+      <h5><b>Total:</b> ${{ "%.2f"|format(pedido.Total) }}</h5>
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>

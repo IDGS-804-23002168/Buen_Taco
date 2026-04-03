@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>📄 Pedido – El Buen Taco</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ventas_linea/index.css') }}">
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a class="navbar-brand">🌮 El Buen Taco</a>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('venta_linea.index') }}">Inicio</a></li>
+            <li><a href="{{ url_for('venta_linea.mis_pedidos') }}">Mis pedidos</a></li>
+        </ul>
+        <div class="nav-right">
+            <span>👤 {{ current_user.Nombre }}</span>
+            <a href="{{ url_for('auth.logout') }}" class="btn-logout">↪ Salir</a>
+        </div>
+    </nav>
+
+    <!-- PAGE WRAPPER -->
+    <div class="page-wrapper" style="grid-template-columns: 1fr;"> 
+        <div class="panel-left">
+            <h1 class="page-title">📄 Pedido</h1>
+            <p>Fecha: {{ pedido.Fecha.strftime("%d/%m/%Y %H:%M") if pedido.Fecha else 'N/A' }}</p>
+            <p>Estado: {{ pedido.Estado }}</p>
+
+            {% if detalles %}
+            <div class="card mt-3">
+                <table style="width:100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="text-align:left; padding: 0.5rem; border-bottom: 1px solid #ddd;">Producto</th>
+                            <th style="text-align:center; padding: 0.5rem; border-bottom: 1px solid #ddd;">Cantidad</th>
+                            <th style="text-align:right; padding: 0.5rem; border-bottom: 1px solid #ddd;">Precio Unitario</th>
+                            <th style="text-align:right; padding: 0.5rem; border-bottom: 1px solid #ddd;">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in detalles %}
+                        <tr>
+                            <td style="padding: 0.5rem; border-bottom: 1px solid #eee;">{{ d.producto.Nombre }}</td>
+                            <td style="text-align:center; padding: 0.5rem; border-bottom: 1px solid #eee;">{{ d.Cantidad }}</td>
+                            <td style="text-align:right; padding: 0.5rem; border-bottom: 1px solid #eee;">${{ "%.2f"|format(d.PrecioUnitario) }}</td>
+                            <td style="text-align:right; padding: 0.5rem; border-bottom: 1px solid #eee;">${{ "%.2f"|format(d.Subtotal) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="totals mt-3">
+                    <div class="total-row grand">
+                        <span>Total</span>
+                        <span>${{ "%.2f"|format(pedido.Total) }}</span>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="alert alert-info mt-3">No hay productos en este pedido.</div>
+            {% endif %}
+
+            <!-- BOTON DE REGRESAR AL ESTILO PAGO -->
+           <!-- BOTON DE REGRESAR AL ESTILO PAGO -->
+<div class="mt-4 btn-row">
+    <a href="{{ url_for('venta_linea.mis_pedidos') }}" class="btn-form back">
+        ← Regresar
+    </a>
+</div>
+
+        </div>
+    </div>
+</body>
+</html>

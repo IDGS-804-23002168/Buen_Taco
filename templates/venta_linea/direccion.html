@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Dirección – El Buen Taco</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/ventas_linea/index.css') }}">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="navbar-brand">🌮 El Buen Taco</a>
+
+  <ul class="nav-links">
+    <li><a href="{{ url_for('venta_linea.index') }}">Inicio</a></li>
+    <li><a href="{{ url_for('venta_linea.mis_pedidos') }}">Mis pedidos</a></li>
+  </ul>
+
+  <div class="nav-right">
+    <span>👤 {{ current_user.Nombre }}</span>
+    <a href="{{ url_for('auth.logout') }}" class="btn-logout">↪ Salir</a>
+  </div>
+</nav>
+
+<!-- PAGE -->
+<div class="page-wrapper">
+
+  <!-- LEFT -->
+  <div class="panel-left">
+    <h1 class="page-title">📍 Tipo de entrega</h1>
+
+    <div class="card">
+
+      <form method="POST" novalidate>
+        {{ form.hidden_tag() }}
+
+        <!-- TIPO ENTREGA -->
+        <div>
+          {{ form.tipo_entrega.label(class="form-label fw-bold") }}
+
+          <div class="mt-2">
+            {% for subfield in form.tipo_entrega %}
+              <div class="form-check">
+                {{ subfield(class="form-check-input") }}
+                {{ subfield.label(class="form-check-label") }}
+              </div>
+            {% endfor %}
+          </div>
+
+          {% for error in form.tipo_entrega.errors %}
+            <div class="invalid-feedback d-block">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <hr>
+
+        <!-- DOMICILIO -->
+        <div id="domicilio-form">
+
+          <div class="row">
+            <div class="col-md-8 mb-3">
+              {{ form.calle.label(class="form-label") }}
+              {{ form.calle(class="form-control" + (" is-invalid" if form.calle.errors else "")) }}
+              {% for error in form.calle.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="col-md-4 mb-3">
+              {{ form.numero.label(class="form-label") }}
+              {{ form.numero(class="form-control" + (" is-invalid" if form.numero.errors else "")) }}
+              {% for error in form.numero.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            {{ form.colonia.label(class="form-label") }}
+            {{ form.colonia(class="form-control" + (" is-invalid" if form.colonia.errors else "")) }}
+            {% for error in form.colonia.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Ciudad</label>
+            <input type="text" class="form-control" value="León, Guanajuato" readonly>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              {{ form.codigo_postal.label(class="form-label") }}
+              {{ form.codigo_postal(class="form-control" + (" is-invalid" if form.codigo_postal.errors else "")) }}
+              {% for error in form.codigo_postal.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="col-md-6 mb-3">
+              {{ form.referencias.label(class="form-label") }}
+              {{ form.referencias(class="form-control" + (" is-invalid" if form.referencias.errors else "")) }}
+              {% for error in form.referencias.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+          </div>
+
+        </div>
+
+        <!-- SUCURSAL -->
+        <div id="sucursal-info" style="display:none;" class="mt-3">
+
+          <div class="border rounded p-3 bg-light">
+            <h5 class="mb-3">🏪 Recoger en sucursal</h5>
+
+            <p class="mb-1"><b>📍 Dirección:</b> Av. Principal #123, León, Gto.</p>
+            <p class="mb-3"><b>📞 Teléfono:</b> 477-123-4567</p>
+
+            <div class="mb-3">
+              {{ form.horario.label(class="form-label") }}
+              {{ form.horario(class="form-select" + (" is-invalid" if form.horario.errors else "")) }}
+
+              {% for error in form.horario.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+              {% endfor %}
+            </div>
+          </div>
+
+        </div>
+
+        <!-- BOTONES -->
+        <!-- BOTONES -->
+<div class="mt-4 btn-row">
+    <a href="{{ url_for('venta_linea.index') }}" class="btn-form back">
+        ← Regresar
+    </a>
+
+    {{ form.submit(class="btn-form continue") }}
+</div>
+
+      </form>
+
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <aside class="panel-right">
+    <div class="order-card">
+
+      <div class="order-header">🛒 Resumen</div>
+
+      {% for item in carrito %}
+      <div class="cart-item">
+        <div class="item-name">
+          {{ item.cantidad }}x {{ item.nombre }}
+        </div>
+      </div>
+      {% endfor %}
+
+      <div class="totals">
+        <div class="total-row">
+          <span>Subtotal</span>
+          <span>${{ "%.2f"|format(subtotal) }}</span>
+        </div>
+
+        <div class="total-row">
+          <span>Envío</span>
+          <span>${{ "%.2f"|format(envio) }}</span>
+        </div>
+
+        <div class="total-row">
+          <span>IVA</span>
+          <span>${{ "%.2f"|format(iva) }}</span>
+        </div>
+
+        <div class="total-row grand">
+          <span>Total</span>
+          <span>${{ "%.2f"|format(total) }}</span>
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+</div>
+
+<!-- SCRIPT -->
+<script>
+const domicilioForm = document.getElementById("domicilio-form");
+const sucursalInfo = document.getElementById("sucursal-info");
+
+function toggleForm() {
+  const selected = document.querySelector('input[name="tipo_entrega"]:checked').value;
+
+  if (selected === "domicilio") {
+    domicilioForm.style.display = "block";
+    sucursalInfo.style.display = "none";
+  } else {
+    domicilioForm.style.display = "none";
+    sucursalInfo.style.display = "block";
+  }
+}
+
+toggleForm();
+
+document.querySelectorAll('input[name="tipo_entrega"]').forEach(radio => {
+  radio.addEventListener('change', toggleForm);
+});
+</script>
+
+<!-- ESTILOS BOTÓN -->
+
+</body>
+</html>
