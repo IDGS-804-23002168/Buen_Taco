@@ -1,41 +1,97 @@
-{% extends "layout.html" %}
+
+{% extends 'layout.html' %}
+
 {% block content %}
-<h1>Productos Disponibles</h1>
-
-<!-- Filtro de categorías y búsqueda -->
-<form method="post" class="form-inline mb-3">
-    {{ filtro_form.hidden_tag() }}
-    <div class="form-group mr-2">
-        {{ filtro_form.categoria.label }} 
-        {{ filtro_form.categoria(class="form-control") }}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-6">
+        <h2 class="fw-bold mb-0" style="color: #8B3A0E;"><i class="bi bi-shop me-2"></i>Disponibilidad en Mostrador</h2>
+        <p class="text-muted">Inventario listo para la venta, actualizado por la cocina.</p>
     </div>
-    <div class="form-group mr-2">
-        {{ filtro_form.buscar(class="form-control", placeholder="Buscar...") }}
-    </div>
-    {{ filtro_form.submit(class="btn btn-primary") }}
-</form>
 
-<!-- Tabla de productos -->
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th>Categoría</th>
-            <th>Precio</th>
-            <th>Activo</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for p in productos %}
-        <tr>
-            <td>{{ p.Nombre }}</td>
-            <td>{{ p.Descripcion or '-' }}</td>
-            <td>{{ p.CategoriaProducto.Nombre if p.CategoriaProducto else '-' }}</td>
-            <td>{{ "{:.2f}".format(p.Precio) }}</td>
-            <td>{{ "Sí" if p.Activo else "No" }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <div class="col-md-6 d-flex gap-2 justify-content-md-end">
+        <div class="input-group shadow-sm" style="max-width: 250px;">
+            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" id="buscador-mostrador" class="form-control border-start-0" placeholder="Buscar...">
+        </div>
+        <select id="filtro-cat-mostrador" class="form-select shadow-sm" style="max-width: 180px;">
+            <option value="todas">Categorías</option>
+            {% for cat in categorias %}
+            <option value="{{ cat.Nombre | lower }}">{{ cat.Nombre }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+<div class="row g-4" id="contenedor-mostrador">
+    {% for producto in productos %}
+    <div class="col-12 col-md-6 col-lg-4 tarjeta-mostrador" data-nombre="{{ producto.Nombre | lower }}"
+        data-categoria="{{ producto.categoria.Nombre | lower if producto.categoria else 'sin_categoria' }}">
+
+        <div class="card p-3 border-0 shadow-sm {% if producto.stock_actual <= 0 %}opacity-50{% endif %}"
+            style="border-radius: 12px;">
+            <div class="text-center mb-3 py-3 rounded" style="background-color: #F8F9FA;">
+                <i class="bi bi-egg-fried text-muted" style="font-size: 3rem;"></i>
+            </div>
+
+            <h5 class="fw-bold {% if producto.stock_actual <= 0 %}text-muted{% endif %}">{{ producto.Nombre }}</h5>
+
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                {% if producto.stock_actual <= 0 %} <span
+                    class="badge bg-secondary text-white px-3 py-2 rounded-pill shadow-sm">
+                    <i class="bi bi-x-circle"></i> Agotado
+                    </span>
+                    {% elif producto.stock_actual <= 5 %} <span
+                        class="badge bg-danger text-white px-3 py-2 rounded-pill shadow-sm">
+                        <i class="bi bi-exclamation-triangle"></i> Quedan {{ producto.stock_actual }}
+                        </span>
+                        {% else %}
+                        <span class="badge bg-success text-white px-3 py-2 rounded-pill shadow-sm">
+                            <i class="bi bi-check-circle"></i> Disponibles: {{ producto.stock_actual }}
+                        </span>
+                        {% endif %}
+
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" {% if producto.stock_actual> 0 %}checked{%
+                            endif %} disabled>
+                        </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center mt-5">
+        <i class="bi bi-box-seam text-muted" style="font-size: 3rem;"></i>
+        <p class="text-muted mt-2">No hay productos registrados en el sistema.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const buscador = document.getElementById('buscador-mostrador');
+        const filtroCat = document.getElementById('filtro-cat-mostrador');
+        const tarjetas = document.querySelectorAll('.tarjeta-mostrador');
+
+        function aplicarFiltros() {
+            const textoBuscado = buscador.value.toLowerCase().trim();
+            const categoriaSeleccionada = filtroCat.value;
+
+            tarjetas.forEach(function (tarjeta) {
+                const nombre = tarjeta.getAttribute('data-nombre');
+                const categoria = tarjeta.getAttribute('data-categoria');
+
+                const cumpleTexto = nombre.includes(textoBuscado);
+                const cumpleCategoria = (categoriaSeleccionada === 'todas' || categoria === categoriaSeleccionada);
+
+                if (cumpleTexto && cumpleCategoria) {
+                    tarjeta.style.display = '';
+                } else {
+                    tarjeta.style.display = 'none';
+                }
+            });
+        }
+
+        buscador.addEventListener('input', aplicarFiltros);
+        filtroCat.addEventListener('change', aplicarFiltros);
+    });
+</script>
 {% endblock %}

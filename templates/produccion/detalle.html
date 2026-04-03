@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block title %}Detalle Orden #{{ orden.OrdenProduccionId }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>📋 Orden de Producción #{{ orden.OrdenProduccionId }}</h2>
+
+  <div class="card mt-3">
+    <div class="card-body">
+      <p><strong>Producto:</strong> {{ orden.producto.Nombre }}</p>
+      <p><strong>Cantidad a producir:</strong> {{ orden.CantidadProducir }}</p>
+      <p><strong>Inicio:</strong> {{ orden.FechaInicio.strftime('%d/%m/%Y %H:%M') }}</p>
+      <p><strong>Estado:</strong>
+        <span class="badge bg-primary">{{ orden.Estado }}</span>
+      </p>
+    </div>
+  </div>
+
+  <h5 class="mt-4">🧾 Materias primas usadas</h5>
+  <table class="table table-sm table-bordered">
+    <thead>
+      <tr>
+        <th>Materia Prima</th>
+        <th>Cantidad descontada</th>
+        <th>Unidad</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in orden.producto.recetas %}
+      <tr>
+        <td>{{ r.materia_prima.Nombre }}</td>
+        <td>{{ r.CantidadBase * orden.CantidadProducir }}</td>
+        <td>{{ r.materia_prima.unidad.Abreviatura }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <a href="{{ url_for('ordenes_produccion.index') }}" class="btn btn-secondary mt-2">← Volver</a>
+</div>
+{% endblock %}

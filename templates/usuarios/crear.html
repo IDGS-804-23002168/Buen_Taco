@@ -1,0 +1,161 @@
+{% extends 'layout.html' %}
+{% block title %}Nuevo Usuario{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 640px;">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0 fw-bold">Nuevo Usuario</h2>
+    <a href="{{ url_for('usuarios.index') }}" class="btn btn-outline-secondary btn-sm">
+      <i class="bi bi-arrow-left"></i> Volver
+    </a>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endwith %}
+
+  <div class="card shadow-sm">
+    <div class="card-body p-4">
+      <form method="POST" autocomplete="off">
+        {{ form.hidden_tag() }}
+
+        <!-- Nombre -->
+        <div class="mb-3">
+          {{ form.nombre.label(class="form-label fw-semibold") }}
+          {{ form.nombre(class="form-control" + (" is-invalid" if form.nombre.errors else ""), placeholder="Ej. Juan Pérez") }}
+          {% for error in form.nombre.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <!-- Username -->
+        <div class="mb-3">
+          {{ form.username.label(class="form-label fw-semibold") }}
+          {{ form.username(class="form-control" + (" is-invalid" if form.username.errors else ""), placeholder="Ej. jperez") }}
+          {% for error in form.username.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+          {{ form.email.label(class="form-label fw-semibold") }}
+          {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""), placeholder="correo@ejemplo.com") }}
+          {% for error in form.email.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <!-- Rol -->
+        <div class="mb-3">
+          {{ form.rol_id.label(class="form-label fw-semibold") }}
+          {{ form.rol_id(class="form-select" + (" is-invalid" if form.rol_id.errors else "")) }}
+          {% for error in form.rol_id.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <hr>
+
+        <!-- Contraseña -->
+        <div class="mb-3">
+          {{ form.password.label(class="form-label fw-semibold") }}
+          <div class="input-group">
+            {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else ""), id="password", autocomplete="new-password") }}
+            <button class="btn btn-outline-secondary" type="button" onclick="toggleVer('password', this)">
+              <i class="bi bi-eye"></i>
+            </button>
+            {% for error in form.password.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Confirmar contraseña -->
+        <div class="mb-3">
+          {{ form.confirm_password.label(class="form-label fw-semibold") }}
+          <div class="input-group">
+            {{ form.confirm_password(class="form-control" + (" is-invalid" if form.confirm_password.errors else ""), id="confirm_password", autocomplete="new-password") }}
+            <button class="btn btn-outline-secondary" type="button" onclick="toggleVer('confirm_password', this)">
+              <i class="bi bi-eye"></i>
+            </button>
+            {% for error in form.confirm_password.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Indicador de requisitos -->
+        <div class="card bg-light border-0 mb-4 p-3 small">
+          <p class="fw-semibold mb-2 text-muted">La contraseña debe cumplir:</p>
+          <ul class="list-unstyled mb-0" id="requisitos">
+            <li id="req-len">  <i class="bi bi-x-circle-fill text-danger"></i> Mínimo 8 caracteres</li>
+            <li id="req-upper"><i class="bi bi-x-circle-fill text-danger"></i> Al menos una mayúscula</li>
+            <li id="req-lower"><i class="bi bi-x-circle-fill text-danger"></i> Al menos una minúscula</li>
+            <li id="req-digit"><i class="bi bi-x-circle-fill text-danger"></i> Al menos un número</li>
+            <li id="req-spec"> <i class="bi bi-x-circle-fill text-danger"></i> Al menos un carácter especial (!@#$%...)</li>
+          </ul>
+        </div>
+
+        <!-- Botones -->
+        <div class="d-flex gap-2">
+          {{ form.submit(class="btn btn-primary w-100") }}
+          <a href="{{ url_for('usuarios.index') }}" class="btn btn-outline-secondary w-100">
+            Cancelar
+          </a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Mostrar/ocultar contraseña
+  function toggleVer(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const icon  = btn.querySelector('i');
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.classList.replace('bi-eye', 'bi-eye-slash');
+    } else {
+      input.type = 'password';
+      icon.classList.replace('bi-eye-slash', 'bi-eye');
+    }
+  }
+
+  // Indicador de requisitos en tiempo real
+  const pwd = document.getElementById('password');
+  const checks = {
+    'req-len':   p => p.length >= 8,
+    'req-upper': p => /[A-Z]/.test(p),
+    'req-lower': p => /[a-z]/.test(p),
+    'req-digit': p => /[0-9]/.test(p),
+    'req-spec':  p => /[!@#$%^&*()\-_=+\[\]{}|;':",./<>?]/.test(p),
+  };
+  const labels = {
+    'req-len':   'Mínimo 8 caracteres',
+    'req-upper': 'Al menos una mayúscula',
+    'req-lower': 'Al menos una minúscula',
+    'req-digit': 'Al menos un número',
+    'req-spec':  'Al menos un carácter especial (!@#$%...)',
+  };
+
+  pwd.addEventListener('input', () => {
+    const val = pwd.value;
+    for (const [id, fn] of Object.entries(checks)) {
+      const el = document.getElementById(id);
+      const ok = fn(val);
+      el.innerHTML = ok
+        ? `<i class="bi bi-check-circle-fill text-success"></i> ${labels[id]}`
+        : `<i class="bi bi-x-circle-fill text-danger"></i> ${labels[id]}`;
+    }
+  });
+</script>
+{% endblock %}

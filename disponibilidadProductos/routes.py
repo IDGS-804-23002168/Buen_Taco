@@ -1,53 +1,55 @@
 from flask import render_template, request, redirect, url_for, flash
-from flask_login import login_required
-from . import productos_bp
-from models import Producto, CategoriaProducto
+from flask_login import login_required, current_user
+from functools import wraps
+from sqlalchemy import func
+from . import disponibilidad_bp
+from models import db, Producto, MovimientoProducto, CategoriaProducto
 
-# Formularios (simples para filtro)
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, SelectField
 
-class FiltroCategoriaForm(FlaskForm):
-    categoria = SelectField('Categoría', choices=[])
-    buscar = StringField('Buscar')
-    submit = SubmitField('Filtrar')
+# --- DECORADOR PARA LOS ROLES ---
+def roles_required(*roles):
+    def wrapper(fn):
+        @wraps(fn)
+        def decorated_view(*args, **kwargs):
+            if not current_user.is_authenticated:
+                return redirect(url_for("auth.login"))
+            roles_usuario = [ur.rol.Nombre for ur in current_user.roles if ur.Activo]
+            if any(rol in roles_usuario for rol in roles):
+                return fn(*args, **kwargs)
+            return redirect(url_for("index"))
 
-@productos_bp.route('/', methods=['GET', 'POST'])
+        return decorated_view
+
+    return wrapper
+
+
+@disponibilidad_bp.route("/disponibilidad", methods=["GET"])
 @login_required
+@roles_required("Administrador", "Vendedor")  # Ajusta según necesites
 def index():
-    # Formularios
-    filtro_form = FiltroCategoriaForm(request.form if request.method == 'POST' else None)
+    productos = Producto.query.filter_by(Activo=True).all()
+    categorias = CategoriaProducto.query.all()
 
-    # Filtrado inicial
-    categoria_sel = request.args.get('categoria', 'Todo')
-    busqueda = request.args.get('busqueda', '').strip()
+    # Lista para guardar solo los productos que la cocina ya preparó (stock > 0)
+    productos_en_mostrador = []
 
-    # Configurar choices dinámicamente
-    filtro_form.categoria.choices = [('Todo','Todas')] + [(c.Nombre,c.Nombre) for c in CategoriaProducto.query.order_by(CategoriaProducto.Nombre).all()]
+    for p in productos:
+        # Sumamos todos los movimientos de este producto (Entradas de la cocina - Salidas de ventas)
+        stock = (
+            db.session.query(func.coalesce(func.sum(MovimientoProducto.Cantidad), 0))
+            .filter_by(ProductoId=p.ProductoId)
+            .scalar()
+        )
 
-    # POST: si se envía formulario de filtro
-    if request.method == 'POST' and filtro_form.validate():
-        categoria_sel = filtro_form.categoria.data
-        busqueda = filtro_form.buscar.data or ''
-        return redirect(url_for('productos.index', categoria=categoria_sel, busqueda=busqueda))
+        # Le asignamos temporalmente el valor al objeto para usarlo en el HTML
+        p.stock_actual = int(stock)
 
-    # Query de productos
-    query = Producto.query.filter_by(Activo=True)
-    if categoria_sel != 'Todo':
-        cat = CategoriaProducto.query.filter_by(Nombre=categoria_sel).first()
-        if cat:
-            query = query.filter_by(CategoriaId=cat.CategoriaId)
-    if busqueda:
-        query = query.filter(Producto.Nombre.ilike(f'%{busqueda}%'))
-
-    productos = query.order_by(Producto.Nombre).all()
-    categorias = CategoriaProducto.query.order_by(CategoriaProducto.Nombre).all()
+        # Opcional: Si solo quieres mostrar los que SÍ tienen existencias, descomenta la siguiente línea:
+        # if p.stock_actual > 0:
+        productos_en_mostrador.append(p)
 
     return render_template(
-        'disponibilidadProductos/index.html',
-        productos=productos,
+        "disponibilidadProductos/index.html",
+        productos=productos_en_mostrador,
         categorias=categorias,
-        categoria_sel=categoria_sel,
-        busqueda=busqueda,
-        filtro_form=filtro_form
     )

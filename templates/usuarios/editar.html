@@ -1,0 +1,111 @@
+{% extends 'layout.html' %}
+{% block title %}Editar Usuario{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 640px;">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0 fw-bold">Editar Usuario</h2>
+    <a href="{{ url_for('usuarios.index') }}" class="btn btn-outline-secondary btn-sm">
+      <i class="bi bi-arrow-left"></i> Volver
+    </a>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endwith %}
+
+  <div class="card shadow-sm">
+    <div class="card-body p-4">
+
+      <!-- Info de solo lectura -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <span class="text-muted small">Username:</span>
+          <code class="ms-1 fs-6">{{ usuario.Username }}</code>
+        </div>
+        {% if usuario.Activo %}
+          <span class="badge bg-success">Activo</span>
+        {% else %}
+          <span class="badge bg-danger">Inactivo</span>
+        {% endif %}
+      </div>
+
+      <div class="row g-2 mb-3 text-muted small">
+        <div class="col-auto">
+          <i class="bi bi-clock-history me-1"></i>
+          Último acceso:
+          <strong>
+            {{ usuario.UltimoLogin.strftime('%d/%m/%Y %H:%M') if usuario.UltimoLogin else '—' }}
+          </strong>
+        </div>
+        <div class="col-auto">
+          <i class="bi bi-shield-exclamation me-1"></i>
+          Intentos fallidos:
+          <strong>{{ usuario.IntentosFallidos or 0 }}</strong>
+        </div>
+        {% if usuario.Bloqueado %}
+        <div class="col-auto">
+          <span class="badge bg-danger">
+            <i class="bi bi-lock-fill me-1"></i>Bloqueado
+          </span>
+        </div>
+        {% endif %}
+      </div>
+
+      <hr>
+
+      <form method="POST" action="{{ url_for('usuarios.editar', usuario_id=usuario.UsuarioId) }}">
+        {{ form.hidden_tag() }}
+
+        <!-- Nombre -->
+        <div class="mb-3">
+          {{ form.nombre.label(class="form-label fw-semibold") }}
+          {{ form.nombre(class="form-control" + (" is-invalid" if form.nombre.errors else ""), placeholder="Nombre completo") }}
+          {% for error in form.nombre.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+          {{ form.email.label(class="form-label fw-semibold") }}
+          {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""), placeholder="correo@ejemplo.com") }}
+          {% for error in form.email.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <!-- Rol -->
+        <div class="mb-3">
+          {{ form.rol_id.label(class="form-label fw-semibold") }}
+          {{ form.rol_id(class="form-select" + (" is-invalid" if form.rol_id.errors else "")) }}
+          {% for error in form.rol_id.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <!-- Aviso contraseña -->
+        <div class="alert alert-info small py-2 mb-4">
+          <i class="bi bi-info-circle me-1"></i>
+          El cambio de contraseña es responsabilidad del propio usuario desde su perfil.
+        </div>
+
+        <!-- Botones -->
+        <div class="d-flex gap-2">
+          {{ form.submit(class="btn btn-primary w-100") }}
+          <a href="{{ url_for('usuarios.index') }}" class="btn btn-outline-secondary w-100">
+            Cancelar
+          </a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

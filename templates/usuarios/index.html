@@ -1,0 +1,221 @@
+{% extends 'layout.html' %}
+{% block title %}Gestión de Usuarios{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+
+  <!-- Encabezado -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0 fw-bold">Gestión de Usuarios</h2>
+    <a href="{{ url_for('usuarios.crear') }}" class="btn btn-primary">
+      <i class="bi bi-person-plus-fill me-1"></i> Nuevo Usuario
+    </a>
+  </div>
+
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endwith %}
+
+  <!-- Filtros -->
+  <div class="mb-3">
+    <a href="{{ url_for('usuarios.index', filtro='todos') }}"
+       class="btn btn-sm {{ 'btn-dark' if filtro == 'todos' else 'btn-outline-secondary' }} me-1">
+      Todos
+    </a>
+    <a href="{{ url_for('usuarios.index', filtro='activos') }}"
+       class="btn btn-sm {{ 'btn-success' if filtro == 'activos' else 'btn-outline-success' }} me-1">
+      Activos
+    </a>
+    <a href="{{ url_for('usuarios.index', filtro='inactivos') }}"
+       class="btn btn-sm {{ 'btn-danger' if filtro == 'inactivos' else 'btn-outline-danger' }}">
+      Inactivos
+    </a>
+  </div>
+
+  <!-- Tabla -->
+  <div class="card shadow-sm">
+    <div class="card-body p-0">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th>Último acceso</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in usuarios_data %}
+          {% set u = item.usuario %}
+          <tr>
+            <td class="text-muted small">{{ u.UsuarioId }}</td>
+            <td class="fw-semibold">{{ u.Nombre }}</td>
+            <td><code>{{ u.Username }}</code></td>
+            <td class="text-muted small">{{ u.Email }}</td>
+            <td>
+              <span class="badge bg-secondary">{{ item.rol }}</span>
+            </td>
+            <td>
+              {% if u.Activo %}
+                <span class="badge bg-success">Activo</span>
+              {% else %}
+                <span class="badge bg-danger">Inactivo</span>
+              {% endif %}
+            </td>
+            <td class="text-muted small">
+              {{ u.UltimoLogin.strftime('%d/%m/%Y %H:%M') if u.UltimoLogin else '—' }}
+            </td>
+            <td class="text-center">
+              <a href="{{ url_for('usuarios.editar', usuario_id=u.UsuarioId) }}"
+                 class="btn btn-sm btn-outline-primary me-1">
+                <i class="bi bi-pencil-fill"></i> Editar
+              </a>
+
+              {% if u.UsuarioId != current_user.UsuarioId %}
+                {% if u.Activo %}
+                  <button type="button" 
+                          class="btn btn-sm btn-outline-danger"
+                          data-bs-toggle="modal"
+                          data-bs-target="#confirmModal"
+                          data-usuario-id="{{ u.UsuarioId }}"
+                          data-usuario-nombre="{{ u.Nombre }}"
+                          data-accion="desactivar">
+                    <i class="bi bi-person-x-fill"></i> Desactivar
+                  </button>
+                {% else %}
+                  <button type="button" 
+                          class="btn btn-sm btn-outline-success"
+                          data-bs-toggle="modal"
+                          data-bs-target="#confirmModal"
+                          data-usuario-id="{{ u.UsuarioId }}"
+                          data-usuario-nombre="{{ u.Nombre }}"
+                          data-accion="activar">
+                    <i class="bi bi-person-check-fill"></i> Activar
+                  </button>
+                {% endif %}
+              {% else %}
+                <span class="text-muted small">(tú)</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="8" class="text-center text-muted py-4">
+              No hay usuarios que mostrar con el filtro actual.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Confirmación -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmModalLabel">Confirmar acción</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p id="modalMessage"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle me-1"></i> Cancelar
+        </button>
+        <form method="POST" id="confirmForm" class="d-inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="filtro" value="{{ filtro }}">
+          <button type="submit" class="btn btn-primary" id="confirmButton">
+            <i class="bi bi-check-circle me-1"></i> Confirmar
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const confirmModal = document.getElementById('confirmModal');
+  const modalMessage = document.getElementById('modalMessage');
+  const confirmForm = document.getElementById('confirmForm');
+  const confirmButton = document.getElementById('confirmButton');
+  
+  confirmModal.addEventListener('show.bs.modal', function(event) {
+    const button = event.relatedTarget;
+    const usuarioId = button.getAttribute('data-usuario-id');
+    const usuarioNombre = button.getAttribute('data-usuario-nombre');
+    const accion = button.getAttribute('data-accion');
+    
+    let message = '';
+    let actionText = '';
+    let buttonClass = '';
+    
+    if (accion === 'activar') {
+      message = `¿Estás seguro de que deseas activar al usuario "${usuarioNombre}"?`;
+      actionText = 'Activar usuario';
+      buttonClass = 'btn-success';
+    } else {
+      message = `¿Estás seguro de que deseas desactivar al usuario "${usuarioNombre}"?`;
+      actionText = 'Desactivar usuario';
+      buttonClass = 'btn-danger';
+    }
+    
+    modalMessage.textContent = message;
+    confirmButton.innerHTML = `<i class="bi bi-check-circle me-1"></i> ${actionText}`;
+    confirmButton.className = `btn ${buttonClass}`;
+    
+    // Actualizar la acción del formulario
+    confirmForm.action = "{{ url_for('usuarios.toggle_activo', usuario_id=0) }}".replace('0', usuarioId);
+  });
+});
+</script>
+
+<!-- Estilos adicionales para mejorar el modal -->
+<style>
+.modal-content {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+}
+
+.modal-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 15px 15px 0 0;
+}
+
+.modal-header .btn-close {
+  filter: brightness(0) invert(1);
+}
+
+.modal-footer {
+  border-top: 1px solid #e9ecef;
+}
+
+.btn {
+  border-radius: 8px;
+  padding: 8px 20px;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+{% block title %}Órdenes de Producción{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">🍳 Solicitudes de Producción</h2>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}
+      <div class="alert alert-{{ cat }}">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  {% if solicitudes %}
+  <table class="table table-bordered table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>#</th>
+        <th>Producto</th>
+        <th>Cantidad</th>
+        <th>Fecha</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in solicitudes %}
+      <tr>
+        <td>{{ s.SolicitudId }}</td>
+        <td>{{ s.producto.Nombre }}</td>
+        <td>{{ s.CantidadSolicitada }}</td>
+        <td>{{ s.Fecha.strftime('%d/%m/%Y %H:%M') }}</td>
+        <td>
+          {% if s.Estado == 'Pendiente' %}
+            <span class="badge bg-warning text-dark">Pendiente</span>
+          {% elif s.Estado == 'En Produccion' %}
+            <span class="badge bg-primary">En Producción</span>
+          {% elif s.Estado == 'Realizada' %}
+            <span class="badge bg-success">Realizada</span>
+          {% else %}
+            <span class="badge bg-secondary">{{ s.Estado }}</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if s.Estado == 'Pendiente' %}
+            {# Botón Iniciar → llama al SP #}
+            <form action="{{ url_for('produccion.iniciar', solicitud_id=s.SolicitudId) }}"
+                  method="POST" class="d-inline">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn-sm btn-success">▶ Iniciar</button>
+            </form>
+            {# Botón Rechazar #}
+            <form action="{{ url_for('produccion.rechazar', solicitud_id=s.SolicitudId) }}"
+                  method="POST" class="d-inline"
+                  onsubmit="return confirm('¿Rechazar solicitud #{{ s.SolicitudId }}?')">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn-sm btn-danger">✗ Rechazar</button>
+            </form>
+
+          {% elif s.Estado == 'En Producción' %}
+            {# Buscar la orden activa de este producto #}
+            {% set orden = s.producto.ordenes | selectattr('Estado', 'eq', 'En proceso') | first %}
+            {% if orden %}
+              <form action="{{ url_for('produccion.finalizar', orden_id=orden.OrdenProduccionId) }}"
+                    method="POST" class="d-inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-sm btn-primary">✔ Finalizar</button>
+              </form>
+              <a href="{{ url_for('produccion.detalle', orden_id=orden.OrdenProduccionId) }}"
+                 class="btn btn-sm btn-outline-secondary">Ver detalle</a>
+            {% endif %}
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <div class="alert alert-info">No hay solicitudes pendientes en este momento.</div>
+  {% endif %}
+</div>
+{% endblock %}

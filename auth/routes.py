@@ -4,6 +4,7 @@ import string
 import logging
 import logging.handlers
 from datetime import datetime, timedelta
+import secrets
 
 from flask import (
     render_template, request, redirect, url_for,
@@ -43,8 +44,7 @@ WEAK_PASSWORDS = {
 }
 
 ROLE_REDIRECTS = {
-    # 'Administrador':     'dashboard.index',
-    'Administrador':     'index',
+    'Administrador':     'dashboard.index',
     'Encargado_Almacen': 'inventario.index',
     'Cocinero':          'produccion.index',
     'Vendedor':          'venta.index',
@@ -86,7 +86,7 @@ def _validar_password_segura(password):
 
 
 def _generar_token_2fa(longitud=6):
-    return ''.join(random.choices(string.digits, k=longitud))
+    return ''.join([str(secrets.randbelow(10)) for _ in range(longitud)])
 
 
 def _generar_token_recuperacion(longitud=32):
