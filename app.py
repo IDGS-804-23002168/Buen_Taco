@@ -54,6 +54,20 @@ def create_app(config=DevelopmentConfig):
         app.permanent_session_lifetime = timedelta(minutes=10)
 
     # ---- Registrar Blueprints ----
+    from auth import auth_bp 
+    app.register_blueprint(auth_bp)
+
+    from disponibilidadProductos import (productos_bp)
+    app.register_blueprint(productos_bp)
+
+
+    from proveedores import proveedores      # Módulo 4 - Proveedores
+    app.register_blueprint(proveedores) 
+
+    from venta_linea import (venta_linea_bp)   # Módulo 14 - Ventas en linea
+    app.register_blueprint(venta_linea_bp)
+
+    from recetas import recetas_bp          # Módulo 7 - Recetas
     from auth import auth_bp
     from proveedores import proveedores
 

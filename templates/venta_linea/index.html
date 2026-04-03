@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>El Buen Taco – Pedido</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  {% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ventas_linea/index.css') }}">
+{% endblock %}
+</head>
+<body>
+
+<!-- ============================================================
+     NAVBAR
+============================================================ -->
+<nav class="navbar">
+  <a class="navbar-brand" href="#">
+    🌮 El Buen Taco
+  </a>
+  <ul class="nav-links">
+    <li>
+  <a href="{{ url_for('venta_linea.index', categoria=categoria_sel, busqueda=busqueda) }}">
+    Inicio
+  </a>
+</li>
+<li><a href="{{ url_for('venta_linea.mis_pedidos') }}">Mis pedidos</a></li>
+    
+  </ul>
+  <div class="nav-right">
+    <span>👤 {{ current_user.Nombre }}</span>
+    <a href="{{ url_for('auth.logout') }}" class="btn-logout">↪ Salir</a>
+  </div>
+</nav>
+
+<!-- ============================================================
+     FLASH MESSAGES
+============================================================ -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="flash-container">
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }}">
+      {% if category == 'success' %}✅{% elif category == 'danger' %}❌{% elif category == 'warning' %}⚠️{% else %}ℹ️{% endif %}
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+{% endwith %}
+
+<!-- ============================================================
+     PAGE
+============================================================ -->
+<div class="page-wrapper">
+
+  <!-- ======================== LEFT PANEL ======================== -->
+  <div class="panel-left">
+    <h1 class="page-title">Pedido</h1>
+    <p class="page-subtitle">Selecciona los productos para la orden</p>
+
+    <!-- Search -->
+    <form method="GET" action="{{ url_for('venta_linea.index') }}" class="search-row">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input
+  type="text"
+  name="busqueda"
+  value="{{ busqueda }}"
+  placeholder="Buscar producto..."
+  id="input-busqueda"
+  autocomplete="off"
+/>
+      </div>
+      <input type="hidden" name="categoria" value="{{ categoria_sel }}" />
+      <button type="submit" class="btn-buscar">Buscar</button>
+    </form>
+
+    <!-- Category tabs -->
+    <div class="cat-tabs">
+      <a href="{{ url_for('venta_linea.index', categoria='Todo', busqueda=busqueda) }}">
+        <button class="cat-tab-btn {% if categoria_sel == 'Todo' %}active{% endif %}">Todo</button>
+      </a>
+      {% for cat in categorias %}
+      <a href="{{ url_for('venta_linea.index', categoria=cat.Nombre, busqueda=busqueda) }}">
+        <button class="cat-tab-btn {% if categoria_sel == cat.Nombre %}active{% endif %}">
+          {{ cat.Nombre }}
+        </button>
+      </a>
+      {% endfor %}
+    </div>
+
+    <!-- Product grid -->
+   <div class="product-grid">
+  {% if productos %}
+    {% for p in productos %}
+      <div class="product-card">
+      <div class="card-img-wrap">
+  {% if p.imagen_url %}
+<img src="{{ url_for('static', filename=p.imagen_url) }}">
+  {% else %}
+    <img src="{{ url_for('static', filename='img/default.jpg') }}" alt="Sin imagen">
+  {% endif %}
+</div>
+
+        <div class="card-body">
+          <div class="card-name">{{ p.Nombre }}</div>
+<div class="card-price">${{ "%.2f"|format(p.Precio) }}</div>
+          {% if p.Descripcion %}
+            <div class="card-desc">{{ p.Descripcion }}</div>
+          {% endif %}
+
+      <form method="POST" action="{{ url_for('venta_linea.index', categoria=categoria_sel, busqueda=busqueda) }}" class="add-form">
+
+ <input type="hidden" name="csrf_token" value="{{ agregar_form.csrf_token._value() }}">
+
+  {{ agregar_form.producto_id(value=p.ProductoId) }}
+
+  {{ agregar_form.notas(
+        placeholder="Notas (ej: sin cebolla)…",
+        maxlength="200"
+     ) }}
+
+  <div class="add-row">
+    {{ agregar_form.cantidad(value=1, min=1) }}
+    <button type="submit" name="add-submit" class="btn-add">＋ Agregar</button>
+  </div>
+
+</form>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="no-products">
+      🌮 No se encontraron productos con ese criterio.
+    </div>
+  {% endif %}
+</div>
+  </div><!-- /panel-left -->
+
+  <!-- ======================== RIGHT PANEL – Orden Actual ======================== -->
+  <aside class="panel-right">
+    <div class="order-card">
+      <div class="order-header">
+        <span>📋</span> Orden Actual
+      </div>
+
+      {% if carrito %}
+        {% for item in carrito %}
+        <div class="cart-item">
+          <div class="item-info">
+            <div class="item-name">{{ item.cantidad }}x {{ item.nombre }}</div>
+            {% if item.notas %}
+            <div class="item-note">{{ item.notas }}</div>
+            {% endif %}
+
+            <!-- Actualizar cantidad -->
+            
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.3rem;">
+            <span class="item-price">${{ "%.2f"|format(item.precio_unitario * item.cantidad) }}</span>
+            <!-- Eliminar item -->
+           <form method="POST" action="{{ url_for('venta_linea.index', categoria=categoria_sel, busqueda=busqueda) }}">
+  <input type="hidden" name="item_index" value="{{ loop.index0 }}">
+  <input type="hidden" name="csrf_token" value="{{ agregar_form.csrf_token._value() }}">
+  <button type="submit" name="del-submit" class="btn-del" title="Eliminar">❌</button>
+</form>
+          </div>
+        </div>
+        {% endfor %}
+
+        <!-- Totals -->
+        <div class="totals">
+          <div class="total-row">
+            <span>Subtotal</span>
+            <span>${{ "%.2f"|format(subtotal) }}</span>
+          </div>
+          <div class="total-row">
+            <span>IVA (16%)</span>
+            <span>${{ "%.2f"|format(iva) }}</span>
+          </div>
+          <div class="total-row grand">
+            <span>Total</span>
+            <span class="amount">${{ "%.2f"|format(total) }}</span>
+          </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="order-btns">
+          <!-- Cancelar / vaciar carrito -->
+          <form method="POST" action="{{ url_for('venta_linea.index') }}" style="display:contents;">
+            {{ eliminar_form.hidden_tag() }}
+            {% for i in range(carrito|length) %}
+            {# Eliminamos todos iterando; el más simple es redirigir a una ruta limpiar #}
+            {% endfor %}
+          </form>
+          <a href="{{ url_for('venta_linea.vaciar') }}" class="btn-cancel">🗑 Cancelar</a>
+          <a href="{{ url_for('venta_linea.direccion') }}" class="btn-pagar">PAGAR →</a>
+        </div>
+
+      {% else %}
+        <div class="cart-empty">
+          🛒 Aún no has agregado productos.<br />Selecciona algo del menú.
+        </div>
+      {% endif %}
+    </div><!-- /order-card -->
+  </aside>
+
+</div><!-- /page-wrapper -->
+<script>
+let timeout = null;
+
+const input = document.getElementById('input-busqueda');
+
+input.addEventListener('input', function () {
+  clearTimeout(timeout);
+
+  timeout = setTimeout(() => {
+    const busqueda = input.value;
+    const categoria = "{{ categoria_sel }}";
+
+    const url = new URL(window.location.href);
+    url.searchParams.set('busqueda', busqueda);
+    url.searchParams.set('categoria', categoria);
+
+    window.location.href = url.toString();
+  }, 300); // 300ms para no recargar en cada tecla
+});
+</script>
+</body>
+</html>
