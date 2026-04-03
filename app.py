@@ -60,6 +60,10 @@ def create_app(config=DevelopmentConfig):
     app.register_blueprint(auth_bp)
     app.register_blueprint(proveedores)
     
+    from produccion import produccion_bp
+    app.register_blueprint(produccion_bp)
+    
+    
     from usuarios import usuarios_bp
 
     app.register_blueprint(usuarios_bp)
