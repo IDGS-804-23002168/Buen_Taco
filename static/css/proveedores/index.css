@@ -189,3 +189,24 @@
   }
 
   .text-muted { color: var(--text-secondary); }
+
+  /* Botón Nuevo Proveedor */
+.btn-nuevo-proveedor {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    background: #8B3A0E;
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: .55rem 1.1rem;
+    font-size: .875rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background .15s;
+}
+
+.btn-nuevo-proveedor:hover {
+    background: #732f08; /* color un poco más oscuro al pasar el mouse */
+}

@@ -105,3 +105,23 @@ body { background:var(--bg-page); }
 .alert-success { background:var(--green-bg); color:var(--green); border:1px solid #bbf7d0; }
 .alert-danger  { background:#fef2f2; color:#dc2626; border:1px solid #fecaca; }
 .alert-info    { background:var(--blue-bg); color:var(--blue); border:1px solid #bfdbfe; }
+/* Botón Guardar */
+.btn-guardar {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    background: #8B3A0E;
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: .55rem 1.1rem;
+    font-size: .875rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background .15s;
+}
+
+.btn-guardar:hover {
+    background: #732f08; /* un poco más oscuro al pasar el mouse */
+}

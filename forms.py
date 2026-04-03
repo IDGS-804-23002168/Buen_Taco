@@ -4,6 +4,181 @@ from wtforms.validators import DataRequired, NumberRange, Email, Length, Validat
 import re
 from models import Proveedor
 
+from flask_wtf import FlaskForm
+from wtforms import (
+    StringField, IntegerField, DecimalField,
+    TextAreaField, SelectField, HiddenField, SubmitField
+)
+from wtforms.validators import (
+    DataRequired, Email, Length, NumberRange,
+    Optional, Regexp
+)
+
+
+from flask_wtf import FlaskForm
+from wtforms import (
+    StringField, SelectField, IntegerField, HiddenField,
+    TextAreaField, SubmitField, RadioField
+)
+from wtforms.validators import DataRequired, Email, Length, Regexp, NumberRange, Optional
+
+
+class AgregarProductoForm(FlaskForm):
+    producto_id = HiddenField('ProductoId', validators=[DataRequired()])
+    cantidad = IntegerField(
+        'Cantidad',
+        default=1,
+        validators=[
+            DataRequired(),
+            NumberRange(min=1, max=50, message='La cantidad debe estar entre 1 y 50.')
+        ]
+    )
+    notas = StringField(
+        'Notas / Modificaciones',
+        validators=[
+            Optional(),
+            Length(max=200, message='Las notas no pueden superar 200 caracteres.')
+        ]
+    )
+    submit = SubmitField('Agregar al carrito')
+
+
+class EliminarItemForm(FlaskForm):
+
+    item_index = HiddenField('ItemIndex', validators=[DataRequired()])
+    submit = SubmitField('Eliminar')
+
+class ActualizarCantidadForm(FlaskForm):
+
+    item_index = HiddenField('ItemIndex', validators=[DataRequired()])
+    cantidad = IntegerField(
+        'Cantidad',
+        validators=[DataRequired(), NumberRange(min=1, max=50)]
+    )
+    submit = SubmitField('Actualizar')
+
+
+
+class DireccionForm(FlaskForm):
+    tipo_entrega = RadioField(
+        'Tipo de entrega',
+        choices=[('domicilio', 'Envío a domicilio'), ('sucursal', 'Recoger en sucursal')],
+        default='domicilio',
+        validators=[DataRequired()]
+    )
+
+    calle = StringField('Calle', validators=[Optional(), Length(max=150)])
+    numero = StringField('Número', validators=[Optional(), Length(max=20)])
+    colonia = StringField('Colonia', validators=[Optional(), Length(max=100)])
+
+    codigo_postal = StringField(
+    'Código Postal',
+    validators=[
+        Optional(),
+        Regexp(r'^\d{5}$', message='El código postal debe tener 5 dígitos.')
+    ]
+)
+
+    referencias = TextAreaField('Referencias', validators=[Optional(), Length(max=255)])
+
+    # 🔥 NUEVO CAMPO HORARIO
+    horario = SelectField(
+        'Horario de recolección',
+        choices=[
+            ('', 'Selecciona un horario'),
+            ('6:00-6:30', '6:00 - 6:30'),
+            ('6:30-7:00', '6:30 - 7:00'),
+            ('7:00-7:30', '7:00 - 7:30'),
+            ('7:30-8:00', '7:30 - 8:00'),
+            ('8:00-8:30', '8:00 - 8:30'),
+            ('8:30-9:00', '8:30 - 9:00'),
+            ('9:00-9:30', '9:00 - 9:30'),
+            ('9:30-10:00', '9:30 - 10:00'),
+            ('10:00-10:30', '10:00 - 10:30'),
+            ('10:30-11:00', '10:30 - 11:00'),
+            ('11:00-11:30', '11:00 - 11:30'),
+            ('11:30-12:00', '11:30 - 12:00'),
+        ],
+        validators=[Optional()]
+    )
+
+    submit = SubmitField('Continuar')
+
+    def validate(self, extra_validators=None):
+        if not super().validate(extra_validators):
+            return False
+
+        if self.tipo_entrega.data == "domicilio":
+            valid = True
+
+            if not self.calle.data:
+                self.calle.errors.append("La calle es obligatoria.")
+                valid = False
+
+            if not self.numero.data:
+                self.numero.errors.append("El número es obligatorio.")
+                valid = False
+
+            if not self.colonia.data:
+                self.colonia.errors.append("La colonia es obligatoria.")
+                valid = False
+
+            return valid
+
+        # 🔥 VALIDAR HORARIO SI ES SUCURSAL
+        if self.tipo_entrega.data == "sucursal":
+            if not self.horario.data:
+                self.horario.errors.append("Selecciona un horario de recolección.")
+                return False
+
+        return True
+
+
+class PagoForm(FlaskForm):
+    nombre_titular = StringField(
+        'Nombre en la tarjeta',
+        validators=[
+            DataRequired(message='El nombre del titular es obligatorio.'),
+            Length(min=3, max=100, message='El nombre debe tener entre 3 y 100 caracteres.')
+        ]
+    )
+    numero_tarjeta = StringField(
+    'Número de tarjeta',
+    validators=[
+        DataRequired(message='El número de tarjeta es obligatorio.'),
+        Regexp(
+            r'^(\d{4}\s){3}\d{4}$',
+            message='Formato inválido. Usa: 1234 5678 9012 3456'
+        )
+    ]
+)
+    mes_expiracion = SelectField(
+        'Mes',
+        choices=[(str(i).zfill(2), str(i).zfill(2)) for i in range(1, 13)],
+        validators=[DataRequired()]
+    )
+    anio_expiracion = SelectField(
+        'Año',
+        choices=[(str(a), str(a)) for a in range(2025, 2036)],
+        validators=[DataRequired()]
+    )
+    cvv = StringField(
+        'CVV',
+        validators=[
+            DataRequired(message='El CVV es obligatorio.'),
+            Regexp(r'^\d{3,4}$', message='El CVV debe tener 3 o 4 dígitos.')
+        ]
+    )
+    submit = SubmitField('Pagar ahora')
+
+
+class FiltroCategoriaForm(FlaskForm):
+    categoria = HiddenField('Categoria', default='Todo')
+    busqueda  = StringField('Buscar producto', validators=[Optional(), Length(max=100)])
+    submit    = SubmitField('Buscar')
+
+
+
 # ---------------------------------------------------------------------------
 # FORMULARIO MATERIA PRIMA 
 # ---------------------------------------------------------------------------

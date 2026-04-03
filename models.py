@@ -5,6 +5,7 @@ from datetime import datetime
 db = SQLAlchemy()
 
 
+
 # ---------------------------------------------------------------------------
 # CATÁLOGOS BASE
 # ---------------------------------------------------------------------------
@@ -115,6 +116,8 @@ class Producto(db.Model):
     CostoUltimaActualizacion = db.Column(db.DateTime)
     Activo                   = db.Column(db.Boolean, default=True)
 
+    imagen_url = db.Column(db.String(255))
+
     recetas = db.relationship('Receta', backref='producto', lazy=True)
 
 
@@ -187,7 +190,7 @@ class Pedido(db.Model):
 
     PedidoId      = db.Column(db.Integer, primary_key=True)
     UsuarioId     = db.Column(db.Integer, db.ForeignKey('Usuarios.UsuarioId'), nullable=False)
-    DireccionId   = db.Column(db.Integer, db.ForeignKey('Direcciones.DireccionId'), nullable=False)
+    DireccionId   = db.Column(db.Integer, db.ForeignKey('Direcciones.DireccionId'), nullable=True)
     Fecha         = db.Column(db.DateTime, default=datetime.utcnow)
     Estado        = db.Column(db.String(50))
     Total         = db.Column(db.Numeric(10, 2))

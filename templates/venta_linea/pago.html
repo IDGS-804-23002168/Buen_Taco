@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>💳 Pago – El Buen Taco</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/ventas_linea/index.css') }}">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="navbar-brand">🌮 El Buen Taco</a>
+
+  <ul class="nav-links">
+    <li><a href="{{ url_for('venta_linea.index') }}">Inicio</a></li>
+    <li><a href="{{ url_for('venta_linea.mis_pedidos') }}">Mis pedidos</a></li>
+  </ul>
+
+  <div class="nav-right">
+    <span>👤 {{ current_user.Nombre }}</span>
+    <a href="{{ url_for('auth.logout') }}" class="btn-logout">↪ Salir</a>
+  </div>
+</nav>
+
+<!-- PAGE -->
+<div class="page-wrapper">
+
+  <!-- LEFT -->
+  <div class="panel-left">
+
+    <h1 class="page-title">💳 Pago</h1>
+
+    <!-- MENSAJES -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-container">
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="card">
+
+      <form method="POST" novalidate>
+        {{ form.hidden_tag() }}
+
+        <!-- Nombre -->
+        <div>
+          {{ form.nombre_titular.label(class="form-label fw-bold") }}
+          {{ form.nombre_titular(
+              class="form-control" + (" is-invalid" if form.nombre_titular.errors else ""),
+              placeholder="Como aparece en la tarjeta"
+          ) }}
+          {% for error in form.nombre_titular.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <!-- Tarjeta -->
+        <div>
+          {{ form.numero_tarjeta.label(class="form-label fw-bold") }}
+          {{ form.numero_tarjeta(
+              class="form-control" + (" is-invalid" if form.numero_tarjeta.errors else ""),
+              placeholder="4000 0566 5566 5556",
+              maxlength="19"
+          ) }}
+          {% for error in form.numero_tarjeta.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <!-- Expiración -->
+        <div class="row">
+          <div class="col-md-6">
+            {{ form.mes_expiracion.label(class="form-label fw-bold") }}
+            {{ form.mes_expiracion(
+                class="form-select" + (" is-invalid" if form.mes_expiracion.errors else "")
+            ) }}
+            {% for error in form.mes_expiracion.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="col-md-6">
+            {{ form.anio_expiracion.label(class="form-label fw-bold") }}
+            {{ form.anio_expiracion(
+                class="form-select" + (" is-invalid" if form.anio_expiracion.errors else "")
+            ) }}
+            {% for error in form.anio_expiracion.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- CVV -->
+        <div>
+          {{ form.cvv.label(class="form-label fw-bold") }}
+          {{ form.cvv(
+              class="form-control" + (" is-invalid" if form.cvv.errors else ""),
+              placeholder="123"
+          ) }}
+          {% for error in form.cvv.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <!-- BOTONES -->
+        <div class="mt-4 btn-row">
+          <a href="{{ url_for('venta_linea.direccion') }}" class="btn-form back">
+            ← Regresar
+          </a>
+
+          {{ form.submit(class="btn-form continue") }}
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <aside class="panel-right">
+
+    <!-- ENTREGA -->
+    <div class="order-card">
+      <div class="order-header">📦 Entrega</div>
+
+      <p><b>Tipo:</b> {{ entrega.tipo }}</p>
+
+      {% if entrega.tipo == 'domicilio' %}
+        <p>{{ entrega.calle }} {{ entrega.numero }}</p>
+        <p>{{ entrega.colonia }}, {{ entrega.ciudad }}</p>
+
+        {% if entrega.codigo_postal %}
+          <p>C.P.: {{ entrega.codigo_postal }}</p>
+        {% endif %}
+
+        {% if entrega.referencias %}
+          <p>Referencias: {{ entrega.referencias }}</p>
+        {% endif %}
+      {% endif %}
+    </div>
+
+    <!-- RESUMEN -->
+    <div class="order-card" style="margin-top:1rem;">
+      <div class="order-header">🛒 Resumen</div>
+
+      {% for item in carrito %}
+      <div class="cart-item">
+        <div class="item-name">
+          {{ item.cantidad }}x {{ item.nombre }}
+        </div>
+      </div>
+      {% endfor %}
+
+      <div class="totals">
+        <div class="total-row">
+          <span>Subtotal</span>
+          <span>${{ "%.2f"|format(subtotal) }}</span>
+        </div>
+
+        <div class="total-row">
+          <span>Envío</span>
+          <span>${{ "%.2f"|format(envio) }}</span>
+        </div>
+
+        <div class="total-row">
+          <span>IVA</span>
+          <span>${{ "%.2f"|format(iva) }}</span>
+        </div>
+
+        <div class="total-row grand">
+          <span>Total</span>
+          <span>${{ "%.2f"|format(total) }}</span>
+        </div>
+      </div>
+
+    </div>
+
+  </aside>
+
+</div>
+
+<!-- SCRIPT -->
+<script>
+const inputTarjeta = document.querySelector('input[name="numero_tarjeta"]');
+
+inputTarjeta.addEventListener('input', function (e) {
+  let valor = e.target.value.replace(/\D/g, '');
+  valor = valor.substring(0, 16);
+
+  let formateado = valor.match(/.{1,4}/g);
+  if (formateado) {
+    e.target.value = formateado.join(' ');
+  } else {
+    e.target.value = '';
+  }
+});
+</script>
+
+</body>
+</html>

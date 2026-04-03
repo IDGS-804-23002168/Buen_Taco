@@ -19,3 +19,28 @@
 2026-03-31 16:28:27,653 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
 2026-03-31 17:52:43,760 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
 2026-03-31 18:19:55,198 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-01 18:50:22,010 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-01 19:29:57,829 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-01 19:34:12,914 WARNING: accion=LOGIN_FALLIDO usuario_id=None detalle=username=admin no existe
+2026-04-01 19:34:17,232 WARNING: accion=LOGIN_FALLIDO usuario_id=None detalle=username=admin no existe
+2026-04-01 19:34:29,036 WARNING: accion=LOGIN_FALLIDO usuario_id=None detalle=username=admin no existe
+2026-04-01 19:34:47,572 WARNING: accion=LOGIN_FALLIDO usuario_id=None detalle=username=admin no existe
+2026-04-01 20:00:41,201 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-01 20:53:40,211 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-01 21:04:37,909 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-01 21:25:03,718 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-01 22:17:01,097 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-01 23:09:18,639 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-01 23:48:44,000 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-02 00:34:51,250 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-02 00:47:48,793 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-02 01:01:51,757 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-02 01:32:03,247 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-02 01:43:52,494 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-02 02:50:49,767 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-02 03:37:27,503 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-02 12:34:24,339 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-02 13:18:11,835 INFO: accion=LOGOUT usuario_id=1 detalle=
+2026-04-02 13:18:15,247 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-02 13:47:07,798 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-02 16:01:56,753 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=

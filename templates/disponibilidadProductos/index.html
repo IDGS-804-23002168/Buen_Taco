@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Productos Disponibles</h1>
+
+<!-- Filtro de categorías y búsqueda -->
+<form method="post" class="form-inline mb-3">
+    {{ filtro_form.hidden_tag() }}
+    <div class="form-group mr-2">
+        {{ filtro_form.categoria.label }} 
+        {{ filtro_form.categoria(class="form-control") }}
+    </div>
+    <div class="form-group mr-2">
+        {{ filtro_form.buscar(class="form-control", placeholder="Buscar...") }}
+    </div>
+    {{ filtro_form.submit(class="btn btn-primary") }}
+</form>
+
+<!-- Tabla de productos -->
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Categoría</th>
+            <th>Precio</th>
+            <th>Activo</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for p in productos %}
+        <tr>
+            <td>{{ p.Nombre }}</td>
+            <td>{{ p.Descripcion or '-' }}</td>
+            <td>{{ p.CategoriaProducto.Nombre if p.CategoriaProducto else '-' }}</td>
+            <td>{{ "{:.2f}".format(p.Precio) }}</td>
+            <td>{{ "Sí" if p.Activo else "No" }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

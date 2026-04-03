@@ -57,9 +57,11 @@
                         </a>
                     </li>
 
-                    <a class="nav-link" href="{{ url_for('inventario.materias_primas') }}">
-                        <i class="bi bi-box-seam"></i> Inventario
-                    </a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('inventario.materias_primas') }}">
+                            <i class="bi bi-box-seam"></i> Inventario
+                        </a>
+                    </li>
 
                     <li class="nav-item">
                         <a class="nav-link" href="/cocina">
@@ -70,6 +72,13 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/finanzas">
                             <i class="bi bi-currency-dollar"></i> Ventas
+                        </a>
+                    </li>
+
+                    <!-- NUEVO: Ventas en Línea -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('venta_linea.index') }}">
+                            <i class="bi bi-cart"></i> Ventas en Línea
                         </a>
                     </li>
 
@@ -87,12 +96,10 @@
 
                 </ul>
 
-                <!-- Derecha-->
+                <!-- Derecha -->
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <!--<a class="nav-link" href="#">
-                        <i class="bi bi-moon"></i>
-                        </a>-->
+                        <!--<a class="nav-link" href="#"><i class="bi bi-moon"></i></a>-->
                     </li>
 
                     <li class="nav-item">
@@ -114,8 +121,7 @@
 
     <!-- CONTENIDO -->
     <div class="container mt-4">
-        {% block content %}
-        {% endblock %}
+        {% block content %}{% endblock %}
     </div>
 
     <!-- JS Bootstrap -->

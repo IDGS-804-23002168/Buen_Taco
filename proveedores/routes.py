@@ -88,7 +88,6 @@ def nuevo():
             db.session.add(proveedor)
             db.session.commit()
 
-            flash('Proveedor registrado correctamente.', 'success')
             return redirect(url_for('proveedores.index'))
 
         except Exception as e:
@@ -133,7 +132,6 @@ def editar(id):
 
             db.session.commit()
 
-            flash('Proveedor actualizado correctamente.', 'success')
             return redirect(url_for('proveedores.index'))
 
         except Exception as e:

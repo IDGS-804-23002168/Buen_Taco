@@ -1,0 +1,674 @@
+
+    /* ============================================================
+       RESET & VARIABLES
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand      : #8B2E0F;
+      --brand-light: #A33A12;
+      --green      : #1A7A3A;
+      --green-light: #22963F;
+      --danger     : #DC2626;
+      --warning    : #D97706;
+      --info       : #2563EB;
+      --success    : #16A34A;
+      --bg         : #F0EFEE;
+      --card       : #FFFFFF;
+      --text       : #1C1C1C;
+      --muted      : #6B7280;
+      --border     : #E5E7EB;
+      --radius     : 12px;
+      --shadow     : 0 2px 12px rgba(0,0,0,.10);
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ============================================================
+       NAVBAR
+    ============================================================ */
+    .navbar {
+      background: var(--brand);
+      display: flex;
+      align-items: center;
+      padding: 0 1.5rem;
+      height: 56px;
+      gap: 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      color: #fff;
+      font-weight: 800;
+      font-size: 1.15rem;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .navbar-brand img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .nav-links {
+      display: flex;
+      gap: 1.1rem;
+      list-style: none;
+      flex: 1;
+    }
+    .nav-links a {
+      color: rgba(255,255,255,.88);
+      text-decoration: none;
+      font-size: .88rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: .3rem;
+    }
+    .nav-links a:hover { color: #fff; }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: .8rem;
+      margin-left: auto;
+      color: rgba(255,255,255,.9);
+      font-size: .88rem;
+    }
+    .btn-logout {
+      background: rgba(255,255,255,.18);
+      border: none;
+      color: #fff;
+      padding: .3rem .8rem;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: .85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: .3rem;
+      text-decoration: none;
+    }
+
+    /* ============================================================
+       FLASH MESSAGES
+    ============================================================ */
+    .flash-container {
+      max-width: 1280px;
+      margin: .75rem auto 0;
+      padding: 0 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: .4rem;
+    }
+    .alert {
+      padding: .65rem 1rem;
+      border-radius: 8px;
+      font-size: .88rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .alert-success { background: #DCFCE7; color: #15803D; border-left: 4px solid #16A34A; }
+    .alert-danger  { background: #FEE2E2; color: #B91C1C; border-left: 4px solid #DC2626; }
+    .alert-warning { background: #FEF9C3; color: #92400E; border-left: 4px solid #D97706; }
+    .alert-info    { background: #DBEAFE; color: #1E40AF; border-left: 4px solid #3B82F6; }
+
+    /* ============================================================
+       LAYOUT
+    ============================================================ */
+    .page-wrapper {
+      max-width: 1280px;
+      margin: 1.5rem auto;
+      padding: 0 1.5rem 3rem;
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    /* ============================================================
+       LEFT PANEL
+    ============================================================ */
+    .panel-left {}
+
+    .page-title { font-size: 1.6rem; font-weight: 800; }
+    .page-subtitle { color: var(--muted); font-size: .92rem; margin-top: .1rem; }
+
+    /* Search bar */
+    .search-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    .search-wrap {
+      position: relative;
+      flex: 1;
+    }
+    .search-wrap input {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 24px;
+      padding: .55rem 1rem .55rem 2.6rem;
+      font-family: inherit;
+      font-size: .92rem;
+      background: #fff;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .search-wrap input:focus { border-color: var(--brand); }
+    .search-icon {
+      position: absolute;
+      left: .85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 1rem;
+      pointer-events: none;
+    }
+    .btn-buscar {
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      border-radius: 24px;
+      padding: .55rem 1.2rem;
+      font-family: inherit;
+      font-size: .88rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Category tabs */
+    .cat-tabs {
+      display: flex;
+      gap: .6rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.2rem;
+    }
+    .cat-tab-btn {
+      border: 1.5px solid var(--border);
+      background: #fff;
+      border-radius: 999px;
+      padding: .4rem 1rem;
+      font-family: inherit;
+      font-size: .88rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--text);
+      transition: all .18s;
+    }
+    .cat-tab-btn.active, .cat-tab-btn:hover {
+      background: var(--text);
+      color: #fff;
+      border-color: var(--text);
+    }
+
+    /* Product grid */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+    .product-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform .18s;
+    }
+    .product-card:hover { transform: translateY(-3px); }
+    .product-card.sin-stock { opacity: .55; pointer-events: none; }
+
+    .card-img-wrap {
+      position: relative;
+      height: 140px;
+      overflow: hidden;
+    }
+    .card-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .price-badge {
+      position: absolute;
+      top: .55rem;
+      right: .55rem;
+      background: var(--green);
+      color: #fff;
+      font-size: .82rem;
+      font-weight: 800;
+      padding: .2rem .55rem;
+      border-radius: 999px;
+    }
+    .stock-badge {
+      position: absolute;
+      top: .55rem;
+      left: .55rem;
+      background: var(--danger);
+      color: #fff;
+      font-size: .75rem;
+      font-weight: 700;
+      padding: .2rem .5rem;
+      border-radius: 999px;
+    }
+
+    .card-body { padding: .8rem 1rem 1rem; }
+    .card-name { font-weight: 800; font-size: .98rem; margin-bottom: .2rem; }
+    .card-desc { color: var(--muted); font-size: .82rem; line-height: 1.35; margin-bottom: .7rem; }
+
+    /* Mini add-form inside card */
+    .add-form { display: flex; flex-direction: column; gap: .4rem; }
+    .add-form input[type="number"] {
+      width: 70px;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      padding: .3rem .5rem;
+      font-family: inherit;
+      font-size: .85rem;
+    }
+    .add-form input[type="text"] {
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      padding: .3rem .5rem;
+      font-family: inherit;
+      font-size: .82rem;
+      width: 100%;
+    }
+    .add-row { display: flex; gap: .4rem; align-items: center; }
+    .btn-add {
+      flex: 1;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: .4rem .7rem;
+      font-family: inherit;
+      font-size: .82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .18s;
+    }
+    .btn-add:hover { background: var(--green-light); }
+
+    .no-products {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    /* ============================================================
+       RIGHT PANEL – Orden Actual
+    ============================================================ */
+    .panel-right {
+      position: sticky;
+      top: 70px;
+    }
+    .order-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.2rem 1.3rem 1.4rem;
+    }
+    .order-header {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      padding-bottom: .8rem;
+      border-bottom: 1.5px solid var(--border);
+    }
+    .order-header span { font-size: 1.2rem; }
+
+    .cart-empty {
+      text-align: center;
+      color: var(--muted);
+      font-size: .9rem;
+      padding: 1.5rem 0;
+    }
+
+    .cart-item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: .85rem;
+      padding-bottom: .85rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .cart-item:last-child { border-bottom: none; }
+    .item-info { flex: 1; }
+    .item-name { font-weight: 700; font-size: .95rem; }
+    .item-note { color: var(--muted); font-size: .8rem; margin-top: .1rem; }
+    .item-price { font-weight: 700; font-size: .95rem; white-space: nowrap; margin-left: .5rem; }
+
+    .item-actions {
+      display: flex;
+      align-items: center;
+      gap: .3rem;
+      margin-top: .4rem;
+    }
+    .item-actions input[type="number"] {
+      width: 50px;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      padding: .2rem .4rem;
+      font-family: inherit;
+      font-size: .8rem;
+      text-align: center;
+    }
+    .btn-upd {
+      background: var(--info);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: .2rem .5rem;
+      font-size: .75rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-del {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--danger);
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      padding: 0;
+    }
+
+    /* Totals */
+    .totals { margin-top: .8rem; padding-top: .8rem; }
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: .92rem;
+      color: var(--muted);
+      margin-bottom: .35rem;
+    }
+    .total-row.grand {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text);
+      border-top: 1.5px solid var(--border);
+      padding-top: .7rem;
+      margin-top: .3rem;
+    }
+    .total-row.grand .amount { color: var(--green); }
+
+    /* Action buttons */
+    .order-btns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .7rem;
+      margin-top: 1.1rem;
+    }
+    .btn-cancel {
+      border: 1.5px solid var(--danger);
+      background: #fff;
+      color: var(--danger);
+      border-radius: 8px;
+      padding: .6rem;
+      font-family: inherit;
+      font-size: .88rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .3rem;
+    }
+ .btn-pagar {
+  background: var(--brand); /* mismo color que el botón Buscar */
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: .6rem;
+  font-family: inherit;
+  font-size: .88rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .3rem;
+  transition: background .18s;
+}
+
+.btn-pagar:hover {
+  background: var(--brand-light); /* color más claro al pasar el cursor */
+}
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 960px) {
+      .page-wrapper { grid-template-columns: 1fr; }
+      .panel-right  { position: static; }
+      .product-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .product-grid { grid-template-columns: 1fr; }
+    }
+/* ================= FORMULARIOS ================= */
+
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 0.6rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+  margin-bottom: 0.6rem;
+}
+
+/* Focus */
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #8B2E0F;
+  box-shadow: 0 0 0 2px rgba(139, 46, 15, 0.15);
+}
+
+/* Textarea */
+textarea {
+  resize: none;
+  min-height: 70px;
+}
+
+/* Labels */
+label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  display: block;
+}
+
+/* Radio buttons (tipo entrega) */
+input[type="radio"] {
+  width: auto;
+  margin-right: 6px;
+  accent-color: #8B2E0F;
+}
+
+/* Contenedor de radios */
+.form-check {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.3rem;
+}
+
+/* Botón principal (igual estilo que index) */
+.btn-add {
+  background-color: #8B2E0F;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 0.5rem 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-add:hover {
+  background-color: #6e240c;
+}
+
+/* Botón regresar */
+.btn-cancel {
+  text-decoration: none;
+  background: #eee;
+  padding: 0.5rem 0.8rem;
+  border-radius: 10px;
+  font-weight: 600;
+  color: #333;
+  margin-right: 0.5rem;
+}
+
+.btn-cancel:hover {
+  background: #ddd;
+}
+
+/* Card tipo index */
+.card {
+  background: white;
+  padding: 1rem;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+/* Inputs */
+.input {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  margin-bottom: 0.5rem;
+}
+
+.invalid-feedback {
+  color: red;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+/* Botones pequeños */
+.btn-small {
+  padding: 0.4rem 0.7rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Continuar */
+.btn-small.primary {
+  background: #8B2E0F;
+  color: white;
+}
+
+.btn-small.primary:hover {
+  background: #6e240c;
+}
+
+/* Regresar */
+.btn-small.cancel {
+  background: #eee;
+  color: #333;
+}
+
+.btn-small.cancel:hover {
+  background: #ddd;
+}
+
+/* Botones alineados */
+.btn-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* 🔥 esto corrige la alineación vertical */
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.btn-form {
+    flex: 1; /* 🔥 mismo ancho para ambos */
+    padding: 0.4rem 0.6rem; /* 🔥 más pequeños */
+    border-radius: 10px;
+    font-size: 0.85rem; /* 🔥 texto un poco más chico */
+    font-weight: 600;
+    cursor: pointer;
+    display: flex; /* 🔥 mejor que inline-flex aquí */
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    transition: background-color 0.2s, transform 0.2s;
+    text-decoration: none;
+}
+
+/* Botón Continuar */
+.btn-form.continue {
+    background-color: #8B2E0F;
+    color: #fff;
+    border: none;
+}
+
+.btn-form.continue:hover {
+    background-color: #6e240c;
+    transform: translateY(-1px);
+}
+
+/* Botón Regresar */
+.btn-form.back {
+    background-color: #eee;
+    color: #333;
+    border: 1px solid #ccc;
+}
+
+.btn-form.back:hover {
+    background-color: #ddd;
+}
+
+/* Botón Regresar igual que en pago */
+/* Botón Regresar (únicamente este) */
+.btn-form.back {
+    width: 140px;             /* ancho fijo solo para este botón */
+    padding: 0.4rem 0.6rem;   /* padding más pequeño */
+    font-size: 0.8rem;        /* texto más pequeño */
+    border-radius: 12px;      /* mismo radius que otros botones */
+    background-color: #eee;   
+    color: #333;
+    border: 1px solid #ccc;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.btn-form.back:hover {
+    background-color: #ddd;
+    transform: translateY(-1px);
+}
