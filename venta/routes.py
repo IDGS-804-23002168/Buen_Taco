@@ -2,10 +2,9 @@ from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from functools import wraps
 from sqlalchemy import func
-from datetime import datetime  # <-- Importamos esto para generar la fecha y hora exacta
+from datetime import datetime
 from . import ventas_bp
 
-# Asegúrate de importar los nombres exactos de tus modelos: Ventas y VentaDetalle
 from models import (
     db,
     Producto,
@@ -13,6 +12,8 @@ from models import (
     MovimientoProducto,
     Venta,
     VentaDetalle,
+    SolicitudProduccion,
+    SolicitudDetalle,
 )
 
 
@@ -37,112 +38,118 @@ def roles_required(*roles):
 @roles_required("Administrador", "Vendedor", "Cajero")
 def index():
     if request.method == "POST":
-        # El método de pago lo recibimos del HTML, pero como no tienes columna para guardarlo,
-        # por ahora solo lo ignoraremos en la base de datos.
+        # Recibir las solicitudes seleccionadas
+        solicitud_ids = request.form.getlist("solicitud_ids")
+        metodo_pago = request.form.get("metodo_pago", "Efectivo")
 
-        hubo_ventas = False
-        total_venta = 0.0
-        items_a_vender = []
+        if not solicitud_ids:
+            flash("Selecciona al menos una solicitud terminada para vender.", "warning")
+            return redirect(url_for("ventas.index"))
 
-        # 1. Leer el carrito y validar existencias antes de cobrar
-        for key, value in request.form.items():
-            if key.startswith("prod_") and int(value) > 0:
-                producto_id = int(key.split("_")[1])
-                cantidad = int(value)
-                producto = Producto.query.get(producto_id)
+        try:
+            total_venta = 0.0
+            items_a_vender = []
+            solicitudes_seleccionadas = []
 
-                stock_actual = (
-                    db.session.query(
-                        func.coalesce(func.sum(MovimientoProducto.Cantidad), 0)
-                    )
-                    .filter_by(ProductoId=producto_id)
-                    .scalar()
-                )
-
-                if stock_actual < cantidad:
+            for sid in solicitud_ids:
+                solicitud = SolicitudProduccion.query.get(int(sid))
+                if not solicitud or solicitud.Estado != "Realizada":
                     flash(
-                        f"Error: Stock insuficiente para {producto.Nombre}. Solo quedan {stock_actual}.",
-                        "danger",
+                        f"La solicitud #{sid} no está disponible para venta.",
+                        "warning",
                     )
                     return redirect(url_for("ventas.index"))
 
-                precio = float(producto.Precio) if producto.Precio else 0.0
-                subtotal = precio * cantidad
-                total_venta += subtotal
+                solicitudes_seleccionadas.append(solicitud)
 
-                items_a_vender.append(
-                    {
-                        "producto_id": producto_id,
-                        "cantidad": cantidad,
-                        "precio": precio,
-                        "subtotal": subtotal,
-                    }
-                )
-                hubo_ventas = True
+                # Recopilar detalle de cada solicitud
+                for detalle in solicitud.detalles:
+                    producto = detalle.producto
+                    cantidad = detalle.CantidadSolicitada
+                    precio = float(producto.Precio) if producto.Precio else 0.0
+                    subtotal = precio * cantidad
+                    total_venta += subtotal
 
-        if not hubo_ventas:
-            flash("El carrito está vacío.", "warning")
-            return redirect(url_for("ventas.index"))
+                    # Validar stock de producto terminado
+                    stock_actual = (
+                        db.session.query(
+                            func.coalesce(func.sum(MovimientoProducto.Cantidad), 0)
+                        )
+                        .filter_by(ProductoId=producto.ProductoId)
+                        .scalar()
+                    )
 
-        # 2. Procesar la transacción adaptada a TUS tablas
-        try:
-            # A) Crear la cabecera en la tabla 'Ventas'
+                    if stock_actual < cantidad:
+                        flash(
+                            f"Stock insuficiente de {producto.Nombre}. Disponible: {stock_actual}, Necesario: {cantidad}.",
+                            "danger",
+                        )
+                        return redirect(url_for("ventas.index"))
+
+                    items_a_vender.append(
+                        {
+                            "producto_id": producto.ProductoId,
+                            "cantidad": cantidad,
+                            "precio": precio,
+                            "subtotal": subtotal,
+                        }
+                    )
+
+            # Crear la venta
             nueva_venta = Venta(
-                EsEnLinea=0,  # Es venta de mostrador, así que es falso (0)
-                Fecha=datetime.now(),  # Mandamos la hora exacta
+                EsEnLinea=False,
+                Fecha=datetime.now(),
                 Total=total_venta,
-                # ClienteId y PedidoId quedan como NULL temporalmente
             )
             db.session.add(nueva_venta)
-            db.session.flush()  # Guardamos para que MySQL nos devuelva el VentaId autoincrementable
+            db.session.flush()
 
-            # B) Crear los detalles en la tabla 'VentaDetalle' y descontar Inventario
+            # Crear detalles y descontar inventario
             for item in items_a_vender:
-                detalle = VentaDetalle(
+                venta_detalle = VentaDetalle(
                     VentaId=nueva_venta.VentaId,
                     ProductoId=item["producto_id"],
                     Cantidad=item["cantidad"],
                     PrecioUnitario=item["precio"],
                     Subtotal=item["subtotal"],
                 )
-                db.session.add(detalle)
+                db.session.add(venta_detalle)
 
-                # Descontar de Disponibilidad
                 mov_salida = MovimientoProducto(
                     ProductoId=item["producto_id"],
-                    TipoMovimiento="Salida por Venta",
-                    Cantidad=-item["cantidad"],  # Negativo para restar
+                    TipoMovimiento="VENTA",
+                    Cantidad=-item["cantidad"],
+                    Fecha=datetime.now(),
+                    ReferenciaId=nueva_venta.VentaId,
                 )
                 db.session.add(mov_salida)
 
+            # Marcar solicitudes como vendidas
+            for solicitud in solicitudes_seleccionadas:
+                solicitud.Estado = "Vendida"
+
             db.session.commit()
-            flash(f"¡Venta cobrada con éxito! Total: ${total_venta:.2f}", "success")
+            flash(
+                f"¡Venta #{nueva_venta.VentaId} registrada con éxito! Total: ${total_venta:.2f}",
+                "success",
+            )
 
         except Exception as e:
             db.session.rollback()
             flash("Error de base de datos al procesar la venta.", "danger")
-            print(
-                f"Error técnico: {e}"
-            )  # Así veremos el problema en la terminal si algo más falla
+            print(f"Error técnico: {e}")
 
         return redirect(url_for("ventas.index"))
 
-    # GET: Mostrar la interfaz de ventas
-    productos = Producto.query.filter_by(Activo=True).all()
-    categorias = CategoriaProducto.query.all()
-
-    productos_disponibles = []
-    for p in productos:
-        stock = (
-            db.session.query(func.coalesce(func.sum(MovimientoProducto.Cantidad), 0))
-            .filter_by(ProductoId=p.ProductoId)
-            .scalar()
-        )
-
-        if stock > 0:
-            p.stock_actual = int(stock)
-            productos_disponibles.append(p)
+    # GET: Mostrar solicitudes con estado "Realizada"
+    solicitudes_terminadas = (
+        SolicitudProduccion.query
+        .filter_by(Estado="Realizada")
+        .order_by(SolicitudProduccion.Fecha.desc())
+        .all()
+    )
 
     return render_template(
-        "venta/index.html", productos=productos_disponibles, categorias=categorias
+        "venta/index.html",
+        solicitudes=solicitudes_terminadas,
     )

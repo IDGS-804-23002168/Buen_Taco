@@ -136,11 +136,21 @@ class Receta(db.Model):
 class SolicitudProduccion(db.Model):
     __tablename__ = 'SolicitudProduccion'
 
-    SolicitudId       = db.Column(db.Integer, primary_key=True)
-    ProductoId        = db.Column(db.Integer, db.ForeignKey('Productos.ProductoId'), nullable=False)
+    SolicitudId = db.Column(db.Integer, primary_key=True)
+    Fecha       = db.Column(db.DateTime, default=datetime.utcnow)
+    Estado      = db.Column(db.String(50))
+
+    detalles = db.relationship('SolicitudDetalle', backref='solicitud', lazy=True)
+    ordenes  = db.relationship('OrdenProduccion', backref='solicitud', lazy=True)
+
+
+class SolicitudDetalle(db.Model):
+    __tablename__ = 'SolicitudDetalle'
+
+    SolicitudDetalleId = db.Column(db.Integer, primary_key=True)
+    SolicitudId        = db.Column(db.Integer, db.ForeignKey('SolicitudProduccion.SolicitudId'), nullable=False)
+    ProductoId         = db.Column(db.Integer, db.ForeignKey('Productos.ProductoId'), nullable=False)
     CantidadSolicitada = db.Column(db.Integer, nullable=False)
-    Fecha             = db.Column(db.DateTime, default=datetime.utcnow)
-    Estado            = db.Column(db.String(50))
 
     producto = db.relationship('Producto')
 
@@ -149,6 +159,7 @@ class OrdenProduccion(db.Model):
     __tablename__ = 'OrdenProduccion'
 
     OrdenProduccionId = db.Column(db.Integer, primary_key=True)
+    SolicitudId       = db.Column(db.Integer, db.ForeignKey('SolicitudProduccion.SolicitudId'))
     ProductoId        = db.Column(db.Integer, db.ForeignKey('Productos.ProductoId'), nullable=False)
     CantidadProducir  = db.Column(db.Integer, nullable=False)
     FechaInicio       = db.Column(db.DateTime, default=datetime.utcnow)

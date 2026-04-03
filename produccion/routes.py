@@ -23,13 +23,14 @@ def roles_required(*roles):
     return wrapper
 
 
-# ── Lista de solicitudes pendientes (vista cocinero) ────────────────────────
+# ── Lista de solicitudes pendientes / en producción (vista cocinero) ────────
 @produccion_bp.route("/produccion", methods=["GET"])
 @login_required
 @roles_required("Administrador", "Cocinero")
 def index():
     """
-    El cocinero ve todas las solicitudes Pendientes y En Produccion.
+    El cocinero ve todas las solicitudes Pendientes y En Produccion,
+    ahora con sus detalles (múltiples productos por solicitud).
     """
     solicitudes = (
         SolicitudProduccion.query
@@ -63,24 +64,23 @@ def rechazar(solicitud_id):
 @roles_required("Administrador", "Cocinero")
 def iniciar(solicitud_id):
     """
-    Llama a sp_iniciar_produccion:
-      - Valida stock
-      - Crea OrdenProduccion
+    Llama a sp_iniciar_produccion que ahora:
+      - Itera sobre SolicitudDetalle
+      - Valida stock de materias primas para cada producto
+      - Crea una OrdenProduccion por cada producto
       - Descuenta materia prima
       - Cambia solicitud a 'En Produccion'
     """
     try:
-        resultado = db.session.execute(
+        db.session.execute(
             text("CALL sp_iniciar_produccion(:sid, @res)"),
             {"sid": solicitud_id}
         )
-        # Leer el OUT parameter
         out = db.session.execute(text("SELECT @res")).fetchone()[0]
 
         if out and out.startswith("OK:"):
-            orden_id = out.split(":")[1]
             db.session.commit()
-            flash(f"Producción iniciada. Orden #{orden_id} creada.", "success")
+            flash(f"Producción iniciada para solicitud #{solicitud_id}.", "success")
         else:
             db.session.rollback()
             flash(out or "Error desconocido al iniciar producción.", "danger")
@@ -93,41 +93,56 @@ def iniciar(solicitud_id):
 
 
 # ── Finalizar producción (llama al SP) ──────────────────────────────────────
-@produccion_bp.route("/produccion/finalizar/<int:orden_id>", methods=["POST"])
+@produccion_bp.route("/produccion/finalizar/<int:solicitud_id>", methods=["POST"])
 @login_required
 @roles_required("Administrador", "Cocinero")
-def finalizar(orden_id):
+def finalizar(solicitud_id):
     """
-    Llama a sp_finalizar_produccion:
-      - Marca OrdenProduccion como Finalizado
-      - Agrega MovimientoProducto (alta de producto terminado)
-      - Marca la SolicitudProduccion como Realizada
+    Llama a sp_finalizar_produccion que ahora:
+      - Recibe SolicitudId
+      - Finaliza TODAS las OrdeneProduccion vinculadas
+      - Agrega MovimientoProducto para cada producto
+      - Marca la SolicitudProduccion como 'Realizada'
     """
     try:
         db.session.execute(
-            text("CALL sp_finalizar_produccion(:oid, @res)"),
-            {"oid": orden_id}
+            text("CALL sp_finalizar_produccion(:sid, @res)"),
+            {"sid": solicitud_id}
         )
         out = db.session.execute(text("SELECT @res")).fetchone()[0]
 
         if out and out.startswith("OK:"):
             db.session.commit()
-            flash(f"Orden #{orden_id} finalizada. Producto en disponibilidad.", "success")
+            flash(f"Solicitud #{solicitud_id} finalizada. Productos disponibles para venta.", "success")
         else:
             db.session.rollback()
             flash(out or "Error desconocido al finalizar.", "danger")
 
     except Exception as e:
         db.session.rollback()
-        flash(f"Error al finalizar orden: {str(e)}", "danger")
+        flash(f"Error al finalizar producción: {str(e)}", "danger")
 
     return redirect(url_for("produccion.index"))
 
 
-
-@produccion_bp.route("/produccion/detalle/<int:orden_id>")
+# ── Detalle de solicitud ────────────────────────────────────────────────────
+@produccion_bp.route("/produccion/detalle/<int:solicitud_id>")
 @login_required
 @roles_required("Administrador", "Cocinero")
-def detalle(orden_id):
-    orden = OrdenProduccion.query.get_or_404(orden_id)
-    return render_template("produccion/detalle.html", orden=orden)
+def detalle(solicitud_id):
+    solicitud = SolicitudProduccion.query.get_or_404(solicitud_id)
+    return render_template("produccion/detalle.html", solicitud=solicitud)
+
+
+# ── Historial de producción ─────────────────────────────────────────────────
+@produccion_bp.route("/produccion/historial")
+@login_required
+@roles_required("Administrador", "Cocinero")
+def historial():
+    """Historial completo de solicitudes (todos los estados)."""
+    solicitudes = (
+        SolicitudProduccion.query
+        .order_by(SolicitudProduccion.Fecha.desc())
+        .all()
+    )
+    return render_template("produccion/historial.html", solicitudes=solicitudes)

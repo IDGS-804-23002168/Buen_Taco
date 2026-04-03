@@ -12,72 +12,104 @@
 <div class="row mb-4 align-items-center">
     <div class="col-md-6">
         <h2 class="fw-bold mb-0" style="color: #8B3A0E;"><i class="bi bi-cash-coin me-2"></i>Punto de Venta</h2>
-        <p class="text-muted">Registro de ventas y cobro de órdenes.</p>
+        <p class="text-muted">Selecciona solicitudes terminadas para generar la venta.</p>
     </div>
 </div>
 
 <div class="row">
+    <!-- Columna izquierda: Solicitudes terminadas -->
     <div class="col-lg-8 mb-4">
+
         <div class="d-flex gap-2 mb-4">
             <div class="input-group shadow-sm">
                 <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
-                <input type="text" id="buscador-ventas" class="form-control border-start-0"
-                    placeholder="Buscar producto...">
+                <input type="text" id="buscador-solicitudes" class="form-control border-start-0"
+                    placeholder="Buscar por # de solicitud o producto...">
             </div>
-            <select id="filtro-cat-ventas" class="form-select shadow-sm" style="max-width: 200px;">
-                <option value="todas">Categorías</option>
-                {% for cat in categorias %}
-                <option value="{{ cat.Nombre | lower }}">{{ cat.Nombre }}</option>
-                {% endfor %}
-            </select>
         </div>
 
-        <div class="row g-3" id="contenedor-productos">
-            {% for producto in productos %}
-            <div class="col-12 col-md-6 col-lg-4 tarjeta-producto" data-nombre="{{ producto.Nombre | lower }}"
-                data-categoria="{{ producto.categoria.Nombre | lower if producto.categoria else 'sin_categoria' }}">
+        {% if solicitudes %}
+        <div id="contenedor-solicitudes">
+            {% for s in solicitudes %}
+            <div class="card border-0 shadow-sm mb-3 tarjeta-solicitud" style="border-radius: 12px; cursor: pointer;"
+                 data-id="{{ s.SolicitudId }}"
+                 data-fecha="{{ s.Fecha.strftime('%d/%m/%Y %H:%M') }}"
+                 data-productos="{% for d in s.detalles %}{{ d.producto.Nombre | lower }} {% endfor %}"
+                 onclick="toggleSolicitud(this, {{ s.SolicitudId }})">
 
-                <div class="card h-100 border-0 shadow-sm text-center" style="border-radius: 12px; cursor: pointer;"
-                    onclick="agregarAlCarrito('{{ producto.ProductoId }}', '{{ producto.Nombre }}', {{ producto.Precio or 0 }}, {{ producto.stock_actual }})">
-                    <div class="card-body p-4">
-                        <i class="bi bi-egg-fried text-muted fs-1 mb-2 d-block"></i>
-                        <h6 class="fw-bold mb-1">{{ producto.Nombre }}</h6>
-                        <span class="badge bg-light text-dark border mb-2">{{ producto.categoria.Nombre if
-                            producto.categoria else 'S/C' }}</span>
-
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <span class="fw-bold text-success fs-5">${{ "%.2f"|format(producto.Precio or 0) }}</span>
-                            <small class="text-muted">Disp: {{ producto.stock_actual }}</small>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="d-flex align-items-start gap-3">
+                            <!-- Checkbox visual -->
+                            <div class="form-check mt-1">
+                                <input class="form-check-input solicitud-check" type="checkbox"
+                                       id="check_{{ s.SolicitudId }}" style="pointer-events: none;">
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">
+                                    <i class="bi bi-clipboard-check text-success me-1"></i>
+                                    Solicitud #{{ s.SolicitudId }}
+                                </h6>
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar3 me-1"></i>{{ s.Fecha.strftime('%d/%m/%Y %H:%M') }}
+                                </small>
+                                <div class="mt-2">
+                                    {% for d in s.detalles %}
+                                    <span class="badge bg-light text-dark border me-1 mb-1">
+                                        <i class="bi bi-egg-fried text-muted me-1"></i>
+                                        {{ d.producto.Nombre }}
+                                        <span class="text-muted">×{{ d.CantidadSolicitada }}</span>
+                                        <span class="text-success ms-1">${{ "%.2f"|format(d.producto.Precio * d.CantidadSolicitada) }}</span>
+                                    </span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-success fs-6">Terminada</span>
+                            {% set ns = namespace(total=0) %}
+                            {% for d in s.detalles %}
+                                {% set ns.total = ns.total + (d.producto.Precio|float * d.CantidadSolicitada) %}
+                            {% endfor %}
+                            <div class="fw-bold text-success mt-2 fs-5">
+                                ${{ "%.2f"|format(ns.total) }}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            {% else %}
-            <div class="col-12 text-center mt-5 py-4 bg-light" style="border-radius: 12px; border: 1px dashed #ccc;">
-                <i class="bi bi-shop-window text-muted d-block mb-3" style="font-size: 2.5rem;"></i>
-                <p class="text-muted fs-5 mb-2">No hay productos disponibles en mostrador.</p>
-                <a href="{{ url_for('solicitudes.index') }}" class="btn px-4 fw-bold shadow-sm"
-                    style="background-color: #8B3A0E; color: white; border-radius: 20px;">
-                    <i class="bi bi-cart-plus me-1"></i> Solicitar a cocina
-                </a>
-            </div>
             {% endfor %}
         </div>
+
+        {% else %}
+        <div class="text-center mt-5 py-4 bg-light" style="border-radius: 12px; border: 1px dashed #ccc;">
+            <i class="bi bi-hourglass text-muted d-block mb-3" style="font-size: 2.5rem;"></i>
+            <p class="text-muted fs-5 mb-2">No hay solicitudes terminadas para vender.</p>
+            <p class="text-muted small">Las solicitudes aparecerán aquí cuando producción las finalice.</p>
+        </div>
+        {% endif %}
     </div>
 
+    <!-- Columna derecha: Resumen de venta -->
     <div class="col-lg-4">
         <div class="card border-0 shadow-sm" style="border-radius: 12px; position: sticky; top: 90px;">
             <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
-                <h5 class="fw-bold"><i class="bi bi-receipt"></i> Orden Actual</h5>
+                <h5 class="fw-bold"><i class="bi bi-receipt"></i> Resumen de Venta</h5>
             </div>
             <div class="card-body">
 
-                <div id="lista-carrito" class="mb-4" style="min-height: 150px; max-height: 300px; overflow-y: auto;">
-                    <p class="text-center text-muted mt-4" id="carrito-vacio">Selecciona productos para comenzar.</p>
+                <div id="resumen-venta" class="mb-4" style="min-height: 150px; max-height: 350px; overflow-y: auto;">
+                    <p class="text-center text-muted mt-4" id="resumen-vacio">
+                        Selecciona solicitudes terminadas para generar la venta.
+                    </p>
                 </div>
 
                 <hr>
 
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted">Solicitudes seleccionadas:</span>
+                    <span class="fw-bold" id="count-solicitudes">0</span>
+                </div>
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h4 class="fw-bold mb-0">Total</h4>
                     <h4 class="fw-bold mb-0 text-success">$<span id="total-venta">0.00</span></h4>
@@ -85,8 +117,7 @@
 
                 <form action="{{ url_for('ventas.index') }}" method="POST" id="form-venta">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-
-                    <div id="inputs-ocultos"></div>
+                    <div id="inputs-solicitudes"></div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-muted">MÉTODO DE PAGO</label>
@@ -100,9 +131,9 @@
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-success btn-lg fw-bold rounded-pill" id="btn-cobrar"
                             disabled>
-                            COBRAR ORDEN
+                            COBRAR VENTA
                         </button>
-                        <button type="button" class="btn btn-outline-danger rounded-pill" onclick="vaciarCarrito()">
+                        <button type="button" class="btn btn-outline-danger rounded-pill" onclick="deseleccionarTodas()">
                             Cancelar
                         </button>
                     </div>
@@ -114,103 +145,112 @@
 </div>
 
 <script>
-    // --- LÓGICA DEL PUNTO DE VENTA (JS) ---
-    let carrito = {};
+    // Datos de solicitudes para el JS
+    let solicitudesData = {};
+    {% for s in solicitudes %}
+    solicitudesData[{{ s.SolicitudId }}] = {
+        id: {{ s.SolicitudId }},
+        fecha: "{{ s.Fecha.strftime('%d/%m/%Y') }}",
+        productos: [
+            {% for d in s.detalles %}
+            {
+                nombre: "{{ d.producto.Nombre }}",
+                cantidad: {{ d.CantidadSolicitada }},
+                precio: {{ d.producto.Precio|float }},
+                subtotal: {{ (d.producto.Precio|float * d.CantidadSolicitada)|round(2) }}
+            },
+            {% endfor %}
+        ],
+        total: {% set ns = namespace(total=0) %}{% for d in s.detalles %}{% set ns.total = ns.total + (d.producto.Precio|float * d.CantidadSolicitada) %}{% endfor %}{{ ns.total|round(2) }}
+    };
+    {% endfor %}
 
-    function agregarAlCarrito(id, nombre, precio, stockMax) {
-        if (!carrito[id]) {
-            carrito[id] = { nombre: nombre, precio: parseFloat(precio), cantidad: 0, stockMax: parseInt(stockMax) };
-        }
+    let seleccionadas = new Set();
 
-        if (carrito[id].cantidad < carrito[id].stockMax) {
-            carrito[id].cantidad++;
-            renderizarCarrito();
+    function toggleSolicitud(card, id) {
+        if (seleccionadas.has(id)) {
+            seleccionadas.delete(id);
+            card.style.border = 'none';
+            card.querySelector('.solicitud-check').checked = false;
         } else {
-            alert('¡Límite alcanzado! No hay más existencias de ' + nombre);
+            seleccionadas.add(id);
+            card.style.border = '2px solid #198754';
+            card.querySelector('.solicitud-check').checked = true;
         }
+        renderizarResumen();
     }
 
-    function quitarDelCarrito(id) {
-        if (carrito[id]) {
-            carrito[id].cantidad--;
-            if (carrito[id].cantidad <= 0) {
-                delete carrito[id];
-            }
-            renderizarCarrito();
-        }
-    }
-
-    function vaciarCarrito() {
-        carrito = {};
-        renderizarCarrito();
-    }
-
-    function renderizarCarrito() {
-        const lista = document.getElementById('lista-carrito');
-        const inputsOcultos = document.getElementById('inputs-ocultos');
-        const totalHtml = document.getElementById('total-venta');
-        const btnCobrar = document.getElementById('btn-cobrar');
-        const mensajeVacio = document.getElementById('carrito-vacio');
-
-        lista.innerHTML = '';
-        inputsOcultos.innerHTML = '';
-        let total = 0;
-        let tieneItems = false;
-
-        for (let id in carrito) {
-            tieneItems = true;
-            let item = carrito[id];
-            let subtotal = item.precio * item.cantidad;
-            total += subtotal;
-
-            // 1. Dibujar el item en la interfaz visual
-            lista.innerHTML += `
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div>
-                        <h6 class="mb-0 fw-bold">${item.cantidad}x ${item.nombre}</h6>
-                        <small class="text-muted" style="cursor:pointer;" onclick="quitarDelCarrito('${id}')">
-                            <i class="bi bi-trash text-danger"></i> Quitar 1
-                        </small>
-                    </div>
-                    <span class="fw-bold">$${subtotal.toFixed(2)}</span>
-                </div>
-            `;
-
-            // 2. Crear los inputs ocultos para que Python los reciba (prod_1 = 2)
-            inputsOcultos.innerHTML += `<input type="hidden" name="prod_${id}" value="${item.cantidad}">`;
-        }
-
-        totalHtml.innerText = total.toFixed(2);
-        btnCobrar.disabled = !tieneItems;
-
-        if (!tieneItems) {
-            lista.innerHTML = '<p class="text-center text-muted mt-4" id="carrito-vacio">Selecciona productos para comenzar.</p>';
-        }
-    }
-
-    // --- LÓGICA DE FILTRADO ---
-    document.getElementById('buscador-ventas').addEventListener('input', function () {
-        const texto = this.value.toLowerCase().trim();
-        const categoriaSeleccionada = document.getElementById('filtro-cat-ventas').value;
-        filtrarTarjetas(texto, categoriaSeleccionada);
-    });
-
-    document.getElementById('filtro-cat-ventas').addEventListener('change', function () {
-        const texto = document.getElementById('buscador-ventas').value.toLowerCase().trim();
-        const categoriaSeleccionada = this.value;
-        filtrarTarjetas(texto, categoriaSeleccionada);
-    });
-
-    function filtrarTarjetas(texto, categoriaSeleccionada) {
-        document.querySelectorAll('.tarjeta-producto').forEach(function (tarjeta) {
-            const nombre = tarjeta.getAttribute('data-nombre');
-            const categoria = tarjeta.getAttribute('data-categoria');
-
-            const cumpleTexto = nombre.includes(texto);
-            const cumpleCategoria = (categoriaSeleccionada === 'todas' || categoria === categoriaSeleccionada);
-
-            tarjeta.style.display = (cumpleTexto && cumpleCategoria) ? '' : 'none';
+    function deseleccionarTodas() {
+        seleccionadas.clear();
+        document.querySelectorAll('.tarjeta-solicitud').forEach(card => {
+            card.style.border = 'none';
+            card.querySelector('.solicitud-check').checked = false;
         });
+        renderizarResumen();
     }
+
+    function renderizarResumen() {
+        const resumen = document.getElementById('resumen-venta');
+        const inputsDiv = document.getElementById('inputs-solicitudes');
+        const totalHtml = document.getElementById('total-venta');
+        const countHtml = document.getElementById('count-solicitudes');
+        const btnCobrar = document.getElementById('btn-cobrar');
+        const resumenVacio = document.getElementById('resumen-vacio');
+
+        resumen.innerHTML = '';
+        inputsDiv.innerHTML = '';
+        let totalGeneral = 0;
+
+        if (seleccionadas.size === 0) {
+            resumen.innerHTML = '<p class="text-center text-muted mt-4">Selecciona solicitudes terminadas para generar la venta.</p>';
+            totalHtml.innerText = '0.00';
+            countHtml.innerText = '0';
+            btnCobrar.disabled = true;
+            return;
+        }
+
+        seleccionadas.forEach(id => {
+            const sol = solicitudesData[id];
+            if (!sol) return;
+
+            // Input oculto
+            inputsDiv.innerHTML += `<input type="hidden" name="solicitud_ids" value="${id}">`;
+
+            // Resumen visual
+            let html = `
+                <div class="mb-3 pb-2 border-bottom">
+                    <div class="d-flex justify-content-between">
+                        <strong class="small">Solicitud #${id}</strong>
+                        <span class="text-success fw-bold">$${sol.total.toFixed(2)}</span>
+                    </div>`;
+
+            sol.productos.forEach(p => {
+                html += `
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span>${p.cantidad}× ${p.nombre}</span>
+                        <span>$${p.subtotal.toFixed(2)}</span>
+                    </div>`;
+            });
+
+            html += `</div>`;
+            resumen.innerHTML += html;
+            totalGeneral += sol.total;
+        });
+
+        totalHtml.innerText = totalGeneral.toFixed(2);
+        countHtml.innerText = seleccionadas.size;
+        btnCobrar.disabled = false;
+    }
+
+    // Filtrado de solicitudes
+    document.getElementById('buscador-solicitudes').addEventListener('input', function () {
+        const texto = this.value.toLowerCase().trim();
+        document.querySelectorAll('.tarjeta-solicitud').forEach(card => {
+            const id = card.getAttribute('data-id');
+            const productos = card.getAttribute('data-productos');
+            const coincide = id.includes(texto) || productos.includes(texto);
+            card.style.display = coincide ? '' : 'none';
+        });
+    });
 </script>
 {% endblock %}

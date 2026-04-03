@@ -2,7 +2,7 @@ from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from functools import wraps
 from . import solicitudes_bp
-from models import db, Producto, SolicitudProduccion, CategoriaProducto
+from models import db, Producto, SolicitudProduccion, SolicitudDetalle, CategoriaProducto
 
 
 # --- DECORADOR PARA LOS ROLES ---
@@ -25,30 +25,40 @@ def roles_required(*roles):
 
 @solicitudes_bp.route("/solicitudes", methods=["GET", "POST"])
 @login_required
-@roles_required("Administrador", "Vendedor")  # Ajusta los roles según necesites
+@roles_required("Administrador", "Vendedor")
 def index():
     if request.method == "POST":
         hubo_pedidos = False
         try:
-            # Iteramos sobre todos los campos enviados desde el formulario (carrito)
+            # Recopilar los productos seleccionados
+            items = []
             for key, value in request.form.items():
                 if key.startswith("prod_"):
                     producto_id = int(key.split("_")[1])
                     cantidad = int(value)
-
-                    # Solo guardamos si el usuario pidió 1 o más de este producto
                     if cantidad > 0:
-                        nueva_solicitud = SolicitudProduccion(
-                            ProductoId=producto_id,
-                            CantidadSolicitada=cantidad,
-                            Estado="Pendiente",
-                        )
-                        db.session.add(nueva_solicitud)
-                        hubo_pedidos = True
+                        items.append((producto_id, cantidad))
 
-            if hubo_pedidos:
+            if items:
+                # Crear UNA solicitud (encabezado)
+                nueva_solicitud = SolicitudProduccion(Estado="Pendiente")
+                db.session.add(nueva_solicitud)
+                db.session.flush()  # Obtener el SolicitudId
+
+                # Crear un detalle por cada producto
+                for producto_id, cantidad in items:
+                    detalle = SolicitudDetalle(
+                        SolicitudId=nueva_solicitud.SolicitudId,
+                        ProductoId=producto_id,
+                        CantidadSolicitada=cantidad,
+                    )
+                    db.session.add(detalle)
+
                 db.session.commit()
-                flash("¡Solicitud enviada a la cocina exitosamente!", "success")
+                flash(
+                    f"¡Solicitud #{nueva_solicitud.SolicitudId} enviada a la cocina con {len(items)} producto(s)!",
+                    "success",
+                )
             else:
                 flash(
                     "El carrito estaba vacío. Selecciona al menos un producto.",
@@ -65,4 +75,19 @@ def index():
     categorias = CategoriaProducto.query.all()
     return render_template(
         "solicitudProduccion/index.html", productos=productos, categorias=categorias
+    )
+
+
+@solicitudes_bp.route("/solicitudes/historial")
+@login_required
+@roles_required("Administrador", "Vendedor")
+def historial():
+    """Vista de historial: todas las solicitudes con todos los estados."""
+    solicitudes = (
+        SolicitudProduccion.query
+        .order_by(SolicitudProduccion.Fecha.desc())
+        .all()
+    )
+    return render_template(
+        "solicitudProduccion/historial.html", solicitudes=solicitudes
     )
