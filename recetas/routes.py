@@ -5,7 +5,7 @@ from functools import wraps
 from decimal import Decimal
 from werkzeug.utils import secure_filename
 from models import db, Receta, Producto, MateriaPrima, CategoriaProducto, CompraDetalle
-from recetas.forms import FormAgregarIngrediente, FormEditarIngrediente, FormProducto
+from recetas.forms import FormAgregarIngrediente, FormEditarIngrediente
 
 recetas_bp = Blueprint('recetas', __name__, url_prefix='/recetas')
 
@@ -90,11 +90,8 @@ def index():
     productos  = Producto.query.all()
     categorias = CategoriaProducto.query.all()
     costos     = {p.ProductoId: calcular_costo_lote(p.ProductoId) for p in productos}
-    form       = FormProducto()
-    form.categoria_id.choices = [(c.CategoriaId, c.Nombre) for c in categorias]
     return render_template('recetas/index.html', productos=productos,
-                           costos=costos, categorias=categorias, form=form,
-                           abrir_modal=False)
+                           costos=costos, categorias=categorias)
 
 
 @recetas_bp.route('/ver/<int:producto_id>')
@@ -110,118 +107,7 @@ def ver(producto_id):
                            unidades_producibles=unidades_producibles)
 
 
-@recetas_bp.route('/nuevo-producto', methods=['POST'])
-@login_required
-@roles_required('Administrador', 'Cocinero')
-def nuevo_producto():
-    categorias = CategoriaProducto.query.all()
-    form       = FormProducto()
-    form.categoria_id.choices = [(c.CategoriaId, c.Nombre) for c in categorias]
 
-    if form.validate_on_submit():
-        try:
-            nombre_producto = form.nombre.data.strip()
-            p = Producto(
-                Nombre=nombre_producto,
-                Descripcion=form.descripcion.data.strip() if form.descripcion.data else '',
-                CategoriaId=form.categoria_id.data,
-                Precio=form.precio.data or 0,
-                Activo=True,
-                imagen_url=None
-            )
-            db.session.add(p)
-            db.session.flush() # Para obtener el ProductoId
-
-            # Guardar imagen si se subió
-            if form.imagen.data and form.imagen.data.filename:
-                archivo = form.imagen.data
-                import os
-                from werkzeug.utils import secure_filename
-                filename = secure_filename(archivo.filename)
-                _, ext = os.path.splitext(filename)
-                
-                # Formato: {id}_{nombre}{extension}
-                nombre_seguro = secure_filename(nombre_producto.replace(' ', '_').lower())
-                nuevo_nombre = f"{p.ProductoId}_{nombre_seguro}{ext}"
-                
-                carpeta = os.path.join(current_app.root_path, 'static', 'img', 'productos')
-                os.makedirs(carpeta, exist_ok=True)
-                archivo.save(os.path.join(carpeta, nuevo_nombre))
-                
-                p.imagen_url = f"img/productos/{nuevo_nombre}"
-            
-            db.session.commit()
-            flash('Producto creado correctamente.', 'success')
-            return redirect(url_for('recetas.index'))
-        except Exception as e:
-            db.session.rollback()
-            flash(f'Error al crear el producto: {str(e)}', 'danger')
-
-    # Si hay errores vuelve al index re-abriendo el modal
-    productos = Producto.query.all()
-    costos    = {p.ProductoId: calcular_costo_lote(p.ProductoId) for p in productos}
-    return render_template('recetas/index.html', productos=productos,
-                           costos=costos, categorias=categorias, form=form,
-                           abrir_modal=True)
-
-
-@recetas_bp.route('/editar-producto/<int:producto_id>', methods=['GET', 'POST'])
-@login_required
-@roles_required('Administrador', 'Cocinero')
-def editar_producto(producto_id):
-    producto = Producto.query.get_or_404(producto_id)
-    categorias = CategoriaProducto.query.all()
-    form = FormProducto()
-    form.categoria_id.choices = [(c.CategoriaId, c.Nombre) for c in categorias]
-
-    if request.method == 'GET':
-        form.nombre.data = producto.Nombre
-        form.descripcion.data = producto.Descripcion
-        form.categoria_id.data = producto.CategoriaId
-        form.precio.data = producto.Precio
-
-    if form.validate_on_submit():
-        try:
-            nombre_producto = form.nombre.data.strip()
-            producto.Nombre = nombre_producto
-            producto.Descripcion = form.descripcion.data.strip() if form.descripcion.data else ''
-            producto.CategoriaId = form.categoria_id.data
-            producto.Precio = form.precio.data or 0
-
-            # Update image if uploaded
-            if form.imagen.data and form.imagen.data.filename:
-                import os
-                from werkzeug.utils import secure_filename
-                archivo = form.imagen.data
-                filename = secure_filename(archivo.filename)
-                _, ext = os.path.splitext(filename)
-                
-                nombre_seguro = secure_filename(nombre_producto.replace(' ', '_').lower())
-                nuevo_nombre = f"{producto.ProductoId}_{nombre_seguro}{ext}"
-                
-                carpeta = os.path.join(current_app.root_path, 'static', 'img', 'productos')
-                os.makedirs(carpeta, exist_ok=True)
-                
-                # Delete old image if it exists to keep directory clean
-                if producto.imagen_url:
-                    vieja_ruta = os.path.join(current_app.root_path, 'static', producto.imagen_url)
-                    if os.path.exists(vieja_ruta):
-                        try:
-                            os.remove(vieja_ruta)
-                        except Exception:
-                            pass
-                
-                archivo.save(os.path.join(carpeta, nuevo_nombre))
-                producto.imagen_url = f"img/productos/{nuevo_nombre}"
-
-            db.session.commit()
-            flash('Producto actualizado correctamente.', 'success')
-            return redirect(url_for('recetas.ver', producto_id=producto.ProductoId))
-        except Exception as e:
-            db.session.rollback()
-            flash(f'Error al actualizar el producto: {str(e)}', 'danger')
-
-    return render_template('recetas/editar_producto.html', form=form, producto=producto)
 
 
 @recetas_bp.route('/agregar/<int:producto_id>', methods=['GET', 'POST'])

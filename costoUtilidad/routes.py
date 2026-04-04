@@ -7,7 +7,7 @@ import csv
 import io
 from models import db, Producto, CategoriaProducto, Receta, CompraDetalle
 
-costo_utilidad_bp = Blueprint('costo_utilidad', __name__, url_prefix='/finanzas/costo-utilidad')
+costo_utilidad_bp = Blueprint('costo_utilidad', __name__, url_prefix='/costo_utilidad')
 
 
 def roles_required(*roles):

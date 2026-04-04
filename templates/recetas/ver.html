@@ -27,7 +27,7 @@
   </div>
   <div class="d-flex gap-2">
     {% if 'Administrador' in roles_usuario or 'Cocinero' in roles_usuario %}
-    <a href="{{ url_for('recetas.editar_producto', producto_id=producto.ProductoId) }}"
+    <a href="{{ url_for('productos.editar_producto', producto_id=producto.ProductoId) }}"
        class="btn btn-sm text-white fw-semibold px-3 py-2" style="background-color:#1e40af;">
       <i class="bi bi-pencil-square me-1"></i>Editar producto
     </a>

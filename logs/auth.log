@@ -105,3 +105,7 @@
 2026-04-03 20:06:13,038 INFO: accion=LOGIN_EXITOSO usuario_id=3 detalle=
 2026-04-03 20:08:42,033 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
 2026-04-03 20:09:41,028 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-04 02:06:54,151 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
+2026-04-04 02:07:31,754 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-04 11:01:18,328 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
+2026-04-04 11:01:54,791 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=

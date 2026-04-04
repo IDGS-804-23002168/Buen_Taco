@@ -82,7 +82,8 @@
                             {% endif %}
                             {% if 'Administrador' in user_roles or 'Cocinero' in user_roles %}
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ url_for('recetas.index') }}"><i class="bi bi-journal-richtext me-2"></i>Recetas y Productos</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('productos.index') }}"><i class="bi bi-box me-2"></i>Productos</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('recetas.index') }}"><i class="bi bi-journal-richtext me-2"></i>Recetas</a></li>
                             {% endif %}
                         </ul>
                     </li>
@@ -107,7 +108,7 @@
                         </a>
                         <ul class="dropdown-menu shadow" aria-labelledby="adminDropdown">
                             <li><a class="dropdown-item" href="{{ url_for('usuarios.index') }}"><i class="bi bi-people me-2"></i>Usuarios</a></li>
-                            <li><a class="dropdown-item" href="/costo_utilidad"><i class="bi bi-graph-up me-2"></i>Costo y Utilidad</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('costo_utilidad.index') }}"><i class="bi bi-graph-up me-2"></i>Costo y Utilidad</a></li>
                         </ul>
                     </li>
                     {% endif %}

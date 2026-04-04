@@ -74,6 +74,9 @@ def create_app(config=DevelopmentConfig):
 
     from recetas import recetas_bp          # Módulo 7 - Recetas
     app.register_blueprint(recetas_bp)
+
+    from productos import productos_bp
+    app.register_blueprint(productos_bp)
     
     from produccion import produccion_bp
     app.register_blueprint(produccion_bp)

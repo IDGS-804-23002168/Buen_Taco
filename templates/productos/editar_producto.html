@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% from "recetas/_macros_recetas.html" import flash_messages, campo, campo_select, botones %}
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/recetas.css') }}">
+
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header receta-card-header">
+        <i class="bi bi-pencil-square me-2"></i>
+        Editar Producto — <span class="fw-semibold">{{ producto.Nombre }}</span>
+      </div>
+      <div class="card-body">
+
+        {{ flash_messages() }}
+
+        <form method="POST" enctype="multipart/form-data" novalidate>
+          {{ form.hidden_tag() }}
+
+          {{ campo(form.nombre) }}
+          {{ campo(form.descripcion, placeholder='Descripción breve del producto...') }}
+          {{ campo_select(form.categoria_id) }}
+          {{ campo(form.precio) }}
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Imagen del producto</label>
+            {% if producto.imagen_url %}
+            <div class="mb-2">
+              <img src="{{ url_for('static', filename=producto.imagen_url) }}" alt="Imagen actual" style="max-height: 100px; border-radius: 6px;">
+            </div>
+            {% endif %}
+            {{ form.imagen(class="form-control") }}
+            <small class="text-muted">Sube una nueva imagen para reemplazar la actual (jpg, png, webp). Déjalo vacío para mantener la actual.</small>
+          </div>
+
+          {{ botones(url_for('productos.index')) }}
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

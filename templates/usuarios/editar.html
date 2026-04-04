@@ -60,7 +60,7 @@
 
       <hr>
 
-      <form method="POST" action="{{ url_for('usuarios.editar', usuario_id=usuario.UsuarioId) }}">
+      <form method="POST" action="{{ url_for('usuarios.editar', usuario_id=usuario.UsuarioId) }}" novalidate>
         {{ form.hidden_tag() }}
 
         <!-- Nombre -->

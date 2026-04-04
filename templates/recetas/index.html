@@ -15,12 +15,6 @@
     <small class="text-muted">Gestión de ingredientes y costos de producción</small>
   </div>
   {% set roles_usuario = current_user.roles | map(attribute='rol.Nombre') | list %}
-  {% if 'Administrador' in roles_usuario or 'Cocinero' in roles_usuario %}
-  <button class="btn btn-sm receta-btn-primary px-3 py-2"
-          data-bs-toggle="modal" data-bs-target="#modalNuevoProducto">
-    <i class="bi bi-plus-lg me-1"></i>Nuevo producto
-  </button>
-  {% endif %}
 </div>
 
 <!-- Buscador -->
@@ -90,41 +84,6 @@
   {% endfor %}
 </div>
 
-<!-- Modal nuevo producto -->
-<div class="modal fade" id="modalNuevoProducto" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header receta-card-header">
-        <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Nuevo Producto</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <form method="POST" action="{{ url_for('recetas.nuevo_producto') }}" enctype="multipart/form-data" novalidate>
-        {{ form.hidden_tag() }}
-        <div class="modal-body">
-          {{ campo(form.nombre) }}
-          {{ campo(form.descripcion, placeholder='Descripción breve del producto...') }}
-          {{ campo_select(form.categoria_id) }}
-          {{ campo(form.precio) }}
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Imagen del producto</label>
-            {{ form.imagen(class="form-control") }}
-            <small class="text-muted">Formatos: jpg, png, webp. Opcional.</small>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary"
-                  data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn receta-btn-primary">
-            <i class="bi bi-check-lg me-1"></i>Guardar
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-
-<input type="hidden" id="abrirModal" value="{{ 'true' if abrir_modal else 'false' }}">
 <script src="{{ url_for('static', filename='js/recetas.js') }}"></script>
 
 {% endblock %}
