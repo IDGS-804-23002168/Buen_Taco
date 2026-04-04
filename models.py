@@ -73,6 +73,8 @@ class CompraDetalle(db.Model):
     PrecioUnitario  = db.Column(db.Numeric(10, 2))
     Subtotal        = db.Column(db.Numeric(10, 2))
 
+    materia_prima = db.relationship('MateriaPrima')
+
 
 # ---------------------------------------------------------------------------
 # MATERIAS PRIMAS

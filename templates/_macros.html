@@ -126,7 +126,7 @@
     <form method="POST"
           action="{{ url_for('proveedores.toggle_activo', id=p.ProveedorId) }}"
           style="display:inline;"
-          onsubmit="return confirm('¿{{ 'Desactivar' if p.Activo else 'Activar' }} a «{{ p.Nombre }}»?')">
+          data-confirm="¿{{ 'Desactivar' if p.Activo else 'Activar' }} a «{{ p.Nombre }}»?">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <button type="submit"
               class="btn-icon {{ 'btn-icon--deactivate' if p.Activo else 'btn-icon--activate' }}">

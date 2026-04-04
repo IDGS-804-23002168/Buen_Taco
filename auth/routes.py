@@ -45,9 +45,9 @@ WEAK_PASSWORDS = {
 
 ROLE_REDIRECTS = {
     'Administrador':     'dashboard.index',
-    'Encargado_Almacen': 'inventario.index',
-    'Cocinero':          'produccion.index',
-    'Vendedor':          'venta.index',
+    'Encargado_Almacen': 'index',
+    'Cocinero':          'index',
+    'Vendedor':          'index',
     'Usuario':           'venta_linea.index',
 }
 
@@ -163,6 +163,14 @@ def login():
         return redirect_by_role(current_user)
 
     if request.method == 'POST':
+        captcha_input = request.form.get('captcha', '').strip().upper()
+        expected_captcha = session.get('captcha_text', '')
+        
+        if not expected_captcha or captcha_input != expected_captcha:
+            flash("El código Captcha es incorrecto. Inténtalo de nuevo.", "danger")
+            session['captcha_text'] = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
+            return render_template('auth/index.html')
+
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '')
 
@@ -204,30 +212,28 @@ def login():
 
         usuario.IntentosFallidos = 0
 
-        if usuario.TwoFactorHabilitado:
-            token = _generar_token_2fa()
-            usuario.Token2FA = token
-            usuario.Token2FAExpiracion = datetime.utcnow() + timedelta(minutes=10)
-            db.session.commit()
-
-            session['pre_auth_user_id'] = usuario.UsuarioId
-            session['pre_auth_user_username'] = usuario.Username
-
-            _enviar_correo_2fa(usuario.Email, token)
-            _registrar_log("2FA_ENVIADO", usuario_id=usuario.UsuarioId)
-
-            flash("Hemos enviado un código de verificación a tu correo.", "info")
-            return redirect(url_for('auth.verificar_2fa'))
-
         if usuario.RequiereCambioPassword:
             db.session.commit()
             _completar_login(usuario)
             flash("Por seguridad, debes cambiar tu contraseña.", "warning")
             return redirect(url_for('auth.cambiar_password'))
 
-        _completar_login(usuario)
-        return redirect_by_role(usuario)
+        # Siempre enviar 2FA si no requiere cambio de contraseña (ignorando TwoFactorHabilitado)
+        token = _generar_token_2fa()
+        usuario.Token2FA = token
+        usuario.Token2FAExpiracion = datetime.utcnow() + timedelta(minutes=10)
+        db.session.commit()
 
+        session['pre_auth_user_id'] = usuario.UsuarioId
+        session['pre_auth_user_username'] = usuario.Username
+
+        _enviar_correo_2fa(usuario.Email, token)
+        _registrar_log("2FA_ENVIADO", usuario_id=usuario.UsuarioId)
+
+        flash("Hemos enviado un código de verificación a tu correo.", "info")
+        return redirect(url_for('auth.verificar_2fa'))
+
+    session['captcha_text'] = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
     return render_template('auth/index.html')
 
 
@@ -358,9 +364,10 @@ def cambiar_password():
         nueva_password  = request.form.get('nueva_password', '')
         confirmar       = request.form.get('confirmar_password', '')
 
-        if not check_password_hash(current_user.PasswordHash, password_actual):
-            flash("La contraseña actual es incorrecta.", "danger")
-            return render_template('auth/cambiar_password.html')
+        if not current_user.RequiereCambioPassword:
+            if not check_password_hash(current_user.PasswordHash, password_actual):
+                flash("La contraseña actual es incorrecta.", "danger")
+                return render_template('auth/cambiar_password.html')
 
         if nueva_password != confirmar:
             flash("Las contraseñas nuevas no coinciden.", "danger")

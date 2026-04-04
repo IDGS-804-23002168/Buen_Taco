@@ -1,18 +1,33 @@
 from flask import render_template, request, redirect, url_for, flash, jsonify
-from flask_login import login_required
+from flask_login import login_required, current_user
 from sqlalchemy import or_
 from datetime import datetime, timedelta
+from functools import wraps
 
 from models import db, Proveedor, Compra
 from forms import ProveedorForm, BusquedaProveedorForm
 from . import proveedores
 
+def roles_required(*roles):
+    def wrapper(fn):
+        @wraps(fn)
+        def decorated_view(*args, **kwargs):
+            if not current_user.is_authenticated:
+                return redirect(url_for("auth.login"))
+            roles_usuario = [ur.rol.Nombre for ur in current_user.roles if ur.Activo]
+            if any(rol in roles_usuario for rol in roles):
+                return fn(*args, **kwargs)
+            flash("No tienes permiso para ver esta página.", "danger")
+            return redirect(url_for("index"))
+        return decorated_view
+    return wrapper
 
 # ────────────────────────────────────────────────────────────────
 # LISTADO 
 # ────────────────────────────────────────────────────────────────
 @proveedores.route("/")
 @login_required
+@roles_required('Administrador', 'Encargado_Almacen')
 def index():
     form_busqueda = BusquedaProveedorForm(request.args)
 
@@ -52,6 +67,7 @@ def index():
 # ────────────────────────────────────────────────
 @proveedores.route("/<int:id>/detalle")
 @login_required
+@roles_required('Administrador', 'Encargado_Almacen')
 def detalle(id):
     proveedor = Proveedor.query.get_or_404(id)
 
@@ -65,6 +81,7 @@ def detalle(id):
 # ────────────────────────────────────────────────
 @proveedores.route("/nuevo", methods=['GET', 'POST'])
 @login_required
+@roles_required('Administrador', 'Encargado_Almacen')
 def nuevo():
     form = ProveedorForm()
 
@@ -107,6 +124,7 @@ def nuevo():
 # ────────────────────────────────────────────────
 @proveedores.route("/<int:id>/editar", methods=['GET', 'POST'])
 @login_required
+@roles_required('Administrador', 'Encargado_Almacen')
 def editar(id):
     proveedor = Proveedor.query.get_or_404(id)
 
@@ -151,6 +169,7 @@ def editar(id):
 # ────────────────────────────────────────────────────────────────
 @proveedores.route("/<int:id>/toggle", methods=['POST'])
 @login_required
+@roles_required('Administrador', 'Encargado_Almacen')
 def toggle_activo(id):
     proveedor = Proveedor.query.get_or_404(id)
 
@@ -168,6 +187,7 @@ def toggle_activo(id):
 # ────────────────────────────────────────────────────────────────
 @proveedores.route("/<int:id>/historial")
 @login_required
+@roles_required('Administrador', 'Encargado_Almacen')
 def historial(id):
     proveedor = Proveedor.query.get_or_404(id)
 
@@ -209,6 +229,7 @@ def historial(id):
 # ────────────────────────────────────────────────────────────────
 @proveedores.route("/compra/<int:compra_id>")
 @login_required
+@roles_required('Administrador', 'Encargado_Almacen')
 def detalle_compra(compra_id):
     compra = Compra.query.get_or_404(compra_id)
 
@@ -223,6 +244,7 @@ def detalle_compra(compra_id):
 # ────────────────────────────────────────────────────────────────
 @proveedores.route("/api/buscar")
 @login_required
+@roles_required('Administrador', 'Encargado_Almacen')
 def api_buscar():
     q = request.args.get('q', '').strip()
     solo_activos = request.args.get('activos', 'true').lower() == 'true'

@@ -26,7 +26,11 @@
     </span>
   </div>
   <div class="d-flex gap-2">
-    {% if 'Administrador' in roles_usuario %}
+    {% if 'Administrador' in roles_usuario or 'Cocinero' in roles_usuario %}
+    <a href="{{ url_for('recetas.editar_producto', producto_id=producto.ProductoId) }}"
+       class="btn btn-sm text-white fw-semibold px-3 py-2" style="background-color:#1e40af;">
+      <i class="bi bi-pencil-square me-1"></i>Editar producto
+    </a>
     <a href="{{ url_for('recetas.agregar', producto_id=producto.ProductoId) }}"
        class="btn btn-sm text-white fw-semibold px-3 py-2" style="background-color:#8B3A0E;">
       <i class="bi bi-plus-lg me-1"></i>Agregar ingrediente
@@ -118,7 +122,7 @@
           <th>Unidad</th>
           <th>Merma</th>
           <th>Cantidad Real</th>
-          {% if 'Administrador' in roles_usuario %}
+          {% if 'Administrador' in roles_usuario or 'Cocinero' in roles_usuario %}
           <th class="text-center">Acciones</th>
           {% endif %}
         </tr>
@@ -137,7 +141,7 @@
             </span>
           </td>
           <td class="text-muted">{{ "%.2f"|format(cantidad_real) }} {{ r.materia_prima.unidad.Abreviatura }}</td>
-          {% if 'Administrador' in roles_usuario %}
+          {% if 'Administrador' in roles_usuario or 'Cocinero' in roles_usuario %}
           <td class="text-center">
             <a href="{{ url_for('recetas.editar', producto_id=r.ProductoId, materia_id=r.MateriaPrimaId) }}"
                class="btn btn-sm btn-outline-secondary me-1">
@@ -145,7 +149,7 @@
             </a>
             <form action="{{ url_for('recetas.eliminar', producto_id=r.ProductoId, materia_id=r.MateriaPrimaId) }}"
                   method="POST" class="d-inline"
-                  onsubmit="return confirm('¿Eliminar este ingrediente?')">
+                  data-confirm="¿Eliminar este ingrediente?">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <button class="btn btn-sm btn-outline-danger">
                 <i class="bi bi-trash"></i>
@@ -163,7 +167,7 @@
 <div class="rounded p-4 text-center" style="background-color:#fdf9f7; border: 2px dashed #8B3A0E33;">
   <i class="bi bi-journal-x fs-2 mb-2 d-block text-muted"></i>
   <p class="text-muted mb-2">Esta receta aún no tiene ingredientes.</p>
-  {% if 'Administrador' in roles_usuario %}
+  {% if 'Administrador' in roles_usuario or 'Cocinero' in roles_usuario %}
   <a href="{{ url_for('recetas.agregar', producto_id=producto.ProductoId) }}"
      class="btn btn-sm text-white" style="background-color:#8B3A0E;">
     <i class="bi bi-plus-lg me-1"></i>Agregar el primero

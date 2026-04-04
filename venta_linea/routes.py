@@ -3,6 +3,7 @@ from flask import (
     flash, session, request
 )
 from flask_login import login_required, current_user
+from functools import wraps
 from decimal import Decimal, ROUND_HALF_UP
 from datetime import datetime
 
@@ -20,6 +21,20 @@ CARRITO_KEY = 'carrito_linea'
 IVA_TASA    = Decimal('0.16')
 
 # --------------------- Helpers ---------------------
+
+def roles_required(*roles):
+    def decorator(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            if not current_user.is_authenticated:
+                return redirect(url_for('auth.login'))
+            roles_usuario = [ur.rol.Nombre for ur in current_user.roles if ur.Activo]
+            if not any(r in roles_usuario for r in roles):
+                flash('No tienes permiso para acceder a esta sección.', 'danger')
+                return redirect(url_for('index'))
+            return f(*args, **kwargs)
+        return decorated
+    return decorator
 
 def _get_carrito():
     return session.get(CARRITO_KEY, [])
@@ -47,6 +62,7 @@ def _totales(carrito, entrega=None):
 
 @venta_linea_bp.route('/', methods=['GET', 'POST'])
 @login_required
+@roles_required('Administrador', 'Usuario')
 def index():
     filtro_form   = FiltroCategoriaForm(request.form if request.method == 'POST' else None)
     agregar_form  = AgregarProductoForm()
@@ -167,6 +183,7 @@ def index():
 
 @venta_linea_bp.route('/pedido/<int:pedido_id>')
 @login_required
+@roles_required('Administrador', 'Usuario')
 def ver_pedido(pedido_id):
     # Obtener el pedido solo si pertenece al usuario actual
     pedido = Pedido.query.filter_by(PedidoId=pedido_id, UsuarioId=current_user.UsuarioId).first_or_404()
@@ -179,6 +196,7 @@ def ver_pedido(pedido_id):
 # --------------------- PEDIDOS ---------------------
 @venta_linea_bp.route('/mis-pedidos')
 @login_required
+@roles_required('Administrador', 'Usuario')
 def mis_pedidos():
     # Obtener todos los pedidos del usuario actual
     pedidos = Pedido.query.filter_by(UsuarioId=current_user.UsuarioId).order_by(Pedido.PedidoId.desc()).all()
@@ -189,6 +207,7 @@ def mis_pedidos():
 
 @venta_linea_bp.route('/vaciar')
 @login_required
+@roles_required('Administrador', 'Usuario')
 def vaciar():
     session.pop(CARRITO_KEY, None)
     return redirect(url_for('venta_linea.index'))
@@ -197,6 +216,7 @@ def vaciar():
 # ---------------------------------------------------------------------------
 @venta_linea_bp.route('/direccion', methods=['GET', 'POST'])
 @login_required
+@roles_required('Administrador', 'Usuario')
 def direccion():
     carrito = _get_carrito()
     subtotal, envio, iva, total = _totales(carrito, session.get('entrega'))
@@ -242,6 +262,7 @@ def direccion():
 # ---------------------------------------------------------------------------
 @venta_linea_bp.route('/pago', methods=['GET', 'POST'])
 @login_required
+@roles_required('Administrador', 'Usuario')
 def pago():
     carrito = _get_carrito()
 
@@ -387,6 +408,7 @@ def pago():
 # ---------------------------------------------------------------------------
 @venta_linea_bp.route('/confirmacion/<int:pedido_id>')
 @login_required
+@roles_required('Administrador', 'Usuario')
 def confirmacion(pedido_id):
     pedido = Pedido.query.filter_by(
         PedidoId  = pedido_id,

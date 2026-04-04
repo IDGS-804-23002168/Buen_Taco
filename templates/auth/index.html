@@ -282,6 +282,19 @@
           </div>
         </div>
 
+        <div class="field-group mt-3">
+          <label class="field-label" for="captcha">Código de Seguridad</label>
+          <div class="p-3 mb-2 rounded text-center fw-bold text-dark fs-4" style="background: repeating-linear-gradient(45deg, #f0e6d2, #f0e6d2 10px, #e8dcc4 10px, #e8dcc4 20px); letter-spacing: 8px; user-select: none; border: 1px solid var(--taco-sand);">
+            {{ session.captcha_text }}
+          </div>
+          <div class="field-wrap">
+            <i class="bi bi-shield-check field-icon"></i>
+            <input class="field-input text-uppercase" type="text" id="captcha" name="captcha"
+              placeholder="Escribe el código de arriba" maxlength="5"
+              required autocomplete="off" />
+          </div>
+        </div>
+
         <a href="{{ url_for('auth.olvide_password') }}" class="forgot-link">¿Olvidaste tu contraseña?</a>
 
         <button type="submit" class="btn-auth">

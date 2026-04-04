@@ -7,7 +7,7 @@ import logging.handlers
 import os
 from datetime import timedelta
 
-from flask import Flask, render_template, session, redirect, url_for
+from flask import Flask, render_template, session, redirect, url_for, request
 from flask_login import LoginManager, current_user
 from flask_wtf.csrf import CSRFProtect
 from flask_mail import Mail
@@ -52,13 +52,18 @@ def create_app(config=DevelopmentConfig):
     def renovar_sesion():
         session.permanent = True
         app.permanent_session_lifetime = timedelta(minutes=10)
+        
+        if current_user.is_authenticated and current_user.RequiereCambioPassword:
+            # Endpoints permitidos cuando urge el cambio
+            if request.endpoint not in ('static', 'auth.cambiar_password', 'auth.logout'):
+                return redirect(url_for('auth.cambiar_password'))
 
     # ---- Registrar Blueprints ----
     from auth import auth_bp 
     app.register_blueprint(auth_bp)
 
-    from disponibilidadProductos import (productos_bp)
-    app.register_blueprint(productos_bp)
+    from disponibilidadProductos import (disponibilidad_bp)
+    app.register_blueprint(disponibilidad_bp)
 
 
     from proveedores import proveedores      # Módulo 4 - Proveedores
@@ -68,11 +73,7 @@ def create_app(config=DevelopmentConfig):
     app.register_blueprint(venta_linea_bp)
 
     from recetas import recetas_bp          # Módulo 7 - Recetas
-    from auth import auth_bp
-    from proveedores import proveedores
-
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(proveedores)
+    app.register_blueprint(recetas_bp)
     
     from produccion import produccion_bp
     app.register_blueprint(produccion_bp)
@@ -86,9 +87,6 @@ def create_app(config=DevelopmentConfig):
 
     app.register_blueprint(dashboard_bp)
 
-    from recetas import recetas_bp  # Módulo 7 - Recetas
-
-    app.register_blueprint(recetas_bp)
 
     from inventario import inventario_bp
 
@@ -106,9 +104,6 @@ def create_app(config=DevelopmentConfig):
 
     app.register_blueprint(solicitudes_bp)
 
-    from disponibilidadProductos import disponibilidad_bp
-
-    app.register_blueprint(disponibilidad_bp)
 
     from venta import ventas_bp
 
@@ -119,12 +114,25 @@ def create_app(config=DevelopmentConfig):
     def pagina_no_encontrada(error):
         return render_template("404.html"), 404
 
+    @app.context_processor
+    def inject_roles():
+        """Inyecta los roles del usuario actual en todas las plantillas."""
+        roles = []
+        if current_user.is_authenticated:
+            roles = [ur.rol.Nombre for ur in current_user.roles if ur.Activo]
+        return dict(user_roles=roles)
+
     # ---- Rutas principales ----
     @app.route("/")
     def index():
         if current_user.is_authenticated:
-            # return redirect(url_for('dashboard.index'))
-            return render_template("index.html")
+            roles = [ur.rol.Nombre for ur in current_user.roles if ur.Activo]
+            if "Administrador" in roles:
+                return redirect(url_for("dashboard.index"))
+            elif "Usuario" in roles:
+                return redirect(url_for("venta_linea.index"))
+            else:
+                return render_template("index.html")
         return redirect(url_for("auth.login"))
 
     return app

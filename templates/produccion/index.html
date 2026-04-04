@@ -71,7 +71,7 @@
                     </form>
                     <form action="{{ url_for('produccion.rechazar', solicitud_id=s.SolicitudId) }}"
                           method="POST" class="d-inline"
-                          onsubmit="return confirm('¿Rechazar solicitud #{{ s.SolicitudId }}?')">
+                          data-confirm="¿Rechazar solicitud #{{ s.SolicitudId }}?">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button class="btn btn-outline-danger rounded-pill px-4">
                             <i class="bi bi-x-circle me-1"></i> Rechazar
@@ -81,7 +81,7 @@
                 {% elif s.Estado == 'En Produccion' %}
                     <form action="{{ url_for('produccion.finalizar', solicitud_id=s.SolicitudId) }}"
                           method="POST" class="d-inline"
-                          onsubmit="return confirm('¿Finalizar producción de solicitud #{{ s.SolicitudId }}?')">
+                          data-confirm="¿Finalizar producción de solicitud #{{ s.SolicitudId }}?">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button class="btn btn-primary rounded-pill px-4">
                             <i class="bi bi-check-circle-fill me-1"></i> Finalizar Producción

@@ -44,55 +44,73 @@
 
             <div class="collapse navbar-collapse" id="menu">
                 <ul class="navbar-nav me-auto">
-
                     <li class="nav-item">
                         <a class="nav-link" href="/">
                             <i class="bi bi-house"></i> Inicio
                         </a>
                     </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('inventario.materias_primas') }}">
-                            <i class="bi bi-box-seam"></i> Inventario
+                    {% if 'Administrador' in user_roles or 'Encargado_Almacen' in user_roles or 'Cocinero' in user_roles %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="inventarioDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-box-seam"></i> Inventario & Compras
                         </a>
+                        <ul class="dropdown-menu shadow" aria-labelledby="inventarioDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('inventario.materias_primas') }}"><i class="bi bi-list-ul me-2"></i>Materias Primas</a></li>
+                            {% if 'Administrador' in user_roles or 'Encargado_Almacen' in user_roles %}
+                            <li><a class="dropdown-item" href="{{ url_for('compras.index') }}"><i class="bi bi-clock-history me-2"></i>Historial Compras</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('compras.nueva_compra') }}"><i class="bi bi-cart-plus me-2"></i>Nueva Compra</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('proveedores.index') }}"><i class="bi bi-truck me-2"></i>Proveedores</a></li>
+                            {% endif %}
+                        </ul>
                     </li>
+                    {% endif %}
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('compras.nueva_compra') }}">
-                            <i class="bi bi-cart-plus"></i> Compras
+                    {% if 'Administrador' in user_roles or 'Cocinero' in user_roles or 'Vendedor' in user_roles %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="produccionDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-fire"></i> Operaciones
                         </a>
+                        <ul class="dropdown-menu shadow" aria-labelledby="produccionDropdown">
+                            {% if 'Administrador' in user_roles or 'Cocinero' in user_roles or 'Vendedor' in user_roles %}
+                            <li><a class="dropdown-item" href="/disponibilidad"><i class="bi bi-shop me-2"></i>Disponibilidad</a></li>
+                            {% endif %}
+                            {% if 'Administrador' in user_roles or 'Cocinero' in user_roles %}
+                            <li><a class="dropdown-item" href="/produccion"><i class="bi bi-fire me-2"></i>Producción</a></li>
+                            <li><a class="dropdown-item" href="/solicitudes"><i class="bi bi-clipboard-data me-2"></i>Solicitudes</a></li>
+                            {% endif %}
+                            {% if 'Administrador' in user_roles or 'Cocinero' in user_roles %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('recetas.index') }}"><i class="bi bi-journal-richtext me-2"></i>Recetas y Productos</a></li>
+                            {% endif %}
+                        </ul>
                     </li>
+                    {% endif %}
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="/solicitudes">
-                            <i class="bi bi-fire"></i> Cocina
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="/ventas">
+                    {% if 'Administrador' in user_roles or 'Vendedor' in user_roles %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="ventasDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-currency-dollar"></i> Ventas
                         </a>
+                        <ul class="dropdown-menu shadow" aria-labelledby="ventasDropdown">
+                            <li><a class="dropdown-item" href="/ventas"><i class="bi bi-cash-coin me-2"></i>Punto de Venta</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('ventas.historial') }}"><i class="bi bi-clock-history me-2"></i>Historial de Ventas</a></li>
+                        </ul>
                     </li>
+                    {% endif %}
 
-                    <!-- NUEVO: Ventas en Línea -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('venta_linea.index') }}">
-                            <i class="bi bi-cart"></i> Ventas en Línea
+                    {% if 'Administrador' in user_roles %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-gear"></i> Sistema
                         </a>
+                        <ul class="dropdown-menu shadow" aria-labelledby="adminDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('usuarios.index') }}"><i class="bi bi-people me-2"></i>Usuarios</a></li>
+                            <li><a class="dropdown-item" href="/costo_utilidad"><i class="bi bi-graph-up me-2"></i>Costo y Utilidad</a></li>
+                        </ul>
                     </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('usuarios.index') }}">
-                            <i class="bi bi-people"></i> Usuarios
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('proveedores.index') }}">
-                            <i class="bi bi-truck"></i> Proveedores
-                        </a>
-                    </li>
+                    {% endif %}
 
                 </ul>
 
@@ -125,6 +143,57 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- Global Confirm Modal -->
+    <div class="modal fade" id="globalConfirmModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header border-0 pb-0">
+            <h5 class="modal-title fw-bold text-dark" id="globalConfirmTitle">Confirmar Acción</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body text-secondary" id="globalConfirmMessage">
+            ¿Estás seguro de continuar?
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-primary px-4" id="globalConfirmBtn">Confirmar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var confirmModal = new bootstrap.Modal(document.getElementById('globalConfirmModal'));
+        var confirmBtn = document.getElementById('globalConfirmBtn');
+        var msgContainer = document.getElementById('globalConfirmMessage');
+        var formToSubmit = null;
+
+        document.querySelectorAll('form[data-confirm]').forEach(function(form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                formToSubmit = form;
+                msgContainer.textContent = form.getAttribute('data-confirm');
+                
+                if(form.querySelector('.btn-outline-danger, .btn-danger')) {
+                    confirmBtn.className = 'btn btn-danger px-4';
+                } else if(form.querySelector('.btn-outline-success, .btn-success')) {
+                    confirmBtn.className = 'btn btn-success px-4';
+                } else {
+                    confirmBtn.className = 'btn btn-primary px-4';
+                }
+
+                confirmModal.show();
+            });
+        });
+
+        confirmBtn.addEventListener('click', function() {
+            if(formToSubmit) {
+                HTMLFormElement.prototype.submit.call(formToSubmit);
+            }
+        });
+    });
+    </script>
 </body>
 
 </html>

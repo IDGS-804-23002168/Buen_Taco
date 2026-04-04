@@ -27,7 +27,7 @@ class DevelopmentConfig(Config):
     MAIL_PORT = int(os.environ.get("MAIL_PORT", 587))
     MAIL_USE_TLS = True
     MAIL_USERNAME = os.environ.get("MAIL_USERNAME", "mreancontl@gmail.com")
-    MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD", "pass")
+    MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD", "jumgdgaxicdfkiyx")
     MAIL_DEFAULT_SENDER = os.environ.get(
         "MAIL_DEFAULT_SENDER", "El Buen Taco <mreancontl@gmail.com>"
     )

@@ -2,6 +2,14 @@
 {% extends 'layout.html' %}
 
 {% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% for cat, msg in messages %}
+<div class="alert alert-{{ cat }} alert-dismissible fade show shadow-sm">
+    {{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endwith %}
+
 <div class="row mb-4 align-items-center">
     <div class="col-md-6">
         <h2 class="fw-bold mb-0" style="color: #8B3A0E;"><i class="bi bi-shop me-2"></i>Disponibilidad en Mostrador</h2>
@@ -19,41 +27,76 @@
             <option value="{{ cat.Nombre | lower }}">{{ cat.Nombre }}</option>
             {% endfor %}
         </select>
+        <select id="filtro-estado-mostrador" class="form-select shadow-sm" style="max-width: 160px;">
+            <option value="todos">Todos</option>
+            <option value="activo">Activos</option>
+            <option value="inactivo">Inactivos</option>
+        </select>
     </div>
 </div>
 
 <div class="row g-4" id="contenedor-mostrador">
     {% for producto in productos %}
-    <div class="col-12 col-md-6 col-lg-4 tarjeta-mostrador" data-nombre="{{ producto.Nombre | lower }}"
-        data-categoria="{{ producto.categoria.Nombre | lower if producto.categoria else 'sin_categoria' }}">
+    <div class="col-12 col-md-6 col-lg-4 tarjeta-mostrador"
+         data-nombre="{{ producto.Nombre | lower }}"
+         data-categoria="{{ producto.categoria.Nombre | lower if producto.categoria else 'sin_categoria' }}"
+         data-estado="{{ 'activo' if producto.Activo else 'inactivo' }}">
 
-        <div class="card p-3 border-0 shadow-sm {% if producto.stock_actual <= 0 %}opacity-50{% endif %}"
-            style="border-radius: 12px;">
+        <div class="card p-3 border-0 shadow-sm {% if not producto.Activo %}opacity-50{% endif %}"
+            style="border-radius: 12px; {% if not producto.Activo %}border-left: 4px solid #dc3545;{% endif %}">
+
             <div class="text-center mb-3 py-3 rounded" style="background-color: #F8F9FA;">
+                {% if producto.imagen_url %}
+                <img src="{{ url_for('static', filename=producto.imagen_url) }}" alt="{{ producto.Nombre }}"
+                     style="width:80px;height:80px;object-fit:cover;border-radius:10px;">
+                {% else %}
                 <i class="bi bi-egg-fried text-muted" style="font-size: 3rem;"></i>
+                {% endif %}
             </div>
 
-            <h5 class="fw-bold {% if producto.stock_actual <= 0 %}text-muted{% endif %}">{{ producto.Nombre }}</h5>
+            <h5 class="fw-bold {% if not producto.Activo %}text-muted text-decoration-line-through{% endif %}">{{ producto.Nombre }}</h5>
+
+            {% if not producto.Activo %}
+            <span class="badge bg-danger mb-2"><i class="bi bi-eye-slash me-1"></i>Producto desactivado</span>
+            {% endif %}
 
             <div class="d-flex justify-content-between align-items-center mt-3">
-                {% if producto.stock_actual <= 0 %} <span
-                    class="badge bg-secondary text-white px-3 py-2 rounded-pill shadow-sm">
-                    <i class="bi bi-x-circle"></i> Agotado
+                {% if producto.Activo %}
+                    {% if producto.stock_actual <= 0 %}
+                    <span class="badge bg-secondary text-white px-3 py-2 rounded-pill shadow-sm">
+                        <i class="bi bi-x-circle"></i> Agotado
                     </span>
-                    {% elif producto.stock_actual <= 5 %} <span
-                        class="badge bg-danger text-white px-3 py-2 rounded-pill shadow-sm">
+                    {% elif producto.stock_actual <= 5 %}
+                    <span class="badge bg-danger text-white px-3 py-2 rounded-pill shadow-sm">
                         <i class="bi bi-exclamation-triangle"></i> Quedan {{ producto.stock_actual }}
-                        </span>
-                        {% else %}
-                        <span class="badge bg-success text-white px-3 py-2 rounded-pill shadow-sm">
-                            <i class="bi bi-check-circle"></i> Disponibles: {{ producto.stock_actual }}
-                        </span>
-                        {% endif %}
+                    </span>
+                    {% else %}
+                    <span class="badge bg-success text-white px-3 py-2 rounded-pill shadow-sm">
+                        <i class="bi bi-check-circle"></i> Disponibles: {{ producto.stock_actual }}
+                    </span>
+                    {% endif %}
+                {% else %}
+                    <span class="badge bg-secondary text-white px-3 py-2 rounded-pill shadow-sm">
+                        <i class="bi bi-dash-circle"></i> No visible
+                    </span>
+                {% endif %}
 
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" {% if producto.stock_actual> 0 %}checked{%
-                            endif %} disabled>
-                        </div>
+                {% if puede_toggle %}
+                <form method="POST" action="{{ url_for('disponibilidad.toggle_producto', producto_id=producto.ProductoId) }}" class="d-inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox"
+                               {% if producto.Activo %}checked{% endif %}
+                               onchange="this.closest('form').submit()"
+                               style="cursor:pointer;">
+                    </div>
+                </form>
+                {% else %}
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox"
+                           {% if producto.Activo %}checked{% endif %} disabled>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -69,20 +112,24 @@
     document.addEventListener('DOMContentLoaded', function () {
         const buscador = document.getElementById('buscador-mostrador');
         const filtroCat = document.getElementById('filtro-cat-mostrador');
+        const filtroEstado = document.getElementById('filtro-estado-mostrador');
         const tarjetas = document.querySelectorAll('.tarjeta-mostrador');
 
         function aplicarFiltros() {
             const textoBuscado = buscador.value.toLowerCase().trim();
             const categoriaSeleccionada = filtroCat.value;
+            const estadoSeleccionado = filtroEstado.value;
 
             tarjetas.forEach(function (tarjeta) {
                 const nombre = tarjeta.getAttribute('data-nombre');
                 const categoria = tarjeta.getAttribute('data-categoria');
+                const estado = tarjeta.getAttribute('data-estado');
 
                 const cumpleTexto = nombre.includes(textoBuscado);
                 const cumpleCategoria = (categoriaSeleccionada === 'todas' || categoria === categoriaSeleccionada);
+                const cumpleEstado = (estadoSeleccionado === 'todos' || estado === estadoSeleccionado);
 
-                if (cumpleTexto && cumpleCategoria) {
+                if (cumpleTexto && cumpleCategoria && cumpleEstado) {
                     tarjeta.style.display = '';
                 } else {
                     tarjeta.style.display = 'none';
@@ -92,6 +139,7 @@
 
         buscador.addEventListener('input', aplicarFiltros);
         filtroCat.addEventListener('change', aplicarFiltros);
+        filtroEstado.addEventListener('change', aplicarFiltros);
     });
 </script>
 {% endblock %}

@@ -28,14 +28,22 @@ def roles_required(*roles):
 # --- RUTA PRINCIPAL DEL INVENTARIO ---
 @inventario_bp.route('/almacen/materias-primas', methods=['GET', 'POST'])
 @login_required
-@roles_required('Administrador', 'Encargado_Almacen')
+@roles_required('Administrador', 'Encargado_Almacen', 'Cocinero')
 def materias_primas():
     form = MateriaPrimaForm()
     
     # Llenamos el select con las unidades de medida de la base de datos
     form.unidad_id.choices = [(u.UnidadId, f"{u.Nombre} ({u.Abreviatura})") for u in UnidadMedida.query.all()]
     
-    if form.validate_on_submit():
+    # Verificar si el usuario puede editar (Administrador o Encargado_Almacen)
+    roles_usuario = [ur.rol.Nombre for ur in current_user.roles if ur.Activo]
+    puede_editar = ('Administrador' in roles_usuario or 'Encargado_Almacen' in roles_usuario)
+
+    if form.validate_on_submit() and request.method == 'POST':
+        if not puede_editar:
+            flash('No tienes permiso para agregar materias primas.', 'danger')
+            return redirect(url_for('inventario.materias_primas'))
+            
         nueva_materia = MateriaPrima(
             Nombre=form.nombre.data,
             UnidadBaseId=form.unidad_id.data,
@@ -50,4 +58,4 @@ def materias_primas():
     # Consultamos las materias para mostrarlas en la tabla
     lista_materias = MateriaPrima.query.filter_by(Activo=True).all()
     
-    return render_template('inventario/materias_primas.html', form=form, materias=lista_materias)
+    return render_template('inventario/materias_primas.html', form=form, materias=lista_materias, puede_editar=puede_editar)

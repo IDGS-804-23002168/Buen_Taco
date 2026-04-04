@@ -16,6 +16,7 @@ def roles_required(*roles):
             roles_usuario = [ur.rol.Nombre for ur in current_user.roles if ur.Activo]
             if any(rol in roles_usuario for rol in roles):
                 return fn(*args, **kwargs)
+            flash("No tienes permiso para ver esta página.", "danger")
             return redirect(url_for("index"))
 
         return decorated_view
@@ -23,33 +24,73 @@ def roles_required(*roles):
     return wrapper
 
 
+def _get_roles_usuario():
+    """Obtiene la lista de roles del usuario actual."""
+    if not current_user.is_authenticated:
+        return []
+    return [ur.rol.Nombre for ur in current_user.roles if ur.Activo]
+
+
 @disponibilidad_bp.route("/disponibilidad", methods=["GET"])
 @login_required
-@roles_required("Administrador", "Vendedor")  # Ajusta según necesites
+@roles_required("Administrador", "Vendedor", "Cocinero")
 def index():
-    productos = Producto.query.filter_by(Activo=True).all()
+    # Mostrar TODOS los productos (activos e inactivos) para Admin y Cocinero
+    roles = _get_roles_usuario()
+    puede_toggle = ('Administrador' in roles or 'Cocinero' in roles)
+
+    if puede_toggle:
+        productos = Producto.query.all()
+    else:
+        # Vendedor solo ve los activos
+        productos = Producto.query.filter_by(Activo=True).all()
+
     categorias = CategoriaProducto.query.all()
 
-    # Lista para guardar solo los productos que la cocina ya preparó (stock > 0)
     productos_en_mostrador = []
 
+    # for p in productos:
+    #     stock = (
+    #         db.session.query(func.coalesce(func.sum(MovimientoProducto.Cantidad), 0))
+    #         .filter_by(ProductoId=p.ProductoId)
+    #         .scalar()
+    #     )
+    #     p.stock_actual = int(stock)
+    #     productos_en_mostrador.append(p)
+    
     for p in productos:
-        # Sumamos todos los movimientos de este producto (Entradas de la cocina - Salidas de ventas)
-        stock = (
-            db.session.query(func.coalesce(func.sum(MovimientoProducto.Cantidad), 0))
-            .filter_by(ProductoId=p.ProductoId)
-            .scalar()
-        )
-
-        # Le asignamos temporalmente el valor al objeto para usarlo en el HTML
-        p.stock_actual = int(stock)
-
-        # Opcional: Si solo quieres mostrar los que SÍ tienen existencias, descomenta la siguiente línea:
-        # if p.stock_actual > 0:
+        if p.recetas:
+            stock_por_receta = None
+            for receta in p.recetas:
+                if receta.CantidadBase and receta.CantidadBase > 0:
+                    stock_mp = float(receta.materia_prima.stock)
+                    posibles = int(stock_mp // float(receta.CantidadBase))
+                    if stock_por_receta is None or posibles < stock_por_receta:
+                        stock_por_receta = posibles
+            p.stock_actual = stock_por_receta if stock_por_receta is not None else 0
+        else:
+            p.stock_actual = 0
         productos_en_mostrador.append(p)
 
     return render_template(
         "disponibilidadProductos/index.html",
         productos=productos_en_mostrador,
         categorias=categorias,
+        puede_toggle=puede_toggle,
     )
+
+
+@disponibilidad_bp.route("/disponibilidad/toggle/<int:producto_id>", methods=["POST"])
+@login_required
+@roles_required("Administrador", "Cocinero")
+def toggle_producto(producto_id):
+    producto = Producto.query.get_or_404(producto_id)
+    try:
+        producto.Activo = not producto.Activo
+        db.session.commit()
+        estado = "activado" if producto.Activo else "desactivado"
+        flash(f'Producto "{producto.Nombre}" {estado} correctamente.', 'success')
+    except Exception:
+        db.session.rollback()
+        flash('Error al cambiar el estado del producto.', 'danger')
+    return redirect(url_for("disponibilidad.index"))
