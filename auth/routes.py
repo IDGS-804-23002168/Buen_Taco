@@ -102,6 +102,19 @@ def _registrar_log(accion, usuario_id=None, detalle="", nivel="INFO"):
     else:
         logger.info(mensaje)
 
+    # Auditoría en MongoDB (RS 020)
+    try:
+        from mongo_client import logs_col
+        logs_col.insert_one({
+            "accion"    : accion,
+            "usuario_id": usuario_id,
+            "detalle"   : detalle,
+            "nivel"     : nivel,
+            "timestamp" : datetime.utcnow()
+        })
+    except Exception:
+        pass
+
 
 def _completar_login(usuario):
     ultimo = usuario.UltimoLogin

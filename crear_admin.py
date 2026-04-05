@@ -13,7 +13,7 @@ with app.app_context():
     u = Usuario(
         Nombre='Administrador',
         Username='admin',
-        Email='admin@buentaco.mx',
+        Email='tadeo123al@gmail.com',
         PasswordHash=generate_password_hash('Admin@1234', method='pbkdf2:sha256', salt_length=16),
         Salt='',
         FechaCambioPassword=datetime.utcnow(),

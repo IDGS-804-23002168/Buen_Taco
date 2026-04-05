@@ -109,3 +109,8 @@
 2026-04-04 02:07:31,754 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
 2026-04-04 11:01:18,328 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
 2026-04-04 11:01:54,791 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-04 21:45:05,478 WARNING: accion=LOGIN_FALLIDO usuario_id=None detalle=username=admin no existe
+2026-04-04 21:47:55,799 WARNING: accion=LOGIN_FALLIDO usuario_id=None detalle=username=admin no existe
+2026-04-04 21:48:36,684 INFO: accion=2FA_ENVIADO usuario_id=6 detalle=
+2026-04-04 21:49:29,285 INFO: accion=LOGIN_EXITOSO usuario_id=6 detalle=
+2026-04-04 21:53:31,783 INFO: accion=LOGOUT usuario_id=6 detalle=
