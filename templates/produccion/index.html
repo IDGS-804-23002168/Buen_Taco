@@ -6,7 +6,8 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h4 class="fw-bold mb-0"><i class="bi bi-fire me-2" style="color:#8B3A0E;"></i>Solicitudes de Producción</h4>
+            <h4 class="fw-bold mb-0"><i class="bi bi-fire me-2" style="color:#8B3A0E;"></i>Solicitudes de Producción
+            </h4>
             <small class="text-muted">Solicitudes pendientes y en proceso</small>
         </div>
         <a href="{{ url_for('produccion.historial') }}" class="btn btn-outline-secondary rounded-pill shadow-sm">
@@ -15,17 +16,18 @@
     </div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
-        {% for cat, msg in messages %}
-            <div class="alert alert-{{ cat }} alert-dismissible fade show">
-                {{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        {% endfor %}
+    {% for cat, msg in messages %}
+    <div class="alert alert-{{ cat }} alert-dismissible fade show">
+        {{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
     {% endwith %}
 
-    {% if solicitudes %}
+    {% if solicitudes or ordenes_linea %}
     {% for s in solicitudes %}
     <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px;">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center" style="border-radius: 12px 12px 0 0;">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center"
+            style="border-radius: 12px 12px 0 0;">
             <div>
                 <h5 class="mb-0 fw-bold">
                     Solicitud #{{ s.SolicitudId }}
@@ -34,9 +36,9 @@
             </div>
             <div class="d-flex align-items-center gap-2">
                 {% if s.Estado == 'Pendiente' %}
-                    <span class="badge bg-warning text-dark fs-6"><i class="bi bi-hourglass-split me-1"></i>Pendiente</span>
+                <span class="badge bg-warning text-dark fs-6"><i class="bi bi-hourglass-split me-1"></i>Pendiente</span>
                 {% elif s.Estado == 'En Produccion' %}
-                    <span class="badge bg-primary fs-6"><i class="bi bi-gear-fill me-1"></i>En Producción</span>
+                <span class="badge bg-primary fs-6"><i class="bi bi-gear-fill me-1"></i>En Producción</span>
                 {% endif %}
             </div>
         </div>
@@ -62,36 +64,80 @@
             <!-- Acciones -->
             <div class="d-flex gap-2">
                 {% if s.Estado == 'Pendiente' %}
-                    <form action="{{ url_for('produccion.iniciar', solicitud_id=s.SolicitudId) }}"
-                          method="POST" class="d-inline">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button class="btn btn-success rounded-pill px-4">
-                            <i class="bi bi-play-fill me-1"></i> Iniciar Producción
-                        </button>
-                    </form>
-                    <form action="{{ url_for('produccion.rechazar', solicitud_id=s.SolicitudId) }}"
-                          method="POST" class="d-inline"
-                          data-confirm="¿Rechazar solicitud #{{ s.SolicitudId }}?">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button class="btn btn-outline-danger rounded-pill px-4">
-                            <i class="bi bi-x-circle me-1"></i> Rechazar
-                        </button>
-                    </form>
+                <form action="{{ url_for('produccion.iniciar', solicitud_id=s.SolicitudId) }}" method="POST"
+                    class="d-inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn btn-success rounded-pill px-4">
+                        <i class="bi bi-play-fill me-1"></i> Iniciar Producción
+                    </button>
+                </form>
+                <form action="{{ url_for('produccion.rechazar', solicitud_id=s.SolicitudId) }}" method="POST"
+                    class="d-inline" data-confirm="¿Rechazar solicitud #{{ s.SolicitudId }}?">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn btn-outline-danger rounded-pill px-4">
+                        <i class="bi bi-x-circle me-1"></i> Rechazar
+                    </button>
+                </form>
 
                 {% elif s.Estado == 'En Produccion' %}
-                    <form action="{{ url_for('produccion.finalizar', solicitud_id=s.SolicitudId) }}"
-                          method="POST" class="d-inline"
-                          data-confirm="¿Finalizar producción de solicitud #{{ s.SolicitudId }}?">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button class="btn btn-primary rounded-pill px-4">
-                            <i class="bi bi-check-circle-fill me-1"></i> Finalizar Producción
-                        </button>
-                    </form>
-                    <a href="{{ url_for('produccion.detalle', solicitud_id=s.SolicitudId) }}"
-                       class="btn btn-outline-secondary rounded-pill px-4">
-                        <i class="bi bi-eye me-1"></i> Ver Detalle
-                    </a>
+                <form action="{{ url_for('produccion.finalizar', solicitud_id=s.SolicitudId) }}" method="POST"
+                    class="d-inline" data-confirm="¿Finalizar producción de solicitud #{{ s.SolicitudId }}?">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn btn-primary rounded-pill px-4">
+                        <i class="bi bi-check-circle-fill me-1"></i> Finalizar Producción
+                    </button>
+                </form>
+                <a href="{{ url_for('produccion.detalle', solicitud_id=s.SolicitudId) }}"
+                    class="btn btn-outline-secondary rounded-pill px-4">
+                    <i class="bi bi-eye me-1"></i> Ver Detalle
+                </a>
                 {% endif %}
+            </div>
+        </div>
+    </div>
+    </div>
+    {% endfor %}
+
+    <!-- OTRAS ORDENES DIRECTAS EN LINEA -->
+    {% for o in ordenes_linea %}
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px; border-left: 4px solid #198754 !important;">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center"
+            style="border-radius: 12px 12px 0 0;">
+            <div>
+                <h5 class="mb-0 fw-bold">
+                    Órden Venta en Línea
+                    <small class="text-muted ms-2">{{ o.FechaInicio.strftime('%d/%m/%Y %H:%M') }}</small>
+                    <span class="badge bg-success ms-2"><i class="bi bi-globe me-1"></i>Venta en Línea</span>
+                </h5>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-primary fs-6"><i class="bi bi-gear-fill me-1"></i>En Producción</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <table class="table table-sm table-bordered mb-3">
+                <thead class="table-light">
+                    <tr>
+                        <th>Producto</th>
+                        <th class="text-center">Cantidad Solicitada</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><i class="bi bi-egg-fried text-muted me-1"></i>{{ o.producto.Nombre }}</td>
+                        <td class="text-center fw-bold">{{ o.CantidadProducir }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="d-flex gap-2">
+                <form action="{{ url_for('produccion.finalizar_orden', orden_id=o.OrdenProduccionId) }}" method="POST"
+                    class="d-inline" data-confirm="¿Finalizar platillo en línea de {{ o.producto.Nombre }}?">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn btn-primary rounded-pill px-4">
+                        <i class="bi bi-check-circle-fill me-1"></i> Finalizar Platillo
+                    </button>
+                </form>
             </div>
         </div>
     </div>

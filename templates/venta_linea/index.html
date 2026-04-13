@@ -106,28 +106,40 @@
 
         <div class="card-body">
           <div class="card-name">{{ p.Nombre }}</div>
-<div class="card-price">${{ "%.2f"|format(p.Precio) }}</div>
+          <div class="card-price">${{ "%.2f"|format(p.Precio) }}</div>
+          
+          <div class="availability-info" style="margin-bottom: 0.5rem;">
+            {% if p.disponibilidad > 0 %}
+              <span style="color: #2e7d32; font-weight: bold; font-size: 0.85rem;">
+                Disponible <!--{{ p.disponibilidad }}-->
+              </span>
+            {% else %}
+              <span style="color: #c62828; font-weight: bold; font-size: 0.85rem;">
+                Agotado
+              </span>
+            {% endif %}
+          </div>
+
           {% if p.Descripcion %}
             <div class="card-desc">{{ p.Descripcion }}</div>
           {% endif %}
 
-      <form method="POST" action="{{ url_for('venta_linea.index', categoria=categoria_sel, busqueda=busqueda) }}" class="add-form">
+          <form method="POST" action="{{ url_for('venta_linea.index', categoria=categoria_sel, busqueda=busqueda) }}" class="add-form">
+            <input type="hidden" name="csrf_token" value="{{ agregar_form.csrf_token._value() }}">
+            {{ agregar_form.producto_id(value=p.ProductoId) }}
+            {{ agregar_form.notas(
+                  placeholder="Notas (ej: sin cebolla)…",
+                  maxlength="200"
+               ) }}
 
- <input type="hidden" name="csrf_token" value="{{ agregar_form.csrf_token._value() }}">
-
-  {{ agregar_form.producto_id(value=p.ProductoId) }}
-
-  {{ agregar_form.notas(
-        placeholder="Notas (ej: sin cebolla)…",
-        maxlength="200"
-     ) }}
-
-  <div class="add-row">
-    {{ agregar_form.cantidad(value=1, min=1) }}
-    <button type="submit" name="add-submit" class="btn-add">＋ Agregar</button>
-  </div>
-
-</form>
+            <div class="add-row">
+              {{ agregar_form.cantidad(value=1, min=1, max=p.disponibilidad if p.disponibilidad > 0 else 1) }}
+              <button type="submit" name="add-submit" class="btn-add" 
+                      {% if p.disponibilidad <= 0 %}disabled style="background-color: #ccc; cursor: not-allowed;"{% endif %}>
+                {% if p.disponibilidad > 0 %}＋ Agregar{% else %}Agotado{% endif %}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     {% endfor %}

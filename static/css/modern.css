@@ -1,0 +1,143 @@
+/* modern.css - Premium Styles for Buen Taco */
+
+:root {
+    --primary-color: #8B3A0E;
+    --primary-light: #A65D37;
+    --secondary-color: #EDEDED;
+    --accent-color: #D97706; /* Keep it subtle */
+    --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    --glass-bg: rgba(255, 255, 255, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.4);
+}
+
+/* Floating Logo Styles */
+.navbar-brand {
+    position: relative;
+    z-index: 1001;
+}
+
+.logo-floating {
+    height: 120px !important; /* Significantly larger */
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+    position: absolute;
+    top: -10px;
+    left: 0;
+    z-index: 1002;
+}
+
+.logo-floating:hover {
+    transform: scale(1.1) rotate(2deg);
+    filter: drop-shadow(0 8px 15px rgba(0,0,0,0.4));
+}
+
+/* Navbar Modernization */
+.navbar-custom {
+    backdrop-filter: blur(10px);
+    background-color: rgba(139, 58, 14, 0.95) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.nav-link {
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    padding: 0.5rem 1rem !important;
+    transition: all 0.2s;
+}
+
+.nav-link:hover {
+    color: #fff !important;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+}
+
+/* Premium Card (Glassmorphism inspired) */
+.premium-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.premium-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+}
+
+/* Modern Tables */
+.modern-table-container {
+    border-radius: 15px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.modern-table thead th {
+    background-color: var(--primary-color);
+    color: white;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    padding: 1.2rem;
+    border: none;
+}
+
+.modern-table tbody tr {
+    transition: all 0.2s;
+}
+
+.modern-table tbody tr:hover {
+    background-color: rgba(139, 58, 14, 0.03);
+}
+
+.modern-table td {
+    padding: 1rem 1.2rem;
+    vertical-align: middle;
+}
+
+/* Buttons */
+.btn-premium {
+    border-radius: 10px;
+    padding: 0.6rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.btn-premium-primary {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+}
+
+.btn-premium-primary:hover {
+    background: var(--primary-light);
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(139, 58, 14, 0.3);
+}
+
+/* Headings */
+.premium-heading {
+    position: relative;
+    display: inline-block;
+    padding-bottom: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.premium-heading::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: var(--primary-color);
+    border-radius: 3px;
+}

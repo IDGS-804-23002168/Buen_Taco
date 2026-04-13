@@ -54,10 +54,15 @@
                     </div>
 
                     <h5 class="fw-bold mb-1">{{ producto.Nombre }}</h5>
-                    <p class="text-muted small mb-3">
+                    <p class="text-muted small mb-2">
                         <span class="badge bg-light text-dark border">{{ producto.categoria.Nombre if producto.categoria
                             else 'Sin Categoría' }}</span>
                     </p>
+                    <div class="mb-3">
+                        <span class="small fw-bold {{ 'text-success' if producto.disponible > 0 else 'text-danger' }}">
+                            Disponible: {{ producto.disponible }}
+                        </span>
+                    </div>
 
                     <div class="input-group input-group-sm mb-3 w-75 mx-auto">
                         <button class="btn btn-outline-secondary" type="button"
@@ -68,7 +73,7 @@
                             id="input_{{ producto.ProductoId }}" name="prod_{{ producto.ProductoId }}" value="0" min="0"
                             readonly>
                         <button class="btn btn-outline-secondary" type="button"
-                            onclick="modificarCantidad('{{ producto.ProductoId }}', 1)">
+                            onclick="modificarCantidad('{{ producto.ProductoId }}', 1, {{ producto.disponible }})">
                             <i class="bi bi-plus"></i>
                         </button>
                     </div>
@@ -138,14 +143,16 @@
     });
 
     // --- LÓGICA DEL CARRITO ---
-    function modificarCantidad(id, cambio) {
+    function modificarCantidad(id, cambio, maxDisponible = 9999) {
         let input = document.getElementById('input_' + id);
         let valorActual = parseInt(input.value) || 0;
         let nuevoValor = valorActual + cambio;
 
-        if (nuevoValor >= 0) {
+        if (nuevoValor >= 0 && nuevoValor <= maxDisponible) {
             input.value = nuevoValor;
             actualizarTotal();
+        } else if (nuevoValor > maxDisponible) {
+            alert("No puedes solicitar más de lo disponible (" + maxDisponible + ")");
         }
     }
 

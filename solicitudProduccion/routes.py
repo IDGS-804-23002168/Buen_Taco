@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from functools import wraps
 from . import solicitudes_bp
 from models import db, Producto, SolicitudProduccion, SolicitudDetalle, CategoriaProducto
+from utils.stock_util import obtener_disponibilidad_producto
 
 
 # --- DECORADOR PARA LOS ROLES ---
@@ -45,8 +46,15 @@ def index():
                 db.session.add(nueva_solicitud)
                 db.session.flush()  # Obtener el SolicitudId
 
-                # Crear un detalle por cada producto
+                # Crear un detalle por cada producto, validando stock nuevamente por seguridad
                 for producto_id, cantidad in items:
+                    stock_disponible = obtener_disponibilidad_producto(producto_id)
+                    if cantidad > stock_disponible:
+                        producto = Producto.query.get(producto_id)
+                        db.session.rollback()
+                        flash(f"Error: No hay suficiente stock para '{producto.Nombre}'. Disponible: {stock_disponible}.", "danger")
+                        return redirect(url_for("solicitudes.index"))
+
                     detalle = SolicitudDetalle(
                         SolicitudId=nueva_solicitud.SolicitudId,
                         ProductoId=producto_id,
@@ -72,6 +80,8 @@ def index():
         return redirect(url_for("solicitudes.index"))
 
     productos = Producto.query.filter_by(Activo=True).all()
+    for p in productos:
+        p.disponible = obtener_disponibilidad_producto(p.ProductoId) # Inyectar disponibilidad
     categorias = CategoriaProducto.query.all()
     return render_template(
         "solicitudProduccion/index.html", productos=productos, categorias=categorias

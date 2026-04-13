@@ -184,13 +184,14 @@ class FiltroCategoriaForm(FlaskForm):
 # ---------------------------------------------------------------------------
 class MateriaPrimaForm(FlaskForm):
     nombre = StringField('Nombre del Insumo', validators=[
-        DataRequired(message="El nombre es obligatorio")
+        DataRequired(message="El nombre es obligatorio."),
+        Length(min=2, max=100, message="El nombre debe tener entre 2 y 100 caracteres.")
     ])
     unidad_id = SelectField('Unidad de Medida', coerce=int, validators=[
-        DataRequired(message="Selecciona una unidad")
+        DataRequired(message="Selecciona una unidad de medida válida.")
     ])
     merma = DecimalField('Porcentaje de Merma (%)', default=0.0, validators=[
-        NumberRange(min=0, max=100, message="La merma debe estar entre 0 y 100")
+        NumberRange(min=0, max=80, message="Para evitar desperdicios severos, la merma máxima permitida es del 80%.")
     ])
     submit = SubmitField('Guardar')
 

@@ -1,43 +1,172 @@
 {% extends "layout.html" %}
-{% from "recetas/_macros_recetas.html" import flash_messages, encabezado, campo, campo_select, botones %}
+{% from "recetas/_macros_recetas.html" import flash_messages, botones %}
 {% block content %}
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/recetas.css') }}">
 
 <div class="row justify-content-center">
-  <div class="col-md-6">
-    <div class="card shadow-sm">
-      <div class="card-header receta-card-header">
-        <i class="bi bi-pencil-square me-2"></i>
-        {% if receta %}Editar ingrediente{% else %}Agregar ingrediente{% endif %}
-        — <span class="fw-semibold">{{ producto.Nombre }}</span>
+  <div class="col-md-10">
+    <div class="card shadow-sm border-0">
+      <div class="card-header receta-card-header py-3">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <i class="bi bi-journal-plus me-2"></i>
+            <span class="fw-bold">Gestionar Receta</span> — 
+            <span class="text-white-50">{{ producto.Nombre }}</span>
+          </div>
+          <button type="button" class="btn btn-sm btn-light" onclick="agregarFila()">
+            <i class="bi bi-plus-circle me-1"></i>Agregar Ingrediente
+          </button>
+        </div>
       </div>
-      <div class="card-body">
+      <div class="card-body p-4">
 
         {{ flash_messages() }}
 
-        <form method="POST" novalidate>
-          {{ form.hidden_tag() }}
+        <form method="POST" id="recetaForm">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-          {% if receta %}
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Materia Prima</label>
-            <input type="text" class="form-control"
-                   value="{{ receta.materia_prima.Nombre }}" disabled>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle" id="tablaIngredientes">
+              <thead class="table-light">
+                <tr>
+                  <th style="width: 50%;">Materia Prima</th>
+                  <th style="width: 30%;">Cantidad Base</th>
+                  <th style="width: 10%;" class="text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if recetas %}
+                  {% for r in recetas %}
+                  <tr class="ingrediente-row">
+                    <td>
+                      <select name="materia_prima_id[]" class="form-select select-materia" required>
+                        <option value="">Selecciona...</option>
+                        {% for m in materias %}
+                        <option value="{{ m.MateriaPrimaId }}" 
+                                {% if m.MateriaPrimaId == r.MateriaPrimaId %}selected{% endif %}>
+                          {{ m.Nombre }} ({{ m.unidad.Abreviatura }})
+                        </option>
+                        {% endfor %}
+                      </select>
+                    </td>
+                    <td>
+                      <div class="input-group">
+                        <input type="number" step="0.001" name="cantidad_base[]" 
+                               class="form-control" value="{{ r.CantidadBase }}" required min="0.001">
+                        <span class="input-group-text unidad-abreviatura">
+                          {{ r.materia_prima.unidad.Abreviatura }}
+                        </span>
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarFila(this)">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                {% else %}
+                  <!-- Fila vacía inicial si no hay ingredientes -->
+                  <tr class="ingrediente-row">
+                    <td>
+                      <select name="materia_prima_id[]" class="form-select select-materia" required onchange="actualizarUnidad(this)">
+                        <option value="">Selecciona...</option>
+                        {% for m in materias %}
+                        <option value="{{ m.MateriaPrimaId }}" data-unidad="{{ m.unidad.Abreviatura }}">
+                          {{ m.Nombre }} ({{ m.unidad.Abreviatura }})
+                        </option>
+                        {% endfor %}
+                      </select>
+                    </td>
+                    <td>
+                      <div class="input-group">
+                        <input type="number" step="0.001" name="cantidad_base[]" 
+                               class="form-control" required min="0.001">
+                        <span class="input-group-text unidad-abreviatura">-</span>
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarFila(this)">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
           </div>
-          {% else %}
-          {{ campo_select(form.materia_prima_id) }}
-          {% endif %}
 
-          {{ campo(form.cantidad_base) }}
-          <div class="form-text mt-n2 mb-3">Cantidad usada por unidad producida.</div>
-
-          {{ botones(url_for('recetas.ver', producto_id=producto.ProductoId)) }}
+          <div class="mt-4 pt-3 border-top d-flex justify-content-between">
+            <button type="button" class="btn btn-outline-secondary" onclick="window.history.back()">
+              <i class="bi bi-x-circle me-1"></i>Cancelar
+            </button>
+            <button type="submit" class="btn receta-btn-primary px-4">
+              <i class="bi bi-check-all me-1"></i>Guardar Cambios
+            </button>
+          </div>
         </form>
 
       </div>
     </div>
   </div>
 </div>
+
+<!-- Template para nueva fila (oculto) -->
+<template id="rowTemplate">
+  <tr class="ingrediente-row">
+    <td>
+      <select name="materia_prima_id[]" class="form-select select-materia" required onchange="actualizarUnidad(this)">
+        <option value="">Selecciona...</option>
+        {% for m in materias %}
+        <option value="{{ m.MateriaPrimaId }}" data-unidad="{{ m.unidad.Abreviatura }}">
+          {{ m.Nombre }} ({{ m.unidad.Abreviatura }})
+        </option>
+        {% endfor %}
+      </select>
+    </td>
+    <td>
+      <div class="input-group">
+        <input type="number" step="0.001" name="cantidad_base[]" class="form-control" required min="0.001">
+        <span class="input-group-text unidad-abreviatura">-</span>
+      </div>
+    </td>
+    <td class="text-center">
+      <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarFila(this)">
+        <i class="bi bi-trash"></i>
+      </button>
+    </td>
+  </tr>
+</template>
+
+<script>
+function agregarFila() {
+    const template = document.getElementById('rowTemplate');
+    const tbody = document.querySelector('#tablaIngredientes tbody');
+    const clone = template.content.cloneNode(true);
+    tbody.appendChild(clone);
+}
+
+function eliminarFila(btn) {
+    const rows = document.querySelectorAll('.ingrediente-row');
+    if (rows.length > 1) {
+        btn.closest('tr').remove();
+    } else {
+        alert('La receta debe tener al menos un ingrediente.');
+    }
+}
+
+function actualizarUnidad(select) {
+    const opt = select.options[select.selectedIndex];
+    const unidad = opt.getAttribute('data-unidad') || '-';
+    const row = select.closest('tr');
+    row.querySelector('.unidad-abreviatura').textContent = unidad;
+}
+
+// Inicializar unidades para filas existentes
+document.querySelectorAll('.select-materia').forEach(select => {
+    select.addEventListener('change', () => actualizarUnidad(select));
+});
+</script>
 
 {% endblock %}

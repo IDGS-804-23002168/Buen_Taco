@@ -7,16 +7,14 @@
 {{ flash_messages() }}
 
 <!-- Encabezado -->
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-5">
   <div>
-    <h4 class="fw-bold mb-0">
-      <i class="bi bi-graph-up-arrow me-2" style="color:#8B3A0E;"></i>Costo y Utilidad
-    </h4>
-    <small class="text-muted">Análisis financiero de rentabilidad por producto</small>
+    <h2 class="mb-0 fw-bold premium-heading">Costo y Utilidad</h2>
+    <p class="text-muted mb-0">Análisis financiero de rentabilidad por producto</p>
   </div>
   <a href="{{ url_for('costo_utilidad.exportar_csv') }}"
-     class="btn btn-sm cu-btn-primary px-3 py-2">
-    <i class="bi bi-download me-1"></i>Exportar CSV
+     class="btn btn-premium btn-premium-primary">
+    <i class="bi bi-download me-2"></i>Exportar CSV
   </a>
 </div>
 
@@ -79,9 +77,9 @@
 </div>
 
 <!-- Tabla -->
-<div class="card border-0 shadow-sm">
-  <div class="card-body p-0">
-    <table class="table table-hover align-middle mb-0 table-cu">
+<div class="premium-card">
+  <div class="modern-table-container">
+    <table class="table table-hover align-middle mb-0 modern-table">
       <thead>
         <tr>
           <th>Producto</th>

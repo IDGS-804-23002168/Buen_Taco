@@ -114,3 +114,276 @@
 2026-04-04 21:48:36,684 INFO: accion=2FA_ENVIADO usuario_id=6 detalle=
 2026-04-04 21:49:29,285 INFO: accion=LOGIN_EXITOSO usuario_id=6 detalle=
 2026-04-04 21:53:31,783 INFO: accion=LOGOUT usuario_id=6 detalle=
+2026-04-06 16:20:14,431 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
+2026-04-06 16:20:33,836 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-06 17:35:08,329 ERROR: Error al enviar correo 2FA a mario.reancont@outlook.com: [WinError 10060] Se produjo un error durante el intento de conexión ya que la parte conectada no respondió adecuadamente tras un periodo de tiempo, o bien se produjo un error en la conexión establecida ya que el host conectado no ha podido responder
+2026-04-06 17:35:08,330 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
+2026-04-06 17:36:42,747 ERROR: Error al enviar correo 2FA a mario.reancont@outlook.com: [WinError 10060] Se produjo un error durante el intento de conexión ya que la parte conectada no respondió adecuadamente tras un periodo de tiempo, o bien se produjo un error en la conexión establecida ya que el host conectado no ha podido responder
+2026-04-06 17:36:42,748 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
+2026-04-06 17:40:20,379 ERROR: Error al enviar correo 2FA a mario.reancont@outlook.com: [WinError 10060] Se produjo un error durante el intento de conexión ya que la parte conectada no respondió adecuadamente tras un periodo de tiempo, o bien se produjo un error en la conexión establecida ya que el host conectado no ha podido responder
+2026-04-06 17:40:20,380 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
+2026-04-06 17:42:29,505 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
+2026-04-06 17:42:47,124 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-06 17:43:21,523 INFO: accion=LOGOUT usuario_id=1 detalle=
+2026-04-06 17:43:40,400 INFO: accion=2FA_ENVIADO usuario_id=3 detalle=
+2026-04-06 17:43:40,419 INFO: accion=2FA_ENVIADO usuario_id=3 detalle=
+2026-04-06 17:43:57,939 INFO: accion=LOGIN_EXITOSO usuario_id=3 detalle=
+2026-04-06 17:49:05,179 INFO: accion=LOGOUT usuario_id=3 detalle=
+2026-04-06 17:49:24,243 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
+2026-04-06 17:49:41,485 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-06 18:52:07,610 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
+2026-04-06 18:52:29,580 WARNING: accion=2FA_FALLIDO usuario_id=1 detalle=
+2026-04-06 18:52:42,123 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-07 17:27:44,505 ERROR: Error al enviar correo 2FA a mario.reancont@outlook.com: [WinError 10060] Se produjo un error durante el intento de conexión ya que la parte conectada no respondió adecuadamente tras un periodo de tiempo, o bien se produjo un error en la conexión establecida ya que el host conectado no ha podido responder
+2026-04-07 17:27:44,507 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
+2026-04-07 17:29:15,267 ERROR: Error al enviar correo 2FA a mario.reancont@outlook.com: [WinError 10060] Se produjo un error durante el intento de conexión ya que la parte conectada no respondió adecuadamente tras un periodo de tiempo, o bien se produjo un error en la conexión establecida ya que el host conectado no ha podido responder
+2026-04-07 17:29:15,268 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
+2026-04-07 17:30:11,723 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
+2026-04-07 17:30:29,120 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-07 17:57:32,106 WARNING: accion=LOGIN_FALLIDO usuario_id=5 detalle=intento 1
+2026-04-07 17:57:32,223 WARNING: accion=LOGIN_FALLIDO usuario_id=5 detalle=intento 1
+2026-04-07 17:59:04,773 INFO: accion=LOGIN_EXITOSO usuario_id=5 detalle=
+2026-04-07 17:59:23,406 INFO: accion=CAMBIO_PASSWORD usuario_id=5 detalle=
+2026-04-07 17:59:48,642 INFO: accion=LOGOUT usuario_id=5 detalle=
+2026-04-07 18:00:21,720 INFO: accion=2FA_ENVIADO usuario_id=2 detalle=
+2026-04-07 18:00:41,068 INFO: accion=LOGIN_EXITOSO usuario_id=2 detalle=
+2026-04-07 18:20:18,104 INFO: accion=LOGOUT usuario_id=1 detalle=
+2026-04-07 18:23:18,072 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
+2026-04-07 18:23:38,544 WARNING: accion=2FA_FALLIDO usuario_id=1 detalle=
+2026-04-07 18:23:47,706 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-08 17:46:01,406 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
+2026-04-08 17:46:49,003 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-10 01:27:33,372 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: Token2FA, Token2FAExpiracion
+2026-04-10 01:27:33,372 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: Token2FA, Token2FAExpiracion
+2026-04-10 01:27:37,926 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
+2026-04-10 01:27:37,926 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
+2026-04-10 01:28:02,456 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: Token2FA, Token2FAExpiracion
+2026-04-10 01:28:02,456 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: Token2FA, Token2FAExpiracion
+2026-04-10 01:28:02,466 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: UltimoLogin
+2026-04-10 01:28:02,466 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: UltimoLogin
+2026-04-10 01:28:02,474 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-10 01:28:02,474 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-10 01:29:26,509 INFO: accion=INSERT_SolicitudProduccion usuario_id=1 nombre=Admin detalle=Registro creado con ID: 11
+2026-04-10 01:29:26,509 INFO: accion=INSERT_SolicitudProduccion usuario_id=1 nombre=Admin detalle=Registro creado con ID: 11
+2026-04-10 01:29:26,517 INFO: accion=INSERT_SolicitudDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 23
+2026-04-10 01:29:26,517 INFO: accion=INSERT_SolicitudDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 23
+2026-04-10 15:42:59,460 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: IntentosFallidos
+2026-04-10 15:42:59,460 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: IntentosFallidos
+2026-04-10 15:42:59,563 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: IntentosFallidos
+2026-04-10 15:42:59,563 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: IntentosFallidos
+2026-04-10 15:42:59,574 WARNING: accion=LOGIN_FALLIDO usuario_id=1 detalle=intento 1
+2026-04-10 15:42:59,574 WARNING: accion=LOGIN_FALLIDO usuario_id=1 detalle=intento 1
+2026-04-10 15:42:59,576 WARNING: accion=LOGIN_FALLIDO usuario_id=1 detalle=intento 1
+2026-04-10 15:42:59,576 WARNING: accion=LOGIN_FALLIDO usuario_id=1 detalle=intento 1
+2026-04-10 15:43:21,027 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: IntentosFallidos, Token2FA, Token2FAExpiracion
+2026-04-10 15:43:21,027 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: IntentosFallidos, Token2FA, Token2FAExpiracion
+2026-04-10 15:43:24,699 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
+2026-04-10 15:43:24,699 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
+2026-04-10 15:43:48,428 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: Token2FA, Token2FAExpiracion
+2026-04-10 15:43:48,428 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: Token2FA, Token2FAExpiracion
+2026-04-10 15:43:48,440 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: UltimoLogin
+2026-04-10 15:43:48,440 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: UltimoLogin
+2026-04-10 15:43:48,450 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-10 15:43:48,450 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-10 15:53:14,913 INFO: accion=INSERT_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 7
+2026-04-10 15:53:14,913 INFO: accion=INSERT_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 7
+2026-04-10 15:53:15,036 INFO: accion=INSERT_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 8
+2026-04-10 15:53:15,036 INFO: accion=INSERT_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 8
+2026-04-10 17:16:53,784 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: Token2FA, Token2FAExpiracion
+2026-04-10 17:16:53,784 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: Token2FA, Token2FAExpiracion
+2026-04-10 17:17:15,778 ERROR: Error al enviar correo 2FA a mario.reancont@outlook.com: [WinError 10060] Se produjo un error durante el intento de conexión ya que la parte conectada no respondió adecuadamente tras un periodo de tiempo, o bien se produjo un error en la conexión establecida ya que el host conectado no ha podido responder
+2026-04-10 17:17:15,778 ERROR: Error al enviar correo 2FA a mario.reancont@outlook.com: [WinError 10060] Se produjo un error durante el intento de conexión ya que la parte conectada no respondió adecuadamente tras un periodo de tiempo, o bien se produjo un error en la conexión establecida ya que el host conectado no ha podido responder
+2026-04-10 17:17:15,779 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
+2026-04-10 17:17:15,779 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
+2026-04-10 17:17:25,366 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: Token2FA, Token2FAExpiracion
+2026-04-10 17:17:25,366 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: Token2FA, Token2FAExpiracion
+2026-04-10 17:17:28,229 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
+2026-04-10 17:17:28,229 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
+2026-04-10 17:17:49,400 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: Token2FA, Token2FAExpiracion
+2026-04-10 17:17:49,400 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: Token2FA, Token2FAExpiracion
+2026-04-10 17:17:49,453 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: UltimoLogin
+2026-04-10 17:17:49,453 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: UltimoLogin
+2026-04-10 17:17:49,461 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-10 17:17:49,461 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-10 17:22:49,609 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: Token2FA, Token2FAExpiracion
+2026-04-10 17:22:49,609 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: Token2FA, Token2FAExpiracion
+2026-04-10 17:22:53,257 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
+2026-04-10 17:22:53,257 INFO: accion=2FA_ENVIADO usuario_id=1 detalle=
+2026-04-10 17:23:12,790 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: Token2FA, Token2FAExpiracion
+2026-04-10 17:23:12,790 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: Token2FA, Token2FAExpiracion
+2026-04-10 17:23:12,842 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: UltimoLogin
+2026-04-10 17:23:12,842 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 1 modificado en campos: UltimoLogin
+2026-04-10 17:23:12,852 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-10 17:23:12,852 INFO: accion=LOGIN_EXITOSO usuario_id=1 detalle=
+2026-04-10 17:24:36,712 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 2 modificado en campos: Token2FA, Token2FAExpiracion
+2026-04-10 17:24:36,712 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 2 modificado en campos: Token2FA, Token2FAExpiracion
+2026-04-10 17:24:39,245 INFO: accion=2FA_ENVIADO usuario_id=2 detalle=
+2026-04-10 17:24:39,245 INFO: accion=2FA_ENVIADO usuario_id=2 detalle=
+2026-04-10 17:24:50,242 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 2 modificado en campos: Token2FA, Token2FAExpiracion
+2026-04-10 17:24:50,242 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 2 modificado en campos: Token2FA, Token2FAExpiracion
+2026-04-10 17:24:50,253 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 2 modificado en campos: UltimoLogin
+2026-04-10 17:24:50,253 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 2 modificado en campos: UltimoLogin
+2026-04-10 17:24:50,262 INFO: accion=LOGIN_EXITOSO usuario_id=2 detalle=
+2026-04-10 17:24:50,262 INFO: accion=LOGIN_EXITOSO usuario_id=2 detalle=
+2026-04-10 17:27:44,601 INFO: accion=INSERT_Direccion usuario_id=2 nombre=Mario Lozano detalle=Registro creado con ID: 2
+2026-04-10 17:27:44,601 INFO: accion=INSERT_Direccion usuario_id=2 nombre=Mario Lozano detalle=Registro creado con ID: 2
+2026-04-10 17:27:44,614 INFO: accion=INSERT_Pedido usuario_id=2 nombre=Mario Lozano detalle=Registro creado con ID: 2
+2026-04-10 17:27:44,614 INFO: accion=INSERT_Pedido usuario_id=2 nombre=Mario Lozano detalle=Registro creado con ID: 2
+2026-04-10 17:27:44,630 INFO: accion=INSERT_PedidoDetalle usuario_id=2 nombre=Mario Lozano detalle=Registro creado con ID: 3
+2026-04-10 17:27:44,630 INFO: accion=INSERT_PedidoDetalle usuario_id=2 nombre=Mario Lozano detalle=Registro creado con ID: 3
+2026-04-10 17:27:44,632 INFO: accion=INSERT_Venta usuario_id=2 nombre=Mario Lozano detalle=Registro creado con ID: 8
+2026-04-10 17:27:44,632 INFO: accion=INSERT_Venta usuario_id=2 nombre=Mario Lozano detalle=Registro creado con ID: 8
+2026-04-10 17:27:44,637 INFO: accion=INSERT_VentaDetalle usuario_id=2 nombre=Mario Lozano detalle=Registro creado con ID: 15
+2026-04-10 17:27:44,637 INFO: accion=INSERT_VentaDetalle usuario_id=2 nombre=Mario Lozano detalle=Registro creado con ID: 15
+2026-04-10 17:27:44,650 INFO: accion=INSERT_MovimientoMateriaPrima usuario_id=2 nombre=Mario Lozano detalle=Registro creado con ID: 43
+2026-04-10 17:27:44,650 INFO: accion=INSERT_MovimientoMateriaPrima usuario_id=2 nombre=Mario Lozano detalle=Registro creado con ID: 43
+2026-04-10 17:27:44,652 INFO: accion=UPDATE_MateriaPrima usuario_id=2 nombre=Mario Lozano detalle=Registro ID 1 modificado en campos: stock
+2026-04-10 17:27:44,652 INFO: accion=UPDATE_MateriaPrima usuario_id=2 nombre=Mario Lozano detalle=Registro ID 1 modificado en campos: stock
+2026-04-10 17:27:44,666 INFO: accion=INSERT_MovimientoMateriaPrima usuario_id=2 nombre=Mario Lozano detalle=Registro creado con ID: 44
+2026-04-10 17:27:44,666 INFO: accion=INSERT_MovimientoMateriaPrima usuario_id=2 nombre=Mario Lozano detalle=Registro creado con ID: 44
+2026-04-10 17:27:44,667 INFO: accion=INSERT_OrdenProduccion usuario_id=2 nombre=Mario Lozano detalle=Registro creado con ID: 15
+2026-04-10 17:27:44,667 INFO: accion=INSERT_OrdenProduccion usuario_id=2 nombre=Mario Lozano detalle=Registro creado con ID: 15
+2026-04-10 17:27:44,669 INFO: accion=INSERT_Pago usuario_id=2 nombre=Mario Lozano detalle=Registro creado con ID: 2
+2026-04-10 17:27:44,669 INFO: accion=INSERT_Pago usuario_id=2 nombre=Mario Lozano detalle=Registro creado con ID: 2
+2026-04-10 17:27:44,670 INFO: accion=UPDATE_MateriaPrima usuario_id=2 nombre=Mario Lozano detalle=Registro ID 2 modificado en campos: stock
+2026-04-10 17:27:44,670 INFO: accion=UPDATE_MateriaPrima usuario_id=2 nombre=Mario Lozano detalle=Registro ID 2 modificado en campos: stock
+2026-04-10 17:29:16,323 INFO: accion=UPDATE_OrdenProduccion usuario_id=1 nombre=Admin detalle=Registro ID 15 modificado en campos: FechaFin, Estado
+2026-04-10 17:29:16,323 INFO: accion=UPDATE_OrdenProduccion usuario_id=1 nombre=Admin detalle=Registro ID 15 modificado en campos: FechaFin, Estado
+2026-04-10 17:34:29,915 INFO: accion=INSERT_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 9
+2026-04-10 17:34:29,915 INFO: accion=INSERT_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 9
+2026-04-10 17:35:18,702 INFO: accion=INSERT_Compra usuario_id=1 nombre=Admin detalle=Registro creado con ID: 9
+2026-04-10 17:35:18,702 INFO: accion=INSERT_Compra usuario_id=1 nombre=Admin detalle=Registro creado con ID: 9
+2026-04-10 17:35:18,725 INFO: accion=INSERT_CompraDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 12
+2026-04-10 17:35:18,725 INFO: accion=INSERT_CompraDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 12
+2026-04-10 17:35:18,727 INFO: accion=INSERT_MovimientoMateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 45
+2026-04-10 17:35:18,727 INFO: accion=INSERT_MovimientoMateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 45
+2026-04-10 17:35:18,735 INFO: accion=UPDATE_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro ID 9 modificado en campos: stock
+2026-04-10 17:35:18,735 INFO: accion=UPDATE_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro ID 9 modificado en campos: stock
+2026-04-10 17:37:18,590 INFO: accion=INSERT_Producto usuario_id=1 nombre=Admin detalle=Registro creado con ID: 6
+2026-04-10 17:37:18,590 INFO: accion=INSERT_Producto usuario_id=1 nombre=Admin detalle=Registro creado con ID: 6
+2026-04-10 17:37:18,603 INFO: accion=UPDATE_Producto usuario_id=1 nombre=Admin detalle=Registro ID 6 modificado en campos: imagen_url
+2026-04-10 17:37:18,603 INFO: accion=UPDATE_Producto usuario_id=1 nombre=Admin detalle=Registro ID 6 modificado en campos: imagen_url
+2026-04-10 17:37:48,012 INFO: accion=INSERT_Receta usuario_id=1 nombre=Admin detalle=Registro creado con ID: 6, 1
+2026-04-10 17:37:48,012 INFO: accion=INSERT_Receta usuario_id=1 nombre=Admin detalle=Registro creado con ID: 6, 1
+2026-04-10 17:37:48,015 INFO: accion=INSERT_Receta usuario_id=1 nombre=Admin detalle=Registro creado con ID: 6, 9
+2026-04-10 17:37:48,015 INFO: accion=INSERT_Receta usuario_id=1 nombre=Admin detalle=Registro creado con ID: 6, 9
+2026-04-10 17:38:56,081 INFO: accion=INSERT_SolicitudProduccion usuario_id=1 nombre=Admin detalle=Registro creado con ID: 12
+2026-04-10 17:38:56,081 INFO: accion=INSERT_SolicitudProduccion usuario_id=1 nombre=Admin detalle=Registro creado con ID: 12
+2026-04-10 17:38:56,093 INFO: accion=INSERT_SolicitudDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 24
+2026-04-10 17:38:56,093 INFO: accion=INSERT_SolicitudDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 24
+2026-04-10 17:38:56,101 INFO: accion=INSERT_SolicitudDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 25
+2026-04-10 17:38:56,101 INFO: accion=INSERT_SolicitudDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 25
+2026-04-10 17:43:27,141 INFO: accion=INSERT_Venta usuario_id=1 nombre=Admin detalle=Registro creado con ID: 9
+2026-04-10 17:43:27,141 INFO: accion=INSERT_Venta usuario_id=1 nombre=Admin detalle=Registro creado con ID: 9
+2026-04-10 17:43:27,149 INFO: accion=INSERT_VentaDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 16
+2026-04-10 17:43:27,149 INFO: accion=INSERT_VentaDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 16
+2026-04-10 17:43:27,150 INFO: accion=INSERT_VentaDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 17
+2026-04-10 17:43:27,150 INFO: accion=INSERT_VentaDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 17
+2026-04-10 17:43:27,153 INFO: accion=UPDATE_SolicitudProduccion usuario_id=1 nombre=Admin detalle=Registro ID 12 modificado en campos: Estado
+2026-04-10 17:43:27,153 INFO: accion=UPDATE_SolicitudProduccion usuario_id=1 nombre=Admin detalle=Registro ID 12 modificado en campos: Estado
+2026-04-10 17:45:07,993 INFO: accion=INSERT_Compra usuario_id=1 nombre=Admin detalle=Registro creado con ID: 10
+2026-04-10 17:45:07,993 INFO: accion=INSERT_Compra usuario_id=1 nombre=Admin detalle=Registro creado con ID: 10
+2026-04-10 17:45:08,002 INFO: accion=INSERT_CompraDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 13
+2026-04-10 17:45:08,002 INFO: accion=INSERT_CompraDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 13
+2026-04-10 17:45:08,004 INFO: accion=INSERT_MovimientoMateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 51
+2026-04-10 17:45:08,004 INFO: accion=INSERT_MovimientoMateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 51
+2026-04-10 17:45:08,010 INFO: accion=UPDATE_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro ID 8 modificado en campos: stock
+2026-04-10 17:45:08,010 INFO: accion=UPDATE_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro ID 8 modificado en campos: stock
+2026-04-10 17:45:54,806 INFO: accion=INSERT_Compra usuario_id=1 nombre=Admin detalle=Registro creado con ID: 11
+2026-04-10 17:45:54,806 INFO: accion=INSERT_Compra usuario_id=1 nombre=Admin detalle=Registro creado con ID: 11
+2026-04-10 17:45:54,811 INFO: accion=INSERT_CompraDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 14
+2026-04-10 17:45:54,811 INFO: accion=INSERT_CompraDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 14
+2026-04-10 17:45:54,813 INFO: accion=INSERT_MovimientoMateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 52
+2026-04-10 17:45:54,813 INFO: accion=INSERT_MovimientoMateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 52
+2026-04-10 17:45:54,818 INFO: accion=UPDATE_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro ID 4 modificado en campos: stock
+2026-04-10 17:45:54,818 INFO: accion=UPDATE_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro ID 4 modificado en campos: stock
+2026-04-10 17:46:18,501 INFO: accion=UPDATE_Producto usuario_id=1 nombre=Admin detalle=Registro ID 2 modificado en campos: Activo
+2026-04-10 17:46:18,501 INFO: accion=UPDATE_Producto usuario_id=1 nombre=Admin detalle=Registro ID 2 modificado en campos: Activo
+2026-04-10 17:46:47,361 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 2 modificado en campos: Token2FA, Token2FAExpiracion
+2026-04-10 17:46:47,361 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 2 modificado en campos: Token2FA, Token2FAExpiracion
+2026-04-10 17:46:51,715 INFO: accion=2FA_ENVIADO usuario_id=2 detalle=
+2026-04-10 17:46:51,715 INFO: accion=2FA_ENVIADO usuario_id=2 detalle=
+2026-04-10 17:47:03,912 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 2 modificado en campos: Token2FA, Token2FAExpiracion
+2026-04-10 17:47:03,912 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 2 modificado en campos: Token2FA, Token2FAExpiracion
+2026-04-10 17:47:03,963 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 2 modificado en campos: UltimoLogin
+2026-04-10 17:47:03,963 INFO: accion=UPDATE_Usuario usuario_id=None nombre=Sistema detalle=Registro ID 2 modificado en campos: UltimoLogin
+2026-04-10 17:47:03,973 INFO: accion=LOGIN_EXITOSO usuario_id=2 detalle=
+2026-04-10 17:47:03,973 INFO: accion=LOGIN_EXITOSO usuario_id=2 detalle=
+2026-04-10 18:04:01,670 INFO: accion=INSERT_SolicitudProduccion usuario_id=1 nombre=Admin detalle=Registro creado con ID: 13
+2026-04-10 18:04:01,670 INFO: accion=INSERT_SolicitudProduccion usuario_id=1 nombre=Admin detalle=Registro creado con ID: 13
+2026-04-10 18:04:01,679 INFO: accion=INSERT_SolicitudDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 26
+2026-04-10 18:04:01,679 INFO: accion=INSERT_SolicitudDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 26
+2026-04-10 18:04:01,687 INFO: accion=INSERT_SolicitudDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 27
+2026-04-10 18:04:01,687 INFO: accion=INSERT_SolicitudDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 27
+2026-04-10 18:04:01,698 INFO: accion=INSERT_SolicitudDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 28
+2026-04-10 18:04:01,698 INFO: accion=INSERT_SolicitudDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 28
+2026-04-10 18:10:24,117 INFO: accion=INSERT_Producto usuario_id=1 nombre=Admin detalle=Registro creado con ID: 7
+2026-04-10 18:10:24,117 INFO: accion=INSERT_Producto usuario_id=1 nombre=Admin detalle=Registro creado con ID: 7
+2026-04-10 18:10:24,148 INFO: accion=UPDATE_Producto usuario_id=1 nombre=Admin detalle=Registro ID 7 modificado en campos: imagen_url
+2026-04-10 18:10:24,148 INFO: accion=UPDATE_Producto usuario_id=1 nombre=Admin detalle=Registro ID 7 modificado en campos: imagen_url
+2026-04-10 18:11:02,666 INFO: accion=INSERT_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 10
+2026-04-10 18:11:02,666 INFO: accion=INSERT_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 10
+2026-04-10 18:11:24,832 INFO: accion=INSERT_Compra usuario_id=1 nombre=Admin detalle=Registro creado con ID: 12
+2026-04-10 18:11:24,832 INFO: accion=INSERT_Compra usuario_id=1 nombre=Admin detalle=Registro creado con ID: 12
+2026-04-10 18:11:24,839 INFO: accion=INSERT_CompraDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 15
+2026-04-10 18:11:24,839 INFO: accion=INSERT_CompraDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 15
+2026-04-10 18:11:24,841 INFO: accion=INSERT_MovimientoMateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 60
+2026-04-10 18:11:24,841 INFO: accion=INSERT_MovimientoMateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 60
+2026-04-10 18:11:24,850 INFO: accion=UPDATE_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro ID 10 modificado en campos: stock
+2026-04-10 18:11:24,850 INFO: accion=UPDATE_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro ID 10 modificado en campos: stock
+2026-04-10 18:11:53,691 INFO: accion=INSERT_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 11
+2026-04-10 18:11:53,691 INFO: accion=INSERT_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 11
+2026-04-10 18:13:34,171 INFO: accion=INSERT_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 12
+2026-04-10 18:13:34,171 INFO: accion=INSERT_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 12
+2026-04-10 18:15:21,142 INFO: accion=INSERT_Compra usuario_id=1 nombre=Admin detalle=Registro creado con ID: 13
+2026-04-10 18:15:21,142 INFO: accion=INSERT_Compra usuario_id=1 nombre=Admin detalle=Registro creado con ID: 13
+2026-04-10 18:15:21,185 INFO: accion=INSERT_CompraDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 16
+2026-04-10 18:15:21,185 INFO: accion=INSERT_CompraDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 16
+2026-04-10 18:15:21,186 INFO: accion=INSERT_MovimientoMateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 61
+2026-04-10 18:15:21,186 INFO: accion=INSERT_MovimientoMateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 61
+2026-04-10 18:15:21,191 INFO: accion=UPDATE_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro ID 12 modificado en campos: stock
+2026-04-10 18:15:21,191 INFO: accion=UPDATE_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro ID 12 modificado en campos: stock
+2026-04-10 18:19:28,289 INFO: accion=INSERT_Receta usuario_id=1 nombre=Admin detalle=Registro creado con ID: 7, 12
+2026-04-10 18:19:28,289 INFO: accion=INSERT_Receta usuario_id=1 nombre=Admin detalle=Registro creado con ID: 7, 12
+2026-04-10 18:19:28,291 INFO: accion=INSERT_Receta usuario_id=1 nombre=Admin detalle=Registro creado con ID: 7, 3
+2026-04-10 18:19:28,291 INFO: accion=INSERT_Receta usuario_id=1 nombre=Admin detalle=Registro creado con ID: 7, 3
+2026-04-10 18:19:28,295 INFO: accion=INSERT_Receta usuario_id=1 nombre=Admin detalle=Registro creado con ID: 7, 10
+2026-04-10 18:19:28,295 INFO: accion=INSERT_Receta usuario_id=1 nombre=Admin detalle=Registro creado con ID: 7, 10
+2026-04-10 18:22:06,073 INFO: accion=INSERT_Compra usuario_id=1 nombre=Admin detalle=Registro creado con ID: 14
+2026-04-10 18:22:06,073 INFO: accion=INSERT_Compra usuario_id=1 nombre=Admin detalle=Registro creado con ID: 14
+2026-04-10 18:22:06,080 INFO: accion=INSERT_CompraDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 17
+2026-04-10 18:22:06,080 INFO: accion=INSERT_CompraDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 17
+2026-04-10 18:22:06,082 INFO: accion=INSERT_MovimientoMateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 62
+2026-04-10 18:22:06,082 INFO: accion=INSERT_MovimientoMateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 62
+2026-04-10 18:22:06,088 INFO: accion=UPDATE_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro ID 12 modificado en campos: stock
+2026-04-10 18:22:06,088 INFO: accion=UPDATE_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro ID 12 modificado en campos: stock
+2026-04-10 18:23:11,066 INFO: accion=INSERT_Compra usuario_id=1 nombre=Admin detalle=Registro creado con ID: 15
+2026-04-10 18:23:11,066 INFO: accion=INSERT_Compra usuario_id=1 nombre=Admin detalle=Registro creado con ID: 15
+2026-04-10 18:23:11,075 INFO: accion=INSERT_CompraDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 18
+2026-04-10 18:23:11,075 INFO: accion=INSERT_CompraDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 18
+2026-04-10 18:23:11,077 INFO: accion=INSERT_MovimientoMateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 63
+2026-04-10 18:23:11,077 INFO: accion=INSERT_MovimientoMateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 63
+2026-04-10 18:23:43,592 INFO: accion=INSERT_Compra usuario_id=1 nombre=Admin detalle=Registro creado con ID: 16
+2026-04-10 18:23:43,592 INFO: accion=INSERT_Compra usuario_id=1 nombre=Admin detalle=Registro creado con ID: 16
+2026-04-10 18:23:43,597 INFO: accion=INSERT_CompraDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 19
+2026-04-10 18:23:43,597 INFO: accion=INSERT_CompraDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 19
+2026-04-10 18:23:43,600 INFO: accion=INSERT_MovimientoMateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 64
+2026-04-10 18:23:43,600 INFO: accion=INSERT_MovimientoMateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 64
+2026-04-10 18:23:43,606 INFO: accion=UPDATE_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro ID 10 modificado en campos: stock
+2026-04-10 18:23:43,606 INFO: accion=UPDATE_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro ID 10 modificado en campos: stock
+2026-04-10 18:24:32,527 INFO: accion=INSERT_Compra usuario_id=1 nombre=Admin detalle=Registro creado con ID: 17
+2026-04-10 18:24:32,527 INFO: accion=INSERT_Compra usuario_id=1 nombre=Admin detalle=Registro creado con ID: 17
+2026-04-10 18:24:32,534 INFO: accion=INSERT_CompraDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 20
+2026-04-10 18:24:32,534 INFO: accion=INSERT_CompraDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 20
+2026-04-10 18:24:32,536 INFO: accion=INSERT_MovimientoMateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 65
+2026-04-10 18:24:32,536 INFO: accion=INSERT_MovimientoMateriaPrima usuario_id=1 nombre=Admin detalle=Registro creado con ID: 65
+2026-04-10 18:24:32,540 INFO: accion=UPDATE_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro ID 3 modificado en campos: stock
+2026-04-10 18:24:32,540 INFO: accion=UPDATE_MateriaPrima usuario_id=1 nombre=Admin detalle=Registro ID 3 modificado en campos: stock
+2026-04-10 18:25:03,943 INFO: accion=INSERT_SolicitudProduccion usuario_id=1 nombre=Admin detalle=Registro creado con ID: 14
+2026-04-10 18:25:03,943 INFO: accion=INSERT_SolicitudProduccion usuario_id=1 nombre=Admin detalle=Registro creado con ID: 14
+2026-04-10 18:25:03,956 INFO: accion=INSERT_SolicitudDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 29
+2026-04-10 18:25:03,956 INFO: accion=INSERT_SolicitudDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 29
+2026-04-10 18:26:16,718 INFO: accion=INSERT_SolicitudProduccion usuario_id=1 nombre=Admin detalle=Registro creado con ID: 15
+2026-04-10 18:26:16,718 INFO: accion=INSERT_SolicitudProduccion usuario_id=1 nombre=Admin detalle=Registro creado con ID: 15
+2026-04-10 18:26:16,732 INFO: accion=INSERT_SolicitudDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 30
+2026-04-10 18:26:16,732 INFO: accion=INSERT_SolicitudDetalle usuario_id=1 nombre=Admin detalle=Registro creado con ID: 30

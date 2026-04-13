@@ -51,6 +51,12 @@ ROLE_REDIRECTS = {
     'Usuario':           'venta_linea.index',
 }
 
+# ---------------------------------------------------------------------------
+# EXPIRACIÓN PERIÓDICA DE CONTRASEÑA
+# ---------------------------------------------------------------------------
+DIAS_EXPIRACION_PASSWORD = 90
+DIAS_AVISO_PASSWORD      = 80
+
 
 # ---------------------------------------------------------------------------
 # HELPERS INTERNOS
@@ -168,6 +174,36 @@ def _enviar_correo_recuperacion(email, link):
 
 
 # ---------------------------------------------------------------------------
+# HELPER: VERIFICAR EXPIRACIÓN PERIÓDICA DE CONTRASEÑA
+# ---------------------------------------------------------------------------
+def _verificar_expiracion_password(usuario):
+    """
+    Revisa si la contraseña del usuario ha expirado o está próxima a expirar.
+    - Si han pasado DIAS_EXPIRACION_PASSWORD días: marca RequiereCambioPassword = True.
+    - Si están entre DIAS_AVISO_PASSWORD y DIAS_EXPIRACION_PASSWORD: muestra aviso.
+    - Si FechaCambioPassword es None, no hace nada para no romper cuentas existentes.
+    Retorna True si se forzó el cambio, False en cualquier otro caso.
+    """
+    if not usuario.FechaCambioPassword:
+        return False
+
+    dias = (datetime.utcnow() - usuario.FechaCambioPassword).days
+
+    if dias >= DIAS_EXPIRACION_PASSWORD:
+        usuario.RequiereCambioPassword = True
+        db.session.commit()
+        _registrar_log("PASSWORD_EXPIRADO", usuario_id=usuario.UsuarioId,
+                       detalle=f"{dias} días sin cambio", nivel="WARNING")
+        return True
+
+    if dias >= DIAS_AVISO_PASSWORD:
+        dias_restantes = DIAS_EXPIRACION_PASSWORD - dias
+        flash(f"Tu contraseña expira en {dias_restantes} día(s). Te recomendamos cambiarla pronto.", "warning")
+
+    return False
+
+
+# ---------------------------------------------------------------------------
 # RUTA: LOGIN
 # ---------------------------------------------------------------------------
 @auth_bp.route('/acceso', methods=['GET', 'POST'])
@@ -178,7 +214,7 @@ def login():
     if request.method == 'POST':
         captcha_input = request.form.get('captcha', '').strip().upper()
         expected_captcha = session.get('captcha_text', '')
-        
+
         if not expected_captcha or captcha_input != expected_captcha:
             flash("El código Captcha es incorrecto. Inténtalo de nuevo.", "danger")
             session['captcha_text'] = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
@@ -224,6 +260,12 @@ def login():
             return render_template('auth/index.html')
 
         usuario.IntentosFallidos = 0
+
+        # ── VERIFICACIÓN DE EXPIRACIÓN PERIÓDICA ──────────────────────────
+        # Se ejecuta antes de RequiereCambioPassword para que una contraseña
+        # expirada también active el flujo de cambio obligatorio.
+        _verificar_expiracion_password(usuario)
+        # ──────────────────────────────────────────────────────────────────
 
         if usuario.RequiereCambioPassword:
             db.session.commit()
@@ -271,9 +313,16 @@ def verificar_2fa():
             flash("Ingresa el código de verificación.", "danger")
             return render_template('auth/two_factor.html')
 
-        if usuario.Token2FAExpiracion < datetime.utcnow():
+        # if usuario.Token2FAExpiracion < datetime.utcnow():
+        #     _registrar_log("2FA_EXPIRADO", usuario_id=user_id, nivel="WARNING")
+        #     flash("El código expiró. Inicia sesión nuevamente.", "warning")
+        #     session.pop('pre_auth_user_id', None)
+        #     session.pop('pre_auth_user_username', None)
+        #     return redirect(url_for('auth.login'))
+        
+        if not usuario.Token2FAExpiracion or usuario.Token2FAExpiracion < datetime.utcnow():
             _registrar_log("2FA_EXPIRADO", usuario_id=user_id, nivel="WARNING")
-            flash("El código expiró. Inicia sesión nuevamente.", "warning")
+            flash("El código expiró o no es válido. Inicia sesión nuevamente.", "warning")
             session.pop('pre_auth_user_id', None)
             session.pop('pre_auth_user_username', None)
             return redirect(url_for('auth.login'))

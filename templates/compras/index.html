@@ -9,19 +9,19 @@
 {% endfor %}
 {% endwith %}
 
-<div class="d-flex justify-content-between align-items-center mb-3">
+<div class="d-flex justify-content-between align-items-center mb-5">
   <div>
-    <h4 class="fw-bold mb-0"><i class="bi bi-cart-plus me-2" style="color:#8B3A0E;"></i>Compras</h4>
-    <small class="text-muted">Historial de compras realizadas</small>
+    <h2 class="mb-0 fw-bold premium-heading">Compras</h2>
+    <p class="text-muted mb-0">Historial de compras realizadas</p>
   </div>
-  <a href="{{ url_for('compras.nueva_compra') }}" class="btn text-white fw-bold px-4 py-2" style="background-color:#8B3A0E;">
-    <i class="bi bi-plus-lg me-1"></i>Nueva Compra
+  <a href="{{ url_for('compras.nueva_compra') }}" class="btn btn-premium btn-premium-primary">
+    <i class="bi bi-plus-lg me-2"></i>Nueva Compra
   </a>
 </div>
 
 <!-- Filtros -->
-<div class="card border-0 shadow-sm mb-4">
-  <div class="card-body">
+<div class="premium-card mb-4">
+  <div class="card-body p-4">
     <form method="GET" action="{{ url_for('compras.index') }}" class="row g-3 align-items-end">
       <div class="col-md-3">
         <label class="form-label fw-semibold small text-muted">Desde</label>
@@ -53,23 +53,23 @@
 </div>
 
 <!-- Resumen -->
-<div class="row mb-4">
+<div class="row mb-5">
   <div class="col-md-4">
-    <div class="card border-0 shadow-sm text-center p-3">
-      <div class="text-muted small">Total de compras</div>
-      <div class="fw-bold fs-4" style="color:#8B3A0E;">{{ compras | length }}</div>
+    <div class="premium-card text-center p-4">
+      <div class="text-muted small text-uppercase fw-bold mb-1">Total de compras</div>
+      <div class="fw-bold fs-2" style="color:var(--primary-color);">{{ compras | length }}</div>
     </div>
   </div>
   <div class="col-md-4">
-    <div class="card border-0 shadow-sm text-center p-3">
-      <div class="text-muted small">Monto total</div>
-      <div class="fw-bold fs-4 text-success">${{ "%.2f"|format(total_filtrado) }}</div>
+    <div class="premium-card text-center p-4">
+      <div class="text-muted small text-uppercase fw-bold mb-1">Monto total</div>
+      <div class="fw-bold fs-2 text-success">${{ "%.2f"|format(total_filtrado) }}</div>
     </div>
   </div>
   <div class="col-md-4">
-    <div class="card border-0 shadow-sm text-center p-3">
-      <div class="text-muted small">Promedio por compra</div>
-      <div class="fw-bold fs-4 text-primary">
+    <div class="premium-card text-center p-4">
+      <div class="text-muted small text-uppercase fw-bold mb-1">Promedio por compra</div>
+      <div class="fw-bold fs-2 text-primary">
         {% if compras | length > 0 %}
         ${{ "%.2f"|format(total_filtrado / (compras | length)) }}
         {% else %}
@@ -81,11 +81,11 @@
 </div>
 
 <!-- Tabla de historial -->
-<div class="card border-0 shadow-sm">
-  <div class="card-header text-white fw-semibold" style="background-color:#8B3A0E;">
-    <i class="bi bi-clock-history me-2"></i>Historial de Compras
+<div class="premium-card p-0">
+  <div class="card-header border-0 bg-transparent py-4 px-4">
+    <h5 class="mb-0 fw-bold"><i class="bi bi-clock-history me-2"></i>Historial de Compras</h5>
   </div>
-  <div class="card-body p-0">
+  <div class="">
     {% if compras %}
     <div class="accordion" id="acordeonCompras">
       {% for c in compras %}

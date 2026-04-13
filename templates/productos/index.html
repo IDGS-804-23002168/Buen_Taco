@@ -7,18 +7,16 @@
 {{ flash_messages() }}
 
 <!-- Encabezado -->
-<div class="d-flex justify-content-between align-items-center mb-3">
+<div class="d-flex justify-content-between align-items-center mb-5">
   <div>
-    <h4 class="fw-bold mb-0">
-      <i class="bi bi-box me-2 receta-icon"></i>Productos
-    </h4>
-    <small class="text-muted">Catálogo y gestión de productos</small>
+    <h2 class="mb-0 fw-bold premium-heading">Productos</h2>
+    <p class="text-muted mb-0">Catálogo y gestión de productos</p>
   </div>
   {% set roles_usuario = current_user.roles | map(attribute='rol.Nombre') | list %}
   {% if 'Administrador' in roles_usuario or 'Cocinero' in roles_usuario %}
-  <button class="btn btn-sm receta-btn-primary px-3 py-2"
+  <button class="btn btn-premium btn-premium-primary"
           data-bs-toggle="modal" data-bs-target="#modalNuevoProducto">
-    <i class="bi bi-plus-lg me-1"></i>Nuevo producto
+    <i class="bi bi-plus-lg me-2"></i>Nuevo producto
   </button>
   {% endif %}
 </div>
@@ -35,9 +33,9 @@
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="contenedorProductos">
   {% for p in productos %}
   <div class="col producto-item" data-nombre="{{ p.Nombre | lower }}">
-    <div class="card h-100 shadow-sm border-0">
+    <div class="premium-card h-100">
       {% if p.imagen_url %}
-        <img src="{{ url_for('static', filename=p.imagen_url) }}" class="card-img-top" alt="{{ p.Nombre }}" style="height: 200px; object-fit: cover;">
+        <img src="{{ url_for('static', filename=p.imagen_url) }}" class="card-img-top" alt="{{ p.Nombre }}" style="height: 200px; object-fit: cover; border-bottom: 1px solid var(--glass-border);">
       {% else %}
         <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
           <i class="bi bi-box fs-1 text-secondary"></i>
@@ -59,10 +57,10 @@
           <strong>Precio:</strong> <span class="text-success fw-bold">${{ "%.2f"|format(p.Precio) }}</span>
         </p>
         <div class="d-flex gap-2 justify-content-between mt-auto">
-          <a href="{{ url_for('productos.editar_producto', producto_id=p.ProductoId) }}" class="btn btn-sm btn-outline-primary flex-fill">
+          <a href="{{ url_for('productos.editar_producto', producto_id=p.ProductoId) }}" class="btn btn-premium btn-outline-primary flex-fill">
             <i class="bi bi-pencil-square me-1"></i>Editar
           </a>
-          <a href="{{ url_for('recetas.ver', producto_id=p.ProductoId) }}" class="btn btn-sm btn-outline-secondary flex-fill" title="Ver Receta">
+          <a href="{{ url_for('recetas.ver', producto_id=p.ProductoId) }}" class="btn btn-premium btn-outline-secondary flex-fill" title="Ver Receta">
             <i class="bi bi-journal-richtext"></i> Receta
           </a>
         </div>
@@ -94,7 +92,7 @@
           {{ campo(form.precio) }}
           <div class="mb-3">
             <label class="form-label fw-semibold">Imagen del producto</label>
-            {{ form.imagen(class="form-control") }}
+            {{ form.imagen(class="form-control", accept="image/*") }}
             <small class="text-muted">Formatos: jpg, png, webp. Opcional.</small>
           </div>
         </div>

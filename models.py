@@ -1,6 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from datetime import datetime
+from sqlalchemy import event
+from utils.logger_util import registrar_movimiento
 
 db = SQLAlchemy()
 
@@ -354,3 +356,47 @@ class Direccion(db.Model):
     CodigoPostal = db.Column(db.String(10))
     Referencias  = db.Column(db.String(255))
     Activa       = db.Column(db.Boolean, default=True)
+
+
+# ---------------------------------------------------------------------------
+# EVENTOS DE AUDITORÍA AUTOMÁTICA
+# ---------------------------------------------------------------------------
+
+def setup_audit_logging():
+    def get_pk(obj):
+        """Helper para obtener la llave primaria como string."""
+        from sqlalchemy import inspect
+        ins = inspect(obj)
+        return ", ".join([str(getattr(obj, key.name)) for key in ins.mapper.primary_key])
+
+    @event.listens_for(db.Session, 'after_flush')
+    def after_flush(session, flush_context):
+        for obj in session.new:
+            if isinstance(obj, db.Model):
+                registrar_movimiento(
+                    accion=f"INSERT_{obj.__class__.__name__}",
+                    detalle=f"Registro creado con ID: {get_pk(obj)}"
+                )
+        
+        for obj in session.dirty:
+            if isinstance(obj, db.Model):
+                # Solo registrar si realmente cambió algo
+                from sqlalchemy import inspect
+                ins = inspect(obj)
+                if ins.persistent and ins.attrs:
+                    changed = [attr.key for attr in ins.attrs if attr.history.has_changes()]
+                    if changed:
+                        registrar_movimiento(
+                            accion=f"UPDATE_{obj.__class__.__name__}",
+                            detalle=f"Registro ID {get_pk(obj)} modificado en campos: {', '.join(changed)}"
+                        )
+
+        for obj in session.deleted:
+            if isinstance(obj, db.Model):
+                registrar_movimiento(
+                    accion=f"DELETE_{obj.__class__.__name__}",
+                    detalle=f"Registro ID {get_pk(obj)} eliminado"
+                )
+
+# Llamar a la configuración de eventos
+setup_audit_logging()

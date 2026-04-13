@@ -38,7 +38,17 @@ def index():
         .order_by(SolicitudProduccion.Fecha.desc())
         .all()
     )
-    return render_template("produccion/index.html", solicitudes=solicitudes)
+    
+    # Órdenes de producción directas de ventas en línea (sin SolicitudId)
+    ordenes_linea = (
+        OrdenProduccion.query
+        .filter_by(SolicitudId=None)
+        .filter(OrdenProduccion.Estado.in_(["Pendiente", "En Produccion"]))
+        .order_by(OrdenProduccion.FechaInicio.desc())
+        .all()
+    )
+    
+    return render_template("produccion/index.html", solicitudes=solicitudes, ordenes_linea=ordenes_linea)
 
 
 # ── Rechazar solicitud ───────────────────────────────────────────────────────
@@ -139,10 +149,32 @@ def detalle(solicitud_id):
 @login_required
 @roles_required("Administrador", "Cocinero")
 def historial():
-    """Historial completo de solicitudes (todos los estados)."""
+    """Historial completo de solicitudes y órdenes (todos los estados)."""
     solicitudes = (
         SolicitudProduccion.query
         .order_by(SolicitudProduccion.Fecha.desc())
         .all()
     )
     return render_template("produccion/historial.html", solicitudes=solicitudes)
+
+
+# ── Finalizar Orden Directa (Ventas en línea) ──────────────────────────────
+@produccion_bp.route("/produccion/finalizar_orden/<int:orden_id>", methods=["POST"])
+@login_required
+@roles_required("Administrador", "Cocinero")
+def finalizar_orden(orden_id):
+    try:
+        from datetime import datetime
+        orden = OrdenProduccion.query.get_or_404(orden_id)
+        
+        orden.Estado = 'Finalizada'
+        orden.FechaFin = datetime.utcnow()
+        # No sumamos a MovimientoProducto ni a Productos porque ya está vendido (venta en línea)
+        
+        db.session.commit()
+        flash(f"Platillo '{orden.producto.Nombre}' terminado y listo para entrega.", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error al finalizar la orden en línea: {str(e)}", "danger")
+
+    return redirect(url_for("produccion.index"))

@@ -116,60 +116,55 @@ def ver(producto_id):
 def agregar(producto_id):
     producto = Producto.query.get_or_404(producto_id)
     materias = MateriaPrima.query.filter_by(Activo=True).all()
-    form     = FormAgregarIngrediente()
-    form.materia_prima_id.choices = [
-        (m.MateriaPrimaId, f"{m.Nombre} ({m.unidad.Abreviatura})") for m in materias
-    ]
+    recetas_actuales = Receta.query.filter_by(ProductoId=producto_id).all()
 
     if request.method == 'POST':
-        if form.validate_on_submit():
-            existe = Receta.query.filter_by(
-                ProductoId=producto_id,
-                MateriaPrimaId=form.materia_prima_id.data
-            ).first()
-            if existe:
-                flash('Esa materia prima ya está en la receta.', 'warning')
-            else:
-                try:
+        ids_materias = request.form.getlist('materia_prima_id[]')
+        cantidades   = request.form.getlist('cantidad_base[]')
+
+        if not ids_materias:
+            flash('La receta debe tener al menos un ingrediente.', 'warning')
+        else:
+            try:
+                # Eliminar ingredientes actuales para reconstruir la receta
+                Receta.query.filter_by(ProductoId=producto_id).delete()
+                
+                # Procesar nuevos ingredientes
+                procesados = set()
+                for i in range(len(ids_materias)):
+                    m_id = int(ids_materias[i])
+                    cant = float(cantidades[i])
+                    
+                    if m_id in procesados:
+                        continue # Evitar duplicados en el mismo POST
+                    
                     nueva = Receta(
                         ProductoId=producto_id,
-                        MateriaPrimaId=form.materia_prima_id.data,
-                        CantidadBase=form.cantidad_base.data
+                        MateriaPrimaId=m_id,
+                        CantidadBase=cant
                     )
                     db.session.add(nueva)
-                    db.session.commit()
-                    flash('Ingrediente agregado correctamente.', 'success')
-                    return redirect(url_for('recetas.ver', producto_id=producto_id))
-                except Exception:
-                    db.session.rollback()
-                    flash('Error al guardar. Intenta de nuevo.', 'danger')
+                    procesados.add(m_id)
 
-    return render_template('recetas/form.html', form=form, producto=producto)
+                db.session.commit()
+                flash('Receta actualizada correctamente.', 'success')
+                return redirect(url_for('recetas.ver', producto_id=producto_id))
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Error al guardar la receta: {str(e)}', 'danger')
+
+    return render_template('recetas/form.html', 
+                         producto=producto, 
+                         materias=materias, 
+                         recetas=recetas_actuales)
 
 
 @recetas_bp.route('/editar/<int:producto_id>/<int:materia_id>', methods=['GET', 'POST'])
 @login_required
 @roles_required('Administrador', 'Cocinero')
 def editar(producto_id, materia_id):
-    receta = Receta.query.get_or_404((producto_id, materia_id))
-    form   = FormEditarIngrediente()
-
-    if request.method == 'GET':
-        form.cantidad_base.data = float(receta.CantidadBase)
-
-    if request.method == 'POST':
-        if form.validate_on_submit():
-            try:
-                receta.CantidadBase = form.cantidad_base.data
-                db.session.commit()
-                flash('Ingrediente actualizado.', 'success')
-                return redirect(url_for('recetas.ver', producto_id=producto_id))
-            except Exception:
-                db.session.rollback()
-                flash('Error al actualizar.', 'danger')
-
-    return render_template('recetas/form.html', form=form,
-                           producto=receta.producto, receta=receta)
+    # Ya no editamos uno por uno, redirigimos al gestor masivo
+    return redirect(url_for('recetas.agregar', producto_id=producto_id))
 
 
 @recetas_bp.route('/eliminar/<int:producto_id>/<int:materia_id>', methods=['POST'])

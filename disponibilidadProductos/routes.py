@@ -4,6 +4,7 @@ from functools import wraps
 from sqlalchemy import func
 from . import disponibilidad_bp
 from models import db, Producto, MovimientoProducto, CategoriaProducto
+from utils.stock_util import obtener_disponibilidad_producto
 
 
 # --- DECORADOR PARA LOS ROLES ---
@@ -59,17 +60,7 @@ def index():
     #     productos_en_mostrador.append(p)
     
     for p in productos:
-        if p.recetas:
-            stock_por_receta = None
-            for receta in p.recetas:
-                if receta.CantidadBase and receta.CantidadBase > 0:
-                    stock_mp = float(receta.materia_prima.stock)
-                    posibles = int(stock_mp // float(receta.CantidadBase))
-                    if stock_por_receta is None or posibles < stock_por_receta:
-                        stock_por_receta = posibles
-            p.stock_actual = stock_por_receta if stock_por_receta is not None else 0
-        else:
-            p.stock_actual = 0
+        p.stock_actual = obtener_disponibilidad_producto(p.ProductoId)
         productos_en_mostrador.append(p)
 
     return render_template(

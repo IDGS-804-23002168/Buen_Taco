@@ -7,16 +7,10 @@
 <div class="proveedores-page">
 
   <!-- ── Cabecera ─────────────────────────────────────────────────── -->
-  <div class="page-header">
-    <div class="page-header__info">
-      <h1 class="page-title">Gestión de Proveedores</h1>
-
-    </div>
-    <a href="{{ url_for('proveedores.nuevo') }}" class="btn btn-nuevo-proveedor">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-        <path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm.75 4.25v2.5h2.5a.75.75 0 0 1 0 1.5h-2.5v2.5a.75.75 0 0 1-1.5 0v-2.5h-2.5a.75.75 0 0 1 0-1.5h2.5v-2.5a.75.75 0 0 1 1.5 0z"/>
-      </svg>
-      Nuevo Proveedor
+  <div class="d-flex justify-content-between align-items-center mb-5">
+    <h2 class="mb-0 fw-bold premium-heading">Gestión de Proveedores</h2>
+    <a href="{{ url_for('proveedores.nuevo') }}" class="btn btn-premium btn-premium-primary">
+      <i class="bi bi-truck me-2"></i>Nuevo Proveedor
     </a>
   </div>
 
@@ -33,14 +27,12 @@
   {% endwith %}
 
   <!-- ── Tarjeta con tabla ─────────────────────────────────────────── -->
-  <div class="card">
-    <div class="card-header">
-      <div class="card-header__left">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" class="icon-truck">
-          <path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5V5h1.02a1.5 1.5 0 0 1 1.17.563l1.481 1.85a1.5 1.5 0 0 1 .329.938V10.5a1.5 1.5 0 0 1-1.5 1.5H14a2 2 0 1 1-4 0H5a2 2 0 1 1-3.998-.085A1.5 1.5 0 0 1 0 10.5zm1.294 7.456A2 2 0 0 1 4.732 11h5.536a2 2 0 0 1 .732-.732V3.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .294.456zM12 10a2 2 0 0 1 1.732 1h.768a.5.5 0 0 0 .5-.5V8.35a.5.5 0 0 0-.11-.312l-1.48-1.85A.5.5 0 0 0 13.02 6H12v4zm-9 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm9 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
-        </svg>
-        <span class="card-title">Lista de Proveedores</span>
-        <span class="badge-count">{{ total }}</span>
+  <div class="premium-card">
+    <div class="card-header border-0 bg-transparent py-4 px-4 d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-truck fs-4 text-primary"></i>
+        <h5 class="mb-0 fw-bold">Lista de Proveedores</h5>
+        <span class="badge bg-secondary rounded-pill">{{ total }}</span>
       </div>
 
       <!-- Búsqueda -->
@@ -54,8 +46,8 @@
     </div>
 
     <!-- Tabla -->
-    <div class="table-wrapper">
-      <table class="proveedores-table">
+    <div class="modern-table-container">
+      <table class="table table-hover align-middle mb-0 modern-table">
         <thead>
           <tr>
             <th>Empresa</th>

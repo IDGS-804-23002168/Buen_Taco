@@ -2,10 +2,10 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     // Datos inyectados desde el template
-    const labels = window.dashData.horasLabels;
-    const data   = window.dashData.ventasHoras;
+    const labels = window.dashData.diasLabels;
+    const data   = window.dashData.ventasDiarias;
 
-    const ctx = document.getElementById('graficaHoras');
+    const ctx = document.getElementById('graficaVentas');
     if (!ctx) return;
 
     new Chart(ctx, {

@@ -11,15 +11,15 @@
 
 {% set roles_usuario = current_user.roles | map(attribute='rol.Nombre') | list %}
 
-<div class="d-flex justify-content-between align-items-center mb-3">
+<div class="d-flex justify-content-between align-items-center mb-5">
   <div>
-    <h4 class="fw-bold mb-0"><i class="bi bi-box-seam me-2" style="color:#8B3A0E;"></i>Materias Primas</h4>
-    <small class="text-muted">Gestión de insumos del almacén</small>
+    <h2 class="mb-0 fw-bold premium-heading">Materias Primas</h2>
+    <p class="text-muted mb-0">Gestión de insumos del almacén</p>
   </div>
   {% if 'Administrador' in roles_usuario or 'Encargado_Almacen' in roles_usuario %}
-  <button class="btn btn-sm text-white fw-semibold px-3 py-2" style="background-color:#8B3A0E;"
+  <button class="btn btn-premium btn-premium-primary"
           data-bs-toggle="modal" data-bs-target="#modalNuevaMateria">
-    <i class="bi bi-plus-lg me-1"></i>Nuevo insumo
+    <i class="bi bi-plus-lg me-2"></i>Nuevo insumo
   </button>
   {% endif %}
 </div>
@@ -32,13 +32,10 @@
 </div>
 
 {% if materias %}
-<div class="card border-0 shadow-sm">
-  <div class="card-header text-white fw-semibold" style="background-color:#8B3A0E;">
-    <i class="bi bi-list-ul me-2"></i>Insumos Registrados
-  </div>
-  <div class="card-body p-0">
-    <table class="table table-hover mb-0 align-middle">
-      <thead class="table-light">
+<div class="premium-card">
+  <div class="modern-table-container">
+    <table class="table table-hover mb-0 align-middle modern-table">
+      <thead class="">
         <tr>
           <th>ID</th>
           <th>Nombre</th>
@@ -55,7 +52,13 @@
           <td><span class="badge bg-light text-dark border">{{ m.unidad.Abreviatura if m.unidad else 'S/U' }}</span></td>
           
           <td class="fw-bold text-success">
-            {{ m.stock }} <span class="fw-normal text-muted">{{ m.unidad.Abreviatura if m.unidad else '' }}</span>
+            {% if (m.unidad.Abreviatura == 'gr' or m.unidad.Abreviatura == 'ml') and m.stock >= 1000 %}
+              {{ "%.2f"|format(m.stock / 1000) }}
+              <span class="fw-normal text-muted">{{ 'kg' if m.unidad.Abreviatura == 'gr' else 'L' }}</span>
+            {% else %}
+              {{ "%.2f"|format(m.stock) }}
+              <span class="fw-normal text-muted">{{ m.unidad.Abreviatura if m.unidad else '' }}</span>
+            {% endif %}
           </td>
 
           <td>

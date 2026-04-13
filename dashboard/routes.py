@@ -2,7 +2,7 @@ from flask import Blueprint, render_template
 from flask_login import login_required, current_user
 from functools import wraps
 from flask import redirect, url_for, flash
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from sqlalchemy import func
 from models import db, Venta, VentaDetalle, Producto, MovimientoMateriaPrima, MateriaPrima
 
@@ -52,27 +52,38 @@ def index():
 
     # ── Productos más vendidos del día (top 5) ──────────────────────
     productos_top = db.session.query(
-        Producto.Nombre,
-        func.sum(VentaDetalle.Cantidad).label('total_vendido'),
-        func.sum(VentaDetalle.Subtotal).label('total_monto')
-    ).join(VentaDetalle, Producto.ProductoId == VentaDetalle.ProductoId)\
-     .join(Venta, Venta.VentaId == VentaDetalle.VentaId)\
-     .filter(func.date(Venta.Fecha) == hoy)\
-     .group_by(Producto.ProductoId, Producto.Nombre)\
-     .order_by(func.sum(VentaDetalle.Cantidad).desc())\
-     .limit(5).all()
+    Producto.Nombre,
+    func.coalesce(func.sum(VentaDetalle.Cantidad), 0).label('total_vendido'),
+    func.coalesce(func.sum(VentaDetalle.Subtotal), 0).label('total_monto')  # ← aquí
+).join(VentaDetalle, Producto.ProductoId == VentaDetalle.ProductoId)\
+ .join(Venta, Venta.VentaId == VentaDetalle.VentaId)\
+ .filter(func.date(Venta.Fecha) == hoy)\
+ .group_by(Producto.ProductoId, Producto.Nombre)\
+ .order_by(func.sum(VentaDetalle.Cantidad).desc())\
+ .limit(5).all()
 
-    # ── Ventas por hora del día (gráfica de barras) ─────────────────
-    ventas_por_hora_raw = db.session.query(
-        func.hour(Venta.Fecha).label('hora'),
+    # ── Ventas de los últimos 7 días (gráfica de barras) ──────────────
+    siete_dias_atras = hoy - timedelta(days=6)
+    
+    ventas_por_dia_raw = db.session.query(
+        func.date(Venta.Fecha).label('fecha'),
         func.sum(Venta.Total).label('total')
     ).filter(
-        func.date(Venta.Fecha) == hoy
-    ).group_by(func.hour(Venta.Fecha)).all()
+        func.date(Venta.Fecha) >= siete_dias_atras,
+        func.date(Venta.Fecha) <= hoy
+    ).group_by(func.date(Venta.Fecha)).all()
 
-    horas_labels = [f"{h:02d}:00" for h in range(6, 23)]
-    horas_data   = {row.hora: float(row.total) for row in ventas_por_hora_raw}
-    ventas_horas = [horas_data.get(h, 0) for h in range(6, 23)]
+    # Generar todos los días del rango para que no haya huecos
+    dias_label = []
+    ventas_data = []
+    datos_dict = {row.fecha.strftime('%Y-%m-%d') if isinstance(row.fecha, date) else row.fecha: float(row.total) for row in ventas_por_dia_raw}
+
+    for i in range(7):
+        d = siete_dias_atras + timedelta(days=i)
+        d_str = d.strftime('%Y-%m-%d')
+        # Etiqueta amigable (ej: "Lun 01")
+        dias_label.append(d.strftime('%a %d'))
+        ventas_data.append(datos_dict.get(d_str, 0))
 
     # ── Materias primas más consumidas del mes ──────────────────────
     materias_top = db.session.query(
@@ -105,8 +116,8 @@ def index():
         ventas_mes        = float(ventas_mes),
         transacciones_hoy = transacciones_hoy,
         productos_top     = productos_top,
-        horas_labels      = horas_labels,
-        ventas_horas      = ventas_horas,
+        dias_label        = dias_label,
+        ventas_data       = ventas_data,
         materias_top      = materias_top,
         alertas_stock     = alertas_stock,
         fecha_hoy         = hoy.strftime('%d/%m/%Y'),

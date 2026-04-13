@@ -10,8 +10,10 @@ from datetime import datetime
 from . import venta_linea_bp
 from models import (
     db, Producto, CategoriaProducto, MovimientoProducto,
-    Pedido, PedidoDetalle, Venta, VentaDetalle, Pago, Direccion
+    Pedido, PedidoDetalle, Venta, VentaDetalle, Pago, Direccion,
+    OrdenProduccion, MateriaPrima, Receta, MovimientoMateriaPrima
 )
+from utils.stock_util import obtener_disponibilidad_producto
 from forms import (
     AgregarProductoForm, EliminarItemForm,
     ActualizarCantidadForm, DireccionForm, PagoForm, FiltroCategoriaForm
@@ -90,18 +92,26 @@ def index():
                     flash('Producto no existe.', 'danger')
                     return redirect(url_for('venta_linea.index'))
 
+                # --- VALIDACIÓN DE STOCK ---
+                disponible = obtener_disponibilidad_producto(pid)
+                if cantidad > disponible:
+                    flash(f'No hay suficiente stock disponible para {producto.Nombre}. Máximo: {disponible}', 'warning')
+                    return redirect(url_for('venta_linea.index'))
+                # ---------------------------
+
                 carrito = _get_carrito()
-
-
                 existe = next(
                 (i for i in carrito if i['producto_id'] == pid and i['notas'] == notas),
                 None
                 )        
 
                 if existe:
+                    # Validar también la suma si ya existe en el carrito
+                    if existe['cantidad'] + cantidad > disponible:
+                        flash(f'Ya tienes este producto en el carrito. El total supera el stock disponible ({disponible}).', 'warning')
+                        return redirect(url_for('venta_linea.index'))
                     existe['cantidad'] += cantidad
                 else:
-
                     carrito.append({
                     'producto_id': pid,
                     'nombre': producto.Nombre,
@@ -156,6 +166,8 @@ def index():
         query = query.filter(Producto.Nombre.ilike(f'%{busqueda}%'))
 
     productos = query.order_by(Producto.Nombre).all()
+    for p in productos:
+        p.disponibilidad = obtener_disponibilidad_producto(p.ProductoId)
 
    
 
@@ -330,6 +342,14 @@ def pago():
             db.session.flush()
             direccion_id = nueva_dir.DireccionId
 
+        # ---- REGISTRO FINAL DE PEDIDO (VALIDACIÓN FINAL DE STOCK) ----
+        for item in carrito:
+            stock_f = obtener_disponibilidad_producto(item['producto_id'])
+            if item['cantidad'] > stock_f:
+                db.session.rollback()
+                flash(f'Lo sentimos, el stock de "{item["nombre"]}" cambió mientras tramitabas el pedido. Disponible: {stock_f}', 'danger')
+                return redirect(url_for('venta_linea.index'))
+
         # ---- Crear Pedido ---------------------------------------------------
         # Usamos DireccionId = 0 como placeholder cuando es recolección
         pedido = Pedido(
@@ -367,9 +387,35 @@ def pago():
                 ProductoId    = item['producto_id'],
                 Cantidad      = item['cantidad'],
                 PrecioUnitario= item['precio_unitario'],
-                Subtotal      = item['precio_unitario'] * item['cantidad'],
             )
             db.session.add(vd)
+
+        # ---- Descuento de Materias Primas y Envío Directo a Producción -------------
+        for item in carrito:
+            # Descuento manual de MateriaPrima según Receta
+            recetas = Receta.query.filter_by(ProductoId=item['producto_id']).all()
+            for receta in recetas:
+                mp = MateriaPrima.query.get(receta.MateriaPrimaId)
+                if mp:
+                    cantidad_a_descontar = receta.CantidadBase * item['cantidad']
+                    mp.stock = float(mp.stock) - float(cantidad_a_descontar)
+
+                    mov_mp = MovimientoMateriaPrima(
+                        MateriaPrimaId=mp.MateriaPrimaId,
+                        TipoMovimiento='Salida - Venta Linea',
+                        Cantidad=cantidad_a_descontar,
+                        ReferenciaId=None  # No hay SolicitudId
+                    )
+                    db.session.add(mov_mp)
+
+            # Crear directamente la OrdenProduccion
+            # Al no tener SolicitudId, podemos dejarlo como NULL o vacío
+            op = OrdenProduccion(
+                ProductoId=item['producto_id'],
+                CantidadProducir=item['cantidad'],
+                Estado='En Produccion'
+            )
+            db.session.add(op)
 
         # ---- Registrar Pago (sin datos sensibles) ---------------------------
         registro_pago = Pago(
