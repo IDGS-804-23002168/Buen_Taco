@@ -39,16 +39,19 @@ def index():
         .all()
     )
     
-    # Órdenes de producción directas de ventas en línea (sin SolicitudId)
-    ordenes_linea = (
-        OrdenProduccion.query
-        .filter_by(SolicitudId=None)
-        .filter(OrdenProduccion.Estado.in_(["Pendiente", "En Produccion"]))
-        .order_by(OrdenProduccion.FechaInicio.desc())
-        .all()
-    )
+    from models import Pedido
     
-    return render_template("produccion/index.html", solicitudes=solicitudes, ordenes_linea=ordenes_linea)
+    # Obtener los PedidoId únicos de las órdenes activas en línea
+    pedidos_linea_ids = [row.PedidoId for row in db.session.query(OrdenProduccion.PedidoId).filter(
+        OrdenProduccion.PedidoId.isnot(None),
+        OrdenProduccion.Estado.in_(["Pendiente", "En Produccion"])
+    ).distinct().all()]
+    
+    pedidos_linea = []
+    if pedidos_linea_ids:
+        pedidos_linea = Pedido.query.filter(Pedido.PedidoId.in_(pedidos_linea_ids)).order_by(Pedido.Fecha.desc()).all()
+    
+    return render_template("produccion/index.html", solicitudes=solicitudes, pedidos_linea=pedidos_linea)
 
 
 # ── Rechazar solicitud ───────────────────────────────────────────────────────
@@ -158,23 +161,32 @@ def historial():
     return render_template("produccion/historial.html", solicitudes=solicitudes)
 
 
-# ── Finalizar Orden Directa (Ventas en línea) ──────────────────────────────
-@produccion_bp.route("/produccion/finalizar_orden/<int:orden_id>", methods=["POST"])
+# ── Finalizar Pedido Completo (Ventas en línea) ──────────────────────────────
+@produccion_bp.route("/produccion/finalizar_pedido_linea/<int:pedido_id>", methods=["POST"])
 @login_required
 @roles_required("Administrador", "Cocinero")
-def finalizar_orden(orden_id):
+def finalizar_pedido_linea(pedido_id):
     try:
         from datetime import datetime
-        orden = OrdenProduccion.query.get_or_404(orden_id)
+        ordenes = OrdenProduccion.query.filter_by(PedidoId=pedido_id).filter(OrdenProduccion.Estado.in_(["Pendiente", "En Produccion"])).all()
         
-        orden.Estado = 'Finalizada'
-        orden.FechaFin = datetime.utcnow()
-        # No sumamos a MovimientoProducto ni a Productos porque ya está vendido (venta en línea)
+        for orden in ordenes:
+            orden.Estado = 'Finalizada'
+            orden.FechaFin = datetime.utcnow()
         
         db.session.commit()
-        flash(f"Platillo '{orden.producto.Nombre}' terminado y listo para entrega.", "success")
+        flash(f"Pedido en línea #{pedido_id} terminado y listo para entrega.", "success")
     except Exception as e:
         db.session.rollback()
-        flash(f"Error al finalizar la orden en línea: {str(e)}", "danger")
+        flash(f"Error al finalizar el pedido en línea: {str(e)}", "danger")
 
     return redirect(url_for("produccion.index"))
+
+# ── Detalle Pedido Línea ───────────────────────────────────────────────────
+@produccion_bp.route("/produccion/detalle_pedido_linea/<int:pedido_id>")
+@login_required
+@roles_required("Administrador", "Cocinero")
+def detalle_pedido_linea(pedido_id):
+    from models import Pedido
+    pedido = Pedido.query.get_or_404(pedido_id)
+    return render_template("produccion/detalle_pedido.html", pedido=pedido)

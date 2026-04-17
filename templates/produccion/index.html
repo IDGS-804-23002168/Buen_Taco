@@ -23,7 +23,7 @@
     {% endfor %}
     {% endwith %}
 
-    {% if solicitudes or ordenes_linea %}
+    {% if solicitudes or pedidos_linea %}
     {% for s in solicitudes %}
     <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px;">
         <div class="card-header bg-white d-flex justify-content-between align-items-center"
@@ -60,6 +60,15 @@
                     {% endfor %}
                 </tbody>
             </table>
+            
+            {% if s.NotasSolicitud %}
+            <div class="alert alert-info py-2 shadow-sm rounded-3 mb-3 d-flex align-items-center" role="alert" style="border-left: 4px solid #17a2b8;">
+                <i class="bi bi-chat-text fs-5 me-2 mb-0"></i>
+                <div class="mb-0">
+                    <strong>Notas Adjuntas:</strong> {{ s.NotasSolicitud }}
+                </div>
+            </div>
+            {% endif %}
 
             <!-- Acciones -->
             <div class="d-flex gap-2">
@@ -98,15 +107,15 @@
     </div>
     {% endfor %}
 
-    <!-- OTRAS ORDENES DIRECTAS EN LINEA -->
-    {% for o in ordenes_linea %}
+    <!-- PEDIDOS DIRECTOS EN LÍNEA -->
+    {% for p in pedidos_linea %}
     <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px; border-left: 4px solid #198754 !important;">
         <div class="card-header bg-white d-flex justify-content-between align-items-center"
             style="border-radius: 12px 12px 0 0;">
             <div>
                 <h5 class="mb-0 fw-bold">
-                    Órden Venta en Línea
-                    <small class="text-muted ms-2">{{ o.FechaInicio.strftime('%d/%m/%Y %H:%M') }}</small>
+                    Pedido en Línea #{{ p.PedidoId }}
+                    <small class="text-muted ms-2">{{ p.Fecha.strftime('%d/%m/%Y %H:%M') }}</small>
                     <span class="badge bg-success ms-2"><i class="bi bi-globe me-1"></i>Venta en Línea</span>
                 </h5>
             </div>
@@ -123,21 +132,50 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td><i class="bi bi-egg-fried text-muted me-1"></i>{{ o.producto.Nombre }}</td>
-                        <td class="text-center fw-bold">{{ o.CantidadProducir }}</td>
-                    </tr>
+                    {% for op in p.ordenes_produccion %}
+                        {% if op.Estado in ["Pendiente", "En Produccion"] %}
+                        <tr>
+                            <td><i class="bi bi-egg-fried text-muted me-1"></i>{{ op.producto.Nombre }}</td>
+                            <td class="text-center fw-bold">{{ op.CantidadProducir }}</td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
                 </tbody>
             </table>
 
+            {% set notas_list = [] %}
+            {% for op in p.ordenes_produccion %}
+                {% if op.NotasSolicitud and op.Estado in ["Pendiente", "En Produccion"] %}
+                    {% set _ = notas_list.append(op.NotasSolicitud) %}
+                {% endif %}
+            {% endfor %}
+
+            {% if notas_list %}
+            <div class="alert alert-success py-2 shadow-sm rounded-3 mb-3 d-flex align-items-center" role="alert" style="border-left: 4px solid #198754;">
+                <i class="bi bi-chat-text fs-5 me-2 mb-0"></i>
+                <div class="mb-0">
+                    <strong>Notas del Cliente:</strong><br>
+                    <ul class="mb-0 ms-2" style="list-style-type: none; padding-left: 0;">
+                        {% for nota in notas_list %}
+                            <li>{{ nota }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+
             <div class="d-flex gap-2">
-                <form action="{{ url_for('produccion.finalizar_orden', orden_id=o.OrdenProduccionId) }}" method="POST"
-                    class="d-inline" data-confirm="¿Finalizar platillo en línea de {{ o.producto.Nombre }}?">
+                <form action="{{ url_for('produccion.finalizar_pedido_linea', pedido_id=p.PedidoId) }}" method="POST"
+                    class="d-inline" data-confirm="¿Finalizar pedido en línea #{{ p.PedidoId }}?">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button class="btn btn-primary rounded-pill px-4">
-                        <i class="bi bi-check-circle-fill me-1"></i> Finalizar Platillo
+                        <i class="bi bi-check-circle-fill me-1"></i> Finalizar Pedido Completo
                     </button>
                 </form>
+                <a href="{{ url_for('produccion.detalle_pedido_linea', pedido_id=p.PedidoId) }}"
+                    class="btn btn-outline-secondary rounded-pill px-4">
+                    <i class="bi bi-eye me-1"></i> Detalles
+                </a>
             </div>
         </div>
     </div>

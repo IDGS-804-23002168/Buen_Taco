@@ -253,7 +253,8 @@ def direccion():
             'ciudad': 'León, Guanajuato',  # 🔥 FIJO
             'codigo_postal': form.codigo_postal.data,
             'referencias': form.referencias.data,
-            'horario': request.form.get('horario')
+            'horario': request.form.get('horario'),
+            'direccion_guardada_id': request.form.get('direccion_guardada_id', 'nueva')
         }
 
         session.modified = True
@@ -325,22 +326,26 @@ def pago():
                 subtotal=subtotal,envio=envio, iva=iva, total=total, entrega=entrega
             )
 
-        # ---- Crear dirección si es a domicilio ------------------------------
+        # ---- Crear dirección si es a domicilio o reusar la existente ------------------------------
         direccion_id = None
         if entrega['tipo'] == 'domicilio':
-            nueva_dir = Direccion(
-                UsuarioId    = current_user.UsuarioId,
-                Calle        = entrega['calle'],
-                Numero       = entrega.get('numero', ''),
-                Colonia      = entrega['colonia'],
-                Ciudad       = 'León, Guanajuato',  # 🔥 FIJO
-                CodigoPostal = entrega.get('codigo_postal', ''),
-                Referencias  = entrega.get('referencias', ''),
-                Activa       = True,
-            )
-            db.session.add(nueva_dir)
-            db.session.flush()
-            direccion_id = nueva_dir.DireccionId
+            dir_id_str = entrega.get('direccion_guardada_id', 'nueva')
+            if dir_id_str != 'nueva':
+                direccion_id = int(dir_id_str)
+            else:
+                nueva_dir = Direccion(
+                    UsuarioId    = current_user.UsuarioId,
+                    Calle        = entrega['calle'],
+                    Numero       = entrega.get('numero', ''),
+                    Colonia      = entrega['colonia'],
+                    Ciudad       = 'León, Guanajuato',  # 🔥 FIJO
+                    CodigoPostal = entrega.get('codigo_postal', ''),
+                    Referencias  = entrega.get('referencias', ''),
+                    Activa       = True,
+                )
+                db.session.add(nueva_dir)
+                db.session.flush()
+                direccion_id = nueva_dir.DireccionId
 
         # ---- REGISTRO FINAL DE PEDIDO (VALIDACIÓN FINAL DE STOCK) ----
         for item in carrito:
@@ -410,10 +415,21 @@ def pago():
 
             # Crear directamente la OrdenProduccion
             # Al no tener SolicitudId, podemos dejarlo como NULL o vacío
+            
+            notas_orden = ''
+            if item.get('notas'):
+                notas_orden += f"{item['nombre']}: {item['notas']} "
+            
+            horario = entrega.get('horario')
+            if entrega['tipo'] == 'sucursal' and horario:
+                notas_orden += f"| Hora de recolección: {horario}"
+                
             op = OrdenProduccion(
+                PedidoId=pedido.PedidoId,
                 ProductoId=item['producto_id'],
                 CantidadProducir=item['cantidad'],
-                Estado='En Produccion'
+                Estado='En Produccion',
+                NotasSolicitud=notas_orden.strip() if notas_orden else None
             )
             db.session.add(op)
 

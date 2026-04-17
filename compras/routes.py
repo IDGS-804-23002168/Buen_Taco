@@ -136,10 +136,29 @@ def nueva_compra():
             flash(f'Ocurrió un error al guardar: {str(e)}', 'danger')
 
     proveedores = Proveedor.query.filter_by(Activo=True).order_by(Proveedor.Nombre.asc()).all()
-    materias = MateriaPrima.query.filter_by(Activo=True).order_by(MateriaPrima.Nombre.asc()).all()
+    materias_base = MateriaPrima.query.filter_by(Activo=True).order_by(MateriaPrima.Nombre.asc()).all()
+    
+    opciones_compra = []
+    for m in materias_base:
+        pres_activas = [p for p in m.presentaciones if p.Activo]
+        if pres_activas:
+            for p in pres_activas:
+                opciones_compra.append({
+                    'id_materia': m.MateriaPrimaId,
+                    'nombre_mostrar': f"{m.Nombre} ({p.Nombre})",
+                    'multiplicador': p.CantidadBase,
+                    'unidad': m.unidad.Abreviatura if m.unidad else ''
+                })
+        else:
+            opciones_compra.append({
+                'id_materia': m.MateriaPrimaId,
+                'nombre_mostrar': m.Nombre,
+                'multiplicador': 1,
+                'unidad': m.unidad.Abreviatura if m.unidad else ''
+            })
 
     return render_template(
         'compras/nueva_compra.html',
         proveedores=proveedores,
-        materias=materias
+        opciones_compra=opciones_compra
     )

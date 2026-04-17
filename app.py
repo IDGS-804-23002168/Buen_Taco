@@ -109,8 +109,10 @@ def create_app(config=DevelopmentConfig):
 
 
     from venta import ventas_bp
-
     app.register_blueprint(ventas_bp)
+
+    from entregas import entregas_bp
+    app.register_blueprint(entregas_bp)
 
     # ---- Manejadores de error (A05 - no exponer información interna) ----
     @app.errorhandler(404)

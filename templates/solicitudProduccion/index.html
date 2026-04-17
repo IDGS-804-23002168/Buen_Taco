@@ -9,23 +9,22 @@
 {% endfor %}
 {% endwith %}
 
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-4 p-4 rounded-4 shadow-sm" style="background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border: 1px solid rgba(0,0,0,0.05);">
     <div>
-        <h4 class="fw-bold mb-0"><i class="bi bi-cart-plus me-2" style="color:#8B3A0E;"></i>Nueva Solicitud a Cocina
-        </h4>
-        <small class="text-muted">Selecciona los productos y cantidades a solicitar</small>
+        <h3 class="fw-bold mb-1 text-dark"><i class="bi bi-cart-plus-fill me-2" style="color:#8B3A0E;"></i>Nueva Solicitud</h3>
+        <p class="text-muted mb-0">Selecciona los platillos para enviar a la cocina en un solo clic.</p>
     </div>
 
-    <div class="d-flex gap-2 align-items-center">
-        <a href="{{ url_for('solicitudes.historial') }}" class="btn btn-outline-secondary rounded-pill shadow-sm">
+    <div class="d-flex flex-wrap gap-3 align-items-center">
+        <a href="{{ url_for('solicitudes.historial') }}" class="btn btn-light rounded-pill shadow-sm border px-4 py-2 fw-semibold">
             <i class="bi bi-clock-history me-1"></i> Historial
         </a>
         <div class="input-group shadow-sm" style="max-width: 250px;">
-            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
-            <input type="text" id="buscador-productos" class="form-control border-start-0"
+            <span class="input-group-text bg-white border-end-0 rounded-start-pill ps-3"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" id="buscador-productos" class="form-control border-start-0 rounded-end-pill py-2"
                 placeholder="Buscar platillo...">
         </div>
-        <select id="filtro-categoria" class="form-select shadow-sm" style="max-width: 200px;">
+        <select id="filtro-categoria" class="form-select shadow-sm rounded-pill px-3 py-2" style="max-width: 200px; cursor: pointer;">
             <option value="todas">Todas las categorías</option>
             {% for cat in categorias %}
             <option value="{{ cat.Nombre | lower }}">{{ cat.Nombre }}</option>
@@ -42,40 +41,41 @@
         <div class="col-12 col-md-4 col-lg-3 tarjeta-producto" data-nombre="{{ producto.Nombre | lower }}"
             data-categoria="{{ producto.categoria.Nombre | lower if producto.categoria else 'sin_categoria' }}">
 
-            <div class="card h-100 border-0 shadow-sm text-center" style="border-radius: 12px;">
-                <div class="card-body p-4">
-                    <div class="mb-3">
+            <div class="card h-100 border-0 shadow-sm text-center tarjeta-hover" style="border-radius: 20px; transition: all 0.3s ease; overflow: hidden; background: #fff;">
+                <div class="card-body p-4 d-flex flex-column align-items-center">
+                    <div class="mb-3 position-relative">
                         {% if producto.imagen_url %}
                         <img src="{{ url_for('static', filename=producto.imagen_url) }}" alt="{{ producto.Nombre }}"
-                             style="width:64px;height:64px;object-fit:cover;border-radius:10px;">
+                             class="shadow-sm" style="width:90px;height:90px;object-fit:cover;border-radius:20px;">
                         {% else %}
-                        <i class="bi bi-egg-fried fs-1 text-muted"></i>
+                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width:90px;height:90px;">
+                            <i class="bi bi-egg-fried fs-1 text-muted"></i>
+                        </div>
                         {% endif %}
-                    </div>
-
-                    <h5 class="fw-bold mb-1">{{ producto.Nombre }}</h5>
-                    <p class="text-muted small mb-2">
-                        <span class="badge bg-light text-dark border">{{ producto.categoria.Nombre if producto.categoria
-                            else 'Sin Categoría' }}</span>
-                    </p>
-                    <div class="mb-3">
-                        <span class="small fw-bold {{ 'text-success' if producto.disponible > 0 else 'text-danger' }}">
-                            Disponible: {{ producto.disponible }}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill {{ 'bg-success' if producto.disponible > 0 else 'bg-danger' }} border border-light shadow-sm" style="font-size: 0.7rem;">
+                            {{ producto.disponible }}
                         </span>
                     </div>
 
-                    <div class="input-group input-group-sm mb-3 w-75 mx-auto">
-                        <button class="btn btn-outline-secondary" type="button"
-                            onclick="modificarCantidad('{{ producto.ProductoId }}', -1)">
-                            <i class="bi bi-dash"></i>
-                        </button>
-                        <input type="number" class="form-control text-center prod-input fw-bold"
-                            id="input_{{ producto.ProductoId }}" name="prod_{{ producto.ProductoId }}" value="0" min="0"
-                            readonly>
-                        <button class="btn btn-outline-secondary" type="button"
-                            onclick="modificarCantidad('{{ producto.ProductoId }}', 1, {{ producto.disponible }})">
-                            <i class="bi bi-plus"></i>
-                        </button>
+                    <h5 class="fw-bold mb-1 text-dark">{{ producto.Nombre }}</h5>
+                    <p class="text-muted small mb-3">
+                        <span class="badge rounded-pill bg-light text-secondary border px-3">{{ producto.categoria.Nombre if producto.categoria else 'Platillo' }}</span>
+                    </p>
+
+                    <div class="mt-auto w-100">
+                        <div class="input-group input-group-sm mb-0 rounded-pill overflow-hidden border shadow-sm" style="background: #fdfdfd;">
+                            <button class="btn btn-link text-decoration-none text-secondary px-3" type="button"
+                                onclick="modificarCantidad('{{ producto.ProductoId }}', -1)">
+                                <i class="bi bi-dash-lg"></i>
+                            </button>
+                            <input type="number" class="form-control border-0 text-center prod-input fw-bold bg-transparent"
+                                id="input_{{ producto.ProductoId }}" name="prod_{{ producto.ProductoId }}" value="0" min="0"
+                                style="font-size: 1.1rem; color: #444;" readonly>
+                            <button class="btn btn-link text-decoration-none text-primary px-3" type="button"
+                                onclick="modificarCantidad('{{ producto.ProductoId }}', 1, {{ producto.disponible }})">
+                                <i class="bi bi-plus-lg"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -90,22 +90,53 @@
         <div id="mensaje-vacio" class="col-12 text-center py-5" style="display: none;">
             <i class="bi bi-search fs-1 text-muted d-block mb-3"></i>
             <h5 class="text-muted">No se encontraron productos con esos filtros.</h5>
-        </div>
     </div>
 
-    <div class="position-fixed bottom-0 start-0 w-100 bg-white border-top shadow p-3 d-flex justify-content-between align-items-center"
-        style="z-index: 1000;">
-        <div class="container d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-bold">
-                <i class="bi bi-cart3"></i> Artículos en solicitud: <span id="total-items" class="text-primary">0</span>
-            </h5>
-            <button type="submit" class="btn btn-success btn-lg px-5 rounded-pill shadow-sm fw-bold" id="btn-enviar"
-                disabled>
-                Enviar a Cocina <i class="bi bi-send-fill ms-2"></i>
+    <div class="position-fixed bottom-0 start-0 w-100 bg-white border-top shadow-lg p-3"
+        style="z-index: 1000; backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.9) !important;">
+        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+            <div class="d-flex align-items-center gap-4 flex-grow-1 w-100">
+                <div class="text-nowrap">
+                    <h5 class="mb-0 fw-bold d-flex align-items-center">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                            <i class="bi bi-cart3"></i>
+                        </div>
+                        <span class="d-none d-sm-inline">Artículos:</span> <span id="total-items" class="text-primary ms-2 fs-4">0</span>
+                    </h5>
+                </div>
+                
+                <div class="flex-grow-1 position-relative">
+                    <i class="bi bi-pencil-square position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                    <input type="text" id="notas_solicitud" name="notas_solicitud" 
+                        class="form-control rounded-pill ps-5 py-2 border-0 bg-light shadow-none" 
+                        placeholder="Añadir observaciones para la cocina..." style="font-size: 0.9rem;">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-success btn-lg px-5 rounded-pill shadow fw-bold text-uppercase w-100 w-md-auto" id="btn-enviar"
+                style="letter-spacing: 1px; transition: transform 0.2s;" disabled>
+                Enviar Solicitud <i class="bi bi-send-fill ms-2"></i>
             </button>
         </div>
     </div>
 </form>
+
+<style>
+    .tarjeta-hover:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+        border: 1px solid rgba(139, 58, 14, 0.1) !important;
+    }
+    .prod-input::-webkit-inner-spin-button, 
+    .prod-input::-webkit-outer-spin-button { 
+        -webkit-appearance: none; 
+        margin: 0; 
+    }
+    #btn-enviar:not(:disabled):hover {
+        transform: scale(1.05);
+    }
+    body { background-color: #f6f7fb; }
+</style>
 
 <script>
     // --- LÓGICA DE FILTRADO DINÁMICO ---
@@ -166,4 +197,41 @@
         document.getElementById('btn-enviar').disabled = (total === 0);
     }
 </script>
+
+<!-- Modal de Éxito -->
+{% if session.get('modal_solicitud') %}
+<div class="modal fade" id="modalExito" tabindex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center" style="border-radius: 15px;">
+      <div class="modal-header border-0 pb-0 justify-content-center position-relative">
+        <h1 class="modal-title fs-1 text-success mt-3" id="modalExitoLabel"><i class="bi bi-check-circle-fill"></i></h1>
+        <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body pt-2">
+        <h4 class="fw-bold mb-3 text-dark">¡Solicitud Exitosa!</h4>
+        <p class="text-muted mb-4">Los productos han sido enviados a la cocina.</p>
+        <div class="bg-light rounded p-4 text-start mx-auto shadow-sm" style="max-width: 300px; border-left: 4px solid #198754;">
+            <p class="mb-2"><i class="bi bi-hash text-muted me-2"></i><strong>ID:</strong> {{ session['modal_solicitud']['id'] }}</p>
+            <p class="mb-2"><i class="bi bi-clock text-muted me-2"></i><strong>Hora:</strong> {{ session['modal_solicitud']['hora'] }}</p>
+            <p class="mb-0"><i class="bi bi-basket text-muted me-2"></i><strong>Cantidad Total:</strong> {{ session['modal_solicitud']['cantidad'] }} artículos</p>
+        </div>
+      </div>
+      <div class="modal-footer border-0 pt-0 pb-4 justify-content-center">
+        <button type="button" class="btn btn-success px-5 rounded-pill fw-bold shadow-sm" data-bs-dismiss="modal">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% set _ = session.pop('modal_solicitud', None) %}
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var myModal = new bootstrap.Modal(document.getElementById('modalExito'), {
+      keyboard: false
+    });
+    myModal.show();
+  });
+</script>
+{% endif %}
+
 {% endblock %}

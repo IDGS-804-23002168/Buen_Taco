@@ -61,6 +61,37 @@
         <!-- DOMICILIO -->
         <div id="domicilio-form">
 
+          {% if direcciones_guardadas %}
+          <div class="mb-4">
+            <label class="form-label fw-bold">Selecciona una dirección guardada:</label>
+            <div class="list-group mb-3 shadow-sm border rounded">
+              {% for d in direcciones_guardadas %}
+              <label class="list-group-item d-flex gap-2 align-items-center" style="cursor: pointer;">
+                <input class="form-check-input flex-shrink-0" type="radio" name="direccion_guardada_id" value="{{ d.DireccionId }}">
+                <span>
+                  <strong>{{ d.Calle }} {{ d.Numero }}</strong><br>
+                  <small class="text-muted">{{ d.Colonia }}, CP: {{ d.CodigoPostal }}</small>
+                </span>
+                <input type="hidden" id="dir_calle_{{ d.DireccionId }}" value="{{ d.Calle }}">
+                <input type="hidden" id="dir_numero_{{ d.DireccionId }}" value="{{ d.Numero }}">
+                <input type="hidden" id="dir_colonia_{{ d.DireccionId }}" value="{{ d.Colonia }}">
+                <input type="hidden" id="dir_cp_{{ d.DireccionId }}" value="{{ d.CodigoPostal }}">
+                <input type="hidden" id="dir_referencias_{{ d.DireccionId }}" value="{{ d.Referencias }}">
+              </label>
+              {% endfor %}
+              <label class="list-group-item d-flex gap-2 align-items-center" style="cursor: pointer;">
+                <input class="form-check-input flex-shrink-0" type="radio" name="direccion_guardada_id" value="nueva" checked>
+                <span>
+                  <strong>+ Ingresar una nueva dirección</strong>
+                </span>
+              </label>
+            </div>
+          </div>
+          {% else %}
+            <input type="hidden" name="direccion_guardada_id" value="nueva">
+          {% endif %}
+
+          <div id="nueva-direccion-campos">
           <div class="row">
             <div class="col-md-8 mb-3">
               {{ form.calle.label(class="form-label") }}
@@ -109,7 +140,7 @@
               {% endfor %}
             </div>
           </div>
-
+          </div> <!-- /nueva-direccion-campos -->
         </div>
 
         <!-- SUCURSAL -->
@@ -210,6 +241,29 @@ toggleForm();
 
 document.querySelectorAll('input[name="tipo_entrega"]').forEach(radio => {
   radio.addEventListener('change', toggleForm);
+});
+
+// Lógica de Direcciones Guardadas
+document.querySelectorAll('input[name="direccion_guardada_id"]').forEach(radio => {
+  radio.addEventListener('change', function() {
+    const isNew = this.value === 'nueva';
+    document.getElementById("nueva-direccion-campos").style.display = isNew ? "block" : "none";
+    
+    if (!isNew) {
+      const id = this.value;
+      document.getElementById('calle').value = document.getElementById('dir_calle_' + id).value;
+      document.getElementById('numero').value = document.getElementById('dir_numero_' + id).value;
+      document.getElementById('colonia').value = document.getElementById('dir_colonia_' + id).value;
+      document.getElementById('codigo_postal').value = document.getElementById('dir_cp_' + id).value;
+      document.getElementById('referencias').value = document.getElementById('dir_referencias_' + id).value;
+    } else {
+      document.getElementById('calle').value = '';
+      document.getElementById('numero').value = '';
+      document.getElementById('colonia').value = '';
+      document.getElementById('codigo_postal').value = '';
+      document.getElementById('referencias').value = '';
+    }
+  });
 });
 </script>
 

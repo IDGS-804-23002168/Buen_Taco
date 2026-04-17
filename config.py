@@ -6,7 +6,7 @@ class Config(object):
     SECRET_KEY = os.environ.get("SECRET_KEY", "C4mbi@M3EnPr0ducci0n!#2025")
     WTF_CSRF_ENABLED = True
     WTF_CSRF_TIME_LIMIT = 3600
-    PERMANENT_SESSION_LIFETIME = timedelta(minutes=10)
+    PERMANENT_SESSION_LIFETIME = timedelta(hours=2)
     SESSION_COOKIE_SECURE = True
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"

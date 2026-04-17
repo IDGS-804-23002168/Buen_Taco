@@ -86,19 +86,17 @@ class DireccionForm(FlaskForm):
         'Horario de recolección',
         choices=[
             ('', 'Selecciona un horario'),
-            ('6:00-6:30', '6:00 - 6:30'),
-            ('6:30-7:00', '6:30 - 7:00'),
-            ('7:00-7:30', '7:00 - 7:30'),
-            ('7:30-8:00', '7:30 - 8:00'),
-            ('8:00-8:30', '8:00 - 8:30'),
-            ('8:30-9:00', '8:30 - 9:00'),
-            ('9:00-9:30', '9:00 - 9:30'),
-            ('9:30-10:00', '9:30 - 10:00'),
-            ('10:00-10:30', '10:00 - 10:30'),
-            ('10:30-11:00', '10:30 - 11:00'),
-            ('11:00-11:30', '11:00 - 11:30'),
-            ('11:30-12:00', '11:30 - 12:00'),
-        ],
+        ('19:00-19:30', '19:00 - 19:30'),
+        ('19:30-20:00', '19:30 - 20:00'),
+        ('20:00-20:30', '20:00 - 20:30'),
+        ('20:30-21:00', '20:30 - 21:00'),
+        ('21:00-21:30', '21:00 - 21:30'),
+        ('21:30-22:00', '21:30 - 22:00'),
+        ('22:00-22:30', '22:00 - 22:30'),
+        ('22:30-23:00', '22:30 - 23:00'),
+        ('23:00-23:30', '23:00 - 23:30'),
+        ('23:30-00:00', '23:30 - 00:00'),
+    ],
         validators=[Optional()]
     )
 
@@ -154,19 +152,19 @@ class PagoForm(FlaskForm):
 )
     mes_expiracion = SelectField(
         'Mes',
-        choices=[(str(i).zfill(2), str(i).zfill(2)) for i in range(1, 13)],
+        choices=[(str(i).zfill(2), str(i).zfill(2)) for i in range(5, 13)],
         validators=[DataRequired()]
     )
     anio_expiracion = SelectField(
         'Año',
-        choices=[(str(a), str(a)) for a in range(2025, 2036)],
+        choices=[(str(a), str(a)) for a in range(2026, 2036)],
         validators=[DataRequired()]
     )
     cvv = StringField(
         'CVV',
         validators=[
             DataRequired(message='El CVV es obligatorio.'),
-            Regexp(r'^\d{3,4}$', message='El CVV debe tener 3 o 4 dígitos.')
+            Regexp(r'^\d{3}$', message='El CVV debe tener 3.')
         ]
     )
     submit = SubmitField('Pagar ahora')
@@ -194,6 +192,17 @@ class MateriaPrimaForm(FlaskForm):
         NumberRange(min=0, max=80, message="Para evitar desperdicios severos, la merma máxima permitida es del 80%.")
     ])
     submit = SubmitField('Guardar')
+
+class PresentacionForm(FlaskForm):
+    nombre = StringField('Nombre de la Presentación', validators=[
+        DataRequired(message="El nombre es obligatorio."),
+        Length(min=2, max=100, message="El nombre debe tener entre 2 y 100 caracteres.")
+    ])
+    cantidad_base = DecimalField('Cantidad en Unidad Base', validators=[
+        DataRequired(message="La cantidad es obligatoria."),
+        NumberRange(min=0.01, message="La cantidad debe ser mayor a cero.")
+    ])
+    submit = SubmitField('Guardar Presentación')
 
 # ---------------------------------------------------------------------------
 # VALIDADORES PERSONALIZADOS 

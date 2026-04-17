@@ -2,8 +2,8 @@ from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from functools import wraps
 from . import inventario_bp
-from forms import MateriaPrimaForm  # <-- Importado correctamente desde la raíz
-from models import db, MateriaPrima, UnidadMedida, UsuariosRoles, Rol
+from forms import MateriaPrimaForm, PresentacionForm  # <-- Importado correctamente desde la raíz
+from models import db, MateriaPrima, UnidadMedida, UsuariosRoles, Rol, MateriaPrimaPresentacion
 
 # --- DECORADOR PARA LOS ROLES ---
 def roles_required(*roles):
@@ -59,3 +59,42 @@ def materias_primas():
     lista_materias = MateriaPrima.query.filter_by(Activo=True).all()
     
     return render_template('inventario/materias_primas.html', form=form, materias=lista_materias, puede_editar=puede_editar)
+
+
+# --- GESTIÓN DE PRESENTACIONES ---
+@inventario_bp.route('/almacen/materias-primas/<int:materia_id>/presentaciones', methods=['GET', 'POST'])
+@login_required
+@roles_required('Administrador', 'Encargado_Almacen')
+def presentaciones(materia_id):
+    materia = MateriaPrima.query.get_or_404(materia_id)
+    form = PresentacionForm()
+    
+    if form.validate_on_submit():
+        nueva_pres = MateriaPrimaPresentacion(
+            MateriaPrimaId=materia_id,
+            Nombre=form.nombre.data,
+            CantidadBase=form.cantidad_base.data
+        )
+        db.session.add(nueva_pres)
+        db.session.commit()
+        flash(f'Presentación "{form.nombre.data}" agregada para {materia.Nombre}.', 'success')
+        return redirect(url_for('inventario.presentaciones', materia_id=materia_id))
+    
+    lista_presentaciones = MateriaPrimaPresentacion.query.filter_by(MateriaPrimaId=materia_id, Activo=True).all()
+    
+    return render_template('inventario/presentaciones.html', 
+                         materia=materia, 
+                         form=form, 
+                         presentaciones=lista_presentaciones)
+
+
+@inventario_bp.route('/almacen/presentaciones/eliminar/<int:pres_id>', methods=['POST'])
+@login_required
+@roles_required('Administrador', 'Encargado_Almacen')
+def eliminar_presentacion(pres_id):
+    pres = MateriaPrimaPresentacion.query.get_or_404(pres_id)
+    materia_id = pres.MateriaPrimaId
+    pres.Activo = False
+    db.session.commit()
+    flash('Presentación eliminada correctamente.', 'warning')
+    return redirect(url_for('inventario.presentaciones', materia_id=materia_id))

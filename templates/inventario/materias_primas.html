@@ -42,6 +42,7 @@
           <th>Unidad</th>
           <th>Stock Actual</th> <th>Merma (%)</th>
           <th>Estado</th>
+          <th class="text-center">Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -67,6 +68,11 @@
             </span>
           </td>
           <td><span class="badge bg-success">Activo</span></td>
+          <td class="text-center">
+            <a href="{{ url_for('inventario.presentaciones', materia_id=m.MateriaPrimaId) }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+              <i class="bi bi-box me-1"></i> Presentaciones
+            </a>
+          </td>
         </tr>
         {% endfor %}
       </tbody>

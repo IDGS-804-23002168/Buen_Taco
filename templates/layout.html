@@ -100,6 +100,8 @@
                         <ul class="dropdown-menu shadow" aria-labelledby="ventasDropdown">
                             <li><a class="dropdown-item" href="/ventas"><i class="bi bi-cash-coin me-2"></i>Punto de Venta</a></li>
                             <li><a class="dropdown-item" href="{{ url_for('ventas.historial') }}"><i class="bi bi-clock-history me-2"></i>Historial de Ventas</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('entregas.index') }}"><i class="bi bi-box-seam me-2"></i>Entregas Web</a></li>
                         </ul>
                     </li>
                     {% endif %}

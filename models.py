@@ -90,9 +90,22 @@ class MateriaPrima(db.Model):
     PorcentajeMerma  = db.Column(db.Numeric(5, 2), default=0)
     stock            = db.Column(db.Numeric(7, 2), nullable=False, default=0.00)
     Activo           = db.Column(db.Boolean, default=True)
-    stock            = db.Column(db.Numeric(7, 2), nullable=False, default=0.00)
 
     unidad = db.relationship('UnidadMedida')
+
+
+class MateriaPrimaPresentacion(db.Model):
+    __tablename__ = 'MateriaPrimaPresentaciones'
+
+    PresentacionId   = db.Column(db.Integer, primary_key=True)
+    MateriaPrimaId   = db.Column(db.Integer, db.ForeignKey('MateriasPrimas.MateriaPrimaId'), nullable=False)
+    Nombre           = db.Column(db.String(100))
+    CantidadBase     = db.Column(db.Numeric(10, 2), nullable=False)
+    Activo           = db.Column(db.Boolean, default=True)
+
+    # Relación con MateriaPrima
+    materia_prima = db.relationship('MateriaPrima', backref=db.backref('presentaciones', lazy=True))
+    
 
 
 class MovimientoMateriaPrima(db.Model):
@@ -146,6 +159,7 @@ class SolicitudProduccion(db.Model):
     SolicitudId = db.Column(db.Integer, primary_key=True)
     Fecha       = db.Column(db.DateTime, default=datetime.utcnow)
     Estado      = db.Column(db.String(50))
+    NotasSolicitud = db.Column(db.Text, nullable=True)
 
     detalles = db.relationship('SolicitudDetalle', backref='solicitud', lazy=True)
     ordenes  = db.relationship('OrdenProduccion', backref='solicitud', lazy=True)
@@ -166,15 +180,18 @@ class OrdenProduccion(db.Model):
     __tablename__ = 'OrdenProduccion'
 
     OrdenProduccionId = db.Column(db.Integer, primary_key=True)
+    PedidoId = db.Column(db.Integer, db.ForeignKey('Pedidos.PedidoId'), nullable=True)
     SolicitudId       = db.Column(db.Integer, db.ForeignKey('SolicitudProduccion.SolicitudId'))
     ProductoId        = db.Column(db.Integer, db.ForeignKey('Productos.ProductoId'), nullable=False)
     CantidadProducir  = db.Column(db.Integer, nullable=False)
     FechaInicio       = db.Column(db.DateTime, default=datetime.utcnow)
     FechaFin          = db.Column(db.DateTime)
     Estado            = db.Column(db.String(50))
+    NotasSolicitud = db.Column(db.Text, nullable=True)
 
     producto = db.relationship('Producto')
-
+    pedido = db.relationship('Pedido', backref='ordenes_produccion')
+    
 
 class MovimientoProducto(db.Model):
     __tablename__ = 'MovimientoProducto'

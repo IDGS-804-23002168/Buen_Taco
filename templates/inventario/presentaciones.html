@@ -1,0 +1,113 @@
+{% extends "layout.html" %}
+{% block title %}Presentaciones - {{ materia.Nombre }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold mb-0">
+                <i class="bi bi-box me-2" style="color:#8B3A0E;"></i>
+                Presentaciones de {{ materia.Nombre }}
+            </h4>
+            <small class="text-muted">Define agrupadores para compras (ej. Saco, Caja, Paquete)</small>
+        </div>
+        <a href="{{ url_for('inventario.materias_primas') }}" class="btn btn-outline-secondary rounded-pill">
+            <i class="bi bi-arrow-left me-1"></i> Volver a Materias Primas
+        </a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="row g-4">
+        <!-- Formulario para agregar -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+                <div class="card-header bg-white fw-bold border-0 pt-3">
+                    <i class="bi bi-plus-circle me-1"></i> Nueva Presentación
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">{{ form.nombre.label }}</label>
+                            {{ form.nombre(class="form-control", placeholder="Ej. Paquete de 30") }}
+                            {% for error in form.nombre.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">{{ form.cantidad_base.label }}</label>
+                            <div class="input-group">
+                                {{ form.cantidad_base(class="form-control", placeholder="Ej. 30") }}
+                                <span class="input-group-text bg-light">{{ materia.unidad.Abreviatura }}</span>
+                            </div>
+                            {% for error in form.cantidad_base.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                            <small class="text-muted d-block mt-1">Cantidad equivalente en {{ materia.unidad.Nombre }}</small>
+                        </div>
+                        <button type="submit" class="btn text-white w-100 fw-bold rounded-pill py-2" style="background-color:#8B3A0E;">
+                            <i class="bi bi-save me-1"></i> {{ form.submit.label.text }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Listado de presentaciones -->
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Nombre de la Presentación</th>
+                                    <th class="text-center">Equivalente</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pres in presentaciones %}
+                                <tr>
+                                    <td class="ps-4 fw-semibold">{{ pres.Nombre }}</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-light text-dark border px-3 py-2" style="font-size: 0.9rem;">
+                                            {{ pres.CantidadBase }} {{ materia.unidad.Abreviatura }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <form action="{{ url_for('inventario.eliminar_presentacion', pres_id=pres.PresentacionId) }}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta presentación?');">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle p-2" title="Eliminar">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="3" class="text-center py-5">
+                                        <i class="bi bi-box-seam fs-1 text-muted d-block mb-3"></i>
+                                        <p class="text-muted mb-0">No hay presentaciones registradas para esta materia prima.</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -40,8 +40,13 @@
           <label class="form-label">Materia Prima</label>
           <select id="select_materia" class="form-select">
             <option value="" selected disabled>Selecciona un insumo...</option>
-            {% for m in materias %}
-              <option value="{{ m.MateriaPrimaId }}" data-nombre="{{ m.Nombre }}">{{ m.Nombre }} ({{ m.unidad.Abreviatura if m.unidad else '' }})</option>
+            {% for o in opciones_compra %}
+              <option value="{{ o.id_materia }}" 
+                      data-nombre="{{ o.nombre_mostrar }}" 
+                      data-multiplicador="{{ o.multiplicador }}"
+                      data-unidad="{{ o.unidad }}">
+                {{ o.nombre_mostrar }}
+              </option>
             {% endfor %}
           </select>
         </div>
@@ -105,10 +110,15 @@
     }
 
     const nombre = select.options[select.selectedIndex].getAttribute('data-nombre');
+    const multiplicador = parseFloat(select.options[select.selectedIndex].getAttribute('data-multiplicador'));
+    const unidad = select.options[select.selectedIndex].getAttribute('data-unidad');
     const idMateria = select.value;
     
-    // Calculamos el precio unitario para guardarlo en la BD (Precio Total / Cantidad)
-    const precioUnitario = precioTotal / cantidad;
+    // Cantidad real que entrará al inventario
+    const cantidadReal = cantidad * multiplicador;
+    
+    // Calculamos el precio unitario basado en la cantidad base (Precio Total / Cantidad Real)
+    const precioUnitario = precioTotal / cantidadReal;
 
     // Crear la fila visible
     const fila = document.createElement('tr');
@@ -118,8 +128,8 @@
         <input type="hidden" name="materia_id[]" value="${idMateria}">
       </td>
       <td>
-        ${cantidad}
-        <input type="hidden" name="cantidad[]" value="${cantidad}">
+        ${cantidad} <small class="text-muted">(${(multiplicador > 1 ? cantidadReal.toFixed(2) + ' ' + unidad : unidad)})</small>
+        <input type="hidden" name="cantidad[]" value="${cantidadReal.toFixed(2)}">
       </td>
       <td class="subtotal-item">
         $${precioTotal.toFixed(2)}

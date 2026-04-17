@@ -1,4 +1,5 @@
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, session
+from datetime import datetime
 from flask_login import login_required, current_user
 from functools import wraps
 from . import solicitudes_bp
@@ -42,7 +43,8 @@ def index():
 
             if items:
                 # Crear UNA solicitud (encabezado)
-                nueva_solicitud = SolicitudProduccion(Estado="Pendiente")
+                notas = request.form.get('notas_solicitud', '')
+                nueva_solicitud = SolicitudProduccion(Estado="Pendiente", NotasSolicitud=notas)
                 db.session.add(nueva_solicitud)
                 db.session.flush()  # Obtener el SolicitudId
 
@@ -63,6 +65,14 @@ def index():
                     db.session.add(detalle)
 
                 db.session.commit()
+                
+                # Establecer sesión para el modal de éxito
+                session['modal_solicitud'] = {
+                    'id': nueva_solicitud.SolicitudId,
+                    'hora': datetime.utcnow().strftime('%H:%M:%S'),
+                    'cantidad': sum(cantidad for _, cantidad in items)
+                }
+
                 flash(
                     f"¡Solicitud #{nueva_solicitud.SolicitudId} enviada a la cocina con {len(items)} producto(s)!",
                     "success",
